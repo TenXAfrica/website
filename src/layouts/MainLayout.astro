@@ -1,0 +1,278 @@
+---
+import { CanvasHero } from "../components/CanvasHero";
+import { Navigation } from "../components/MobileMenu";
+import "../styles/global.css";
+
+import logoImage from "../assets/Logo.png";
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const {
+	title,
+	description = "Ten X Africa - Building the Future. Backing the Bold.",
+} = Astro.props;
+
+// Get current path for active state
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title} | Ten X Africa</title>
+
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body
+		class="bg-obsidian-void text-vapor-white min-h-screen flex flex-col overflow-x-hidden selection:bg-tenx-gold selection:text-obsidian-void"
+	>
+		<!-- Sticky Glass Nav -->
+		<nav
+			class="fixed top-0 left-0 right-0 z-50 h-[80px] bg-black/50 backdrop-blur-md border-b border-white/5 flex items-center px-6 lg:px-12 justify-between"
+		>
+			<!-- Logo -->
+			<a
+				href="/"
+				class="flex items-center gap-3 text-2xl font-heading font-bold tracking-tighter text-white hover:text-tenx-gold transition-colors"
+			>
+				<img
+					src={logoImage.src}
+					alt="TEN X Logo"
+					class="h-10 w-auto object-contain"
+				/>
+				<span class="hidden sm:inline">Ten X Africa</span>
+			</a>
+
+			<!-- Desktop Menu -->
+			<div class="hidden lg:flex gap-6 font-medium text-sm tracking-wide">
+				<a
+					href="/"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath === "/" && "text-tenx-gold",
+					]}>HOME</a
+				>
+				<a
+					href="/consulting"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath.startsWith("/consulting") &&
+							"text-tenx-gold",
+					]}>CONSULTING</a
+				>
+				<a
+					href="/catalyst"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath.startsWith("/catalyst") && "text-tenx-gold",
+					]}>CATALYST</a
+				>
+				<a
+					href="/impact"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath.startsWith("/impact") && "text-tenx-gold",
+					]}>IMPACT</a
+				>
+				<a
+					href="/insights"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath.startsWith("/insights") && "text-tenx-gold",
+					]}>INSIGHTS</a
+				>
+				<a
+					href="/contact"
+					class:list={[
+						"hover:text-tenx-gold transition-colors py-2",
+						currentPath.startsWith("/contact") && "text-tenx-gold",
+					]}>CONTACT</a
+				>
+			</div>
+
+			<!-- Desktop CTA -->
+			<div class="hidden lg:block">
+				<a
+					href="/network"
+					class:list={[
+						"border border-tenx-gold/50 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-tenx-gold hover:text-black transition-all",
+						currentPath.startsWith("/network") &&
+							"bg-tenx-gold text-black",
+					]}
+				>
+					Join Network
+				</a>
+			</div>
+
+			<!-- Mobile Menu Toggle -->
+			<Navigation client:load />
+		</nav>
+
+		<main class="flex-grow pt-[80px]">
+			<slot />
+		</main>
+
+		<footer
+			class="relative border-t border-white/5 py-12 px-6 lg:px-12 bg-black overflow-hidden"
+		>
+			<!-- Footer Mesh (Chaos Mode) -->
+			<CanvasHero
+				client:only="react"
+				variant="chaos"
+				className="absolute inset-0 z-0 opacity-50"
+			/>
+
+			<div class="relative z-10 grid md:grid-cols-4 gap-8 mb-12">
+				<div class="col-span-1">
+					<a
+						href="/"
+						class="flex items-center gap-3 text-2xl font-heading font-bold tracking-tighter text-white hover:text-tenx-gold transition-colors pb-4"
+					>
+						<img
+							src={logoImage.src}
+							alt="TEN X Logo"
+							class="h-10 w-auto object-contain"
+						/>
+						<span class="hidden sm:inline">Ten X Africa</span>
+					</a>
+					<p class="text-white/60 text-sm leading-relaxed">
+						Strategy. Technology. Capital. Impact. <br />
+						Driving sustainable development and digital transformation
+						in Africa.
+					</p>
+				</div>
+				<div>
+					<h4 class="font-bold mb-4 text-tenx-gold">ECOSYSTEM</h4>
+					<ul class="space-y-2 text-sm text-white/60">
+						<li>
+							<a
+								href="/consulting"
+								class="hover:text-white transition-colors"
+								>Consulting</a
+							>
+						</li>
+						<li>
+							<a
+								href="/catalyst"
+								class="hover:text-white transition-colors"
+								>Ventures</a
+							>
+						</li>
+						<li>
+							<a
+								href="/impact"
+								class="hover:text-white transition-colors"
+								>Impact Funding</a
+							>
+						</li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="font-bold mb-4 text-tenx-gold">FIRM</h4>
+					<ul class="space-y-2 text-sm text-white/60">
+						<li>
+							<a
+								href="/#about"
+								class="hover:text-white transition-colors"
+								>Our Philosophy</a
+							>
+						</li>
+						<li>
+							<a
+								href="/insights"
+								class="hover:text-white transition-colors"
+								>Insights</a
+							>
+						</li>
+						<li>
+							<a
+								href="/network"
+								class="hover:text-white transition-colors"
+								>Join Network</a
+							>
+						</li>
+						<li>
+							<a
+								href="/contact"
+								class="hover:text-white transition-colors"
+								>Contact</a
+							>
+						</li>
+					</ul>
+				</div>
+				<div>
+					<h4 class="font-bold mb-4 text-tenx-gold">CONNECT</h4>
+					<div class="flex gap-3 mb-4">
+						<a
+							href="https://linkedin.com/company/tenxafrica"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:bg-tenx-gold hover:text-black transition-all"
+							aria-label="LinkedIn"
+						>
+							<svg
+								class="w-5 h-5"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+								></path>
+							</svg>
+						</a>
+						<a
+							href="https://twitter.com/tenxafrica"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:bg-tenx-gold hover:text-black transition-all"
+							aria-label="X (Twitter)"
+						>
+							<svg
+								class="w-5 h-5"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+								></path>
+							</svg>
+						</a>
+					</div>
+					<p class="text-xs text-white/40">hello@tenxafrica.co.za</p>
+				</div>
+			</div>
+			<div
+				class="relative z-10 border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between text-xs text-white/30"
+			>
+				<p>
+					© {new Date().getFullYear()} Ten X Africa. All rights reserved.
+				</p>
+				<p>
+					<a
+						href="/privacy"
+						class="hover:text-white transition-colors"
+						>Privacy Policy</a
+					>
+					<span class="mx-2">|</span>
+					<a href="/terms" class="hover:text-white transition-colors"
+						>Terms of Service</a
+					>
+				</p>
+			</div>
+		</footer>
+	</body>
+</html>

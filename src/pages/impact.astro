@@ -1,0 +1,296 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { PageHero } from "../components/PageHero";
+import { GlassCard } from "../components/GlassCard";
+import { GoldButton } from "../components/GoldButton";
+import { StatsCounter } from "../components/StatsCounter";
+import { ProjectCard } from "../components/ProjectCard";
+import { getEntry } from "astro:content";
+
+const impactPage = await getEntry("pages", "impact");
+
+if (!impactPage) {
+    throw new Error("Impact page content not found");
+}
+
+const { data } = impactPage;
+---
+
+<MainLayout title={data.seo.title} description={data.seo.description}>
+    <div class="relative min-h-screen">
+        <!-- Hero Section -->
+        <PageHero
+            client:load
+            headline={data.hero.headline}
+            subheadline={data.hero.subheadline}
+        />
+
+        <!-- Stats Section -->
+        <section
+            class="py-16 px-6 lg:px-12 border-t border-white/5 bg-black/40"
+        >
+            <div class="max-w-6xl mx-auto">
+                <StatsCounter client:visible stats={data.stats!} />
+            </div>
+        </section>
+
+        <!-- Funding Model Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-12">
+                    <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                    <h2
+                        class="text-3xl md:text-4xl font-heading font-bold text-white mb-4"
+                    >
+                        {data.fundingModel!.title}
+                    </h2>
+                    <p class="text-lg text-white/60 max-w-2xl">
+                        {data.fundingModel!.description}
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {
+                        data.fundingModel!.pillars.map((pillar, index) => (
+                            <GlassCard
+                                client:visible
+                                className="p-6 text-center"
+                            >
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-tenx-gold/10 flex items-center justify-center">
+                                    {pillar.icon === "coins" && (
+                                        <svg
+                                            class="w-8 h-8 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                    )}
+                                    {pillar.icon === "building" && (
+                                        <svg
+                                            class="w-8 h-8 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                            />
+                                        </svg>
+                                    )}
+                                    {pillar.icon === "leaf" && (
+                                        <svg
+                                            class="w-8 h-8 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                                            />
+                                        </svg>
+                                    )}
+                                    {pillar.icon === "chart-bar" && (
+                                        <svg
+                                            class="w-8 h-8 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                            />
+                                        </svg>
+                                    )}
+                                </div>
+                                <h4 class="font-heading font-bold text-white mb-2">
+                                    {pillar.title}
+                                </h4>
+                                <p class="text-sm text-white/60">
+                                    {pillar.description}
+                                </p>
+                            </GlassCard>
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section
+            class="py-20 px-6 lg:px-12 bg-black/40 border-t border-white/5"
+        >
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-12">
+                    <h2
+                        class="text-3xl md:text-4xl font-heading font-bold text-white border-l-4 border-tenx-gold pl-4"
+                    >
+                        ACTIVE PROJECTS
+                    </h2>
+                    <p class="text-white/60 mt-4 max-w-2xl">
+                        Initiatives driving real change across communities.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {
+                        data.projects!.map((project, index) => (
+                            <ProjectCard
+                                client:visible
+                                project={project}
+                                index={index}
+                            />
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- ESG Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                        <h2
+                            class="text-3xl md:text-4xl font-heading font-bold text-white mb-6"
+                        >
+                            {data.esg!.title}
+                        </h2>
+                        <p class="text-lg text-white/60 leading-relaxed mb-8">
+                            {data.esg!.description}
+                        </p>
+                        {
+                            data.esg!.downloadLink && (
+                                <a href={data.esg!.downloadLink.href}>
+                                    <GoldButton
+                                        client:visible
+                                        variant="outline"
+                                    >
+                                        <span class="flex items-center gap-2">
+                                            <svg
+                                                class="w-5 h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                                />
+                                            </svg>
+                                            {data.esg!.downloadLink.label}
+                                        </span>
+                                    </GoldButton>
+                                </a>
+                            )
+                        }
+                    </div>
+
+                    <div class="relative">
+                        <GlassCard client:visible className="p-8">
+                            <h4 class="font-heading font-bold text-white mb-6">
+                                OUR IMPACT FRAMEWORK
+                            </h4>
+                            <div class="space-y-4">
+                                <div
+                                    class="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                >
+                                    <span class="text-white/80">
+                                        Carbon Strategy
+                                    </span>
+                                    <span class="font-mono text-tenx-gold">
+                                        Net Zero Target
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                >
+                                    <span class="text-white/80">
+                                        Gender Parity
+                                    </span>
+                                    <span class="font-mono text-tenx-gold">
+                                        50% Mandate
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                >
+                                    <span class="text-white/80">
+                                        Job Creation
+                                    </span>
+                                    <span class="font-mono text-tenx-gold">
+                                        Primary KPI
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                >
+                                    <span class="text-white/80">
+                                        Reporting Standard
+                                    </span>
+                                    <span class="font-mono text-tenx-gold">
+                                        GRI / SASB
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="flex items-center justify-between p-3 bg-white/5 rounded-lg"
+                                >
+                                    <span class="text-white/80">
+                                        Geographic Focus
+                                    </span>
+                                    <span class="font-mono text-tenx-gold">
+                                        Rural / Underserved
+                                    </span>
+                                </div>
+                            </div>
+                        </GlassCard>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section
+            class="py-24 px-6 lg:px-12 border-t border-white/5 bg-gradient-to-r from-tenx-gold/5 via-transparent to-slate-teal/5"
+        >
+            <div class="max-w-4xl mx-auto text-center">
+                <h2
+                    class="text-4xl md:text-5xl font-heading font-bold text-white mb-6"
+                >
+                    INVEST IN AFRICA'S FUTURE
+                </h2>
+                <p class="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+                    Partner with us to drive sustainable development while
+                    generating returns.
+                </p>
+                <a href="/contact?interest=general">
+                    <GoldButton client:visible className="text-lg px-10 py-4">
+                        Partner With Us
+                    </GoldButton>
+                </a>
+            </div>
+        </section>
+    </div>
+</MainLayout>

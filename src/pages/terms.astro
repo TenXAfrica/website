@@ -1,0 +1,50 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { PageHero } from "../components/PageHero";
+import { GoldButton } from "../components/GoldButton";
+import { getEntry } from "astro:content";
+
+const termsPage = await getEntry('pages', 'terms');
+
+if (!termsPage) {
+    throw new Error('Terms page content not found');
+}
+
+const { data } = termsPage;
+const { Content } = await termsPage.render();
+---
+
+<MainLayout title={data.seo.title} description={data.seo.description}>
+    <div class="relative min-h-screen">
+        <PageHero
+            client:load
+            headline={data.hero.headline}
+            subheadline={data.hero.subheadline}
+        />
+
+        <section class="py-16 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-3xl mx-auto space-y-10">
+                <div class="flex justify-start">
+                    <a href="/">
+                        <GoldButton variant="outline" client:visible>Home</GoldButton>
+                    </a>
+                </div>
+
+                <header class="space-y-2">
+                    <h1 class="text-3xl md:text-4xl font-heading font-bold text-white leading-tight">
+                        {data.hero.headline}
+                    </h1>
+                    {data.hero.subheadline && (
+                        <p class="text-white/70 text-base md:text-lg leading-relaxed">
+                            {data.hero.subheadline}
+                        </p>
+                    )}
+                </header>
+
+                <article class="legal-content">
+                    <Content />
+                </article>
+            </div>
+        </section>
+    </div>
+</MainLayout>

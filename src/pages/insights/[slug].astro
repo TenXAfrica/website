@@ -1,0 +1,347 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { GlassCard } from "../../components/GlassCard";
+import { GoldButton } from "../../components/GoldButton";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+// Get all posts for static path generation
+export async function getStaticPaths() {
+    const posts = await getCollection('insights');
+    return posts.map((entry) => ({
+        params: { slug: entry.slug },
+        props: { entry },
+    }));
+}
+
+interface Props {
+    entry: CollectionEntry<'insights'>;
+}
+
+const { entry } = Astro.props;
+const { data, slug } = entry;
+
+if (!entry) {
+    return Astro.redirect("/insights");
+}
+
+// Render the markdown content
+const { Content } = await entry.render();
+
+---
+
+<MainLayout title={data.title} description={data.excerpt}>
+    <article class="relative min-h-screen">
+        <!-- Hero Image -->
+        <div class="relative h-[40vh] md:h-[50vh] overflow-hidden">
+            {/* Placeholder gradient */}
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-tenx-gold/20 via-slate-teal/20 to-obsidian-void"
+            >
+            </div>
+
+            {
+                data.image?.src && (
+                    <img
+                        src={data.image.src}
+                        alt={data.image.alt || data.title}
+                        class="w-full h-full object-cover opacity-50"
+                    />
+                )
+            }
+
+            {/* Overlay */}
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-obsidian-void via-obsidian-void/50 to-transparent"
+            >
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative -mt-32 z-10 px-6 lg:px-12 pb-20">
+            <div class="max-w-3xl mx-auto">
+                <!-- Meta Card -->
+                <GlassCard
+                    client:load
+                    className="p-8 mb-12"
+                    hoverEffect={false}
+                >
+                    {/* Tags */}
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {
+                            data.tags.map((tag: string) => (
+                                <span class="px-3 py-1 text-xs font-mono uppercase tracking-wider text-tenx-gold bg-tenx-gold/10 rounded">
+                                    {tag}
+                                </span>
+                            ))
+                        }
+                    </div>
+
+                    {/* Title */}
+                    <h1
+                        class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white leading-tight mb-6"
+                    >
+                        {data.title}
+                    </h1>
+
+                    {/* Author & Date */}
+                    <div
+                        class="flex flex-wrap items-center gap-6 text-sm text-white/60"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-tenx-gold/20 flex items-center justify-center"
+                            >
+                                <span class="text-sm font-bold text-tenx-gold">
+                                    {
+                                        data.author.name
+                                            .split(" ")
+                                            .map((n: string) => n[0])
+                                            .join("")
+                                    }
+                                </span>
+                            </div>
+                            <div>
+                                <div class="text-white font-medium">
+                                    {data.author.name}
+                                </div>
+                                <div class="text-xs text-white/40">
+                                    {data.author.role}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                ></path>
+                            </svg>
+                            {
+                                new Date(data.publishedAt).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        month: "long",
+                                        day: "numeric",
+                                        year: "numeric",
+                                    },
+                                )
+                            }
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                ></path>
+                            </svg>
+                            {data.readTime} min read
+                        </div>
+                    </div>
+                </GlassCard>
+
+                {/* Article Content */}
+                <GlassCard client:load className="p-8 lg:p-10" hoverEffect={false}>
+                    <div class="article-content space-y-6">
+                        <Content />
+                    </div>
+                </GlassCard>
+
+                <style>
+                    .article-content :global(h1) {
+                        font-size: 1.875rem;
+                        font-family: var(--font-heading);
+                        font-weight: 700;
+                        color: white;
+                        margin-top: 2rem;
+                        margin-bottom: 1rem;
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .article-content :global(h1) {
+                            font-size: 2.25rem;
+                        }
+                    }
+                    
+                    .article-content :global(h2) {
+                        font-size: 1.5rem;
+                        font-family: var(--font-heading);
+                        font-weight: 700;
+                        color: white;
+                        margin-top: 2.5rem;
+                        margin-bottom: 1rem;
+                        padding-bottom: 0.75rem;
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .article-content :global(h2) {
+                            font-size: 1.875rem;
+                        }
+                    }
+                    
+                    .article-content :global(h3) {
+                        font-size: 1.25rem;
+                        font-family: var(--font-heading);
+                        font-weight: 600;
+                        color: #D68614;
+                        margin-top: 2rem;
+                        margin-bottom: 0.75rem;
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .article-content :global(h3) {
+                            font-size: 1.5rem;
+                        }
+                    }
+                    
+                    .article-content :global(p) {
+                        color: rgba(255, 255, 255, 0.7);
+                        line-height: 1.75;
+                        font-size: 1rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    
+                    @media (min-width: 768px) {
+                        .article-content :global(p) {
+                            font-size: 1.125rem;
+                        }
+                    }
+                    
+                    .article-content :global(ul),
+                    .article-content :global(ol) {
+                        margin-top: 1.5rem;
+                        margin-bottom: 1.5rem;
+                        padding-left: 1.5rem;
+                    }
+                    
+                    .article-content :global(ul > li),
+                    .article-content :global(ol > li) {
+                        color: rgba(255, 255, 255, 0.7);
+                        line-height: 1.75;
+                        margin-bottom: 0.75rem;
+                    }
+                    
+                    .article-content :global(ul li) {
+                        position: relative;
+                        padding-left: 0.5rem;
+                        list-style: none;
+                    }
+                    
+                    .article-content :global(ul li::before) {
+                        content: "•";
+                        position: absolute;
+                        left: -1rem;
+                        color: #D68614;
+                        font-size: 1.25rem;
+                    }
+                    
+                    .article-content :global(strong) {
+                        color: white;
+                        font-weight: 600;
+                    }
+                    
+                    .article-content :global(a) {
+                        color: #D68614;
+                        text-decoration: underline;
+                        transition: color 0.2s;
+                    }
+                    
+                    .article-content :global(a:hover) {
+                        color: rgba(214, 134, 20, 0.8);
+                    }
+                    
+                    .article-content :global(code) {
+                        color: #D68614;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 0.25rem;
+                        font-size: 0.875rem;
+                    }
+                    
+                    .article-content :global(pre) {
+                        background-color: rgba(0, 0, 0, 0.6);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        padding: 1rem;
+                        border-radius: 0.5rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 1.5rem;
+                        overflow-x: auto;
+                    }
+                    
+                    .article-content :global(blockquote) {
+                        border-left: 4px solid #D68614;
+                        padding-left: 1.5rem;
+                        padding-top: 0.5rem;
+                        padding-bottom: 0.5rem;
+                        margin-top: 1.5rem;
+                        margin-bottom: 1.5rem;
+                        font-style: italic;
+                        color: rgba(255, 255, 255, 0.6);
+                    }
+                </style>
+
+                {/* Share & Navigation */}
+                <div class="mt-12 pt-8 border-t border-white/10">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-center gap-6"
+                    >
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm text-white/40">Share:</span>
+                            <a
+                                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:bg-tenx-gold hover:text-black transition-all"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                                    ></path>
+                                </svg>
+                            </a>
+                            <a
+                                href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(Astro.url.href)}&title=${encodeURIComponent(data.title)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-white/60 hover:bg-tenx-gold hover:text-black transition-all"
+                            >
+                                <svg
+                                    class="w-5 h-5"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                                    ></path>
+                                </svg>
+                            </a>
+                        </div>
+                        <a href="/insights">
+                            <GoldButton client:visible variant="outline">
+                                ← Back to Insights
+                            </GoldButton>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</MainLayout>

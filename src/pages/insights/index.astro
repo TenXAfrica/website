@@ -1,0 +1,112 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { PageHero } from "../../components/PageHero";
+import { BlogCard } from "../../components/BlogCard";
+import { InsightsFilter } from "../../components/InsightsFilter";
+import { GlassCard } from "../../components/GlassCard";
+import { getEntry, getCollection } from "astro:content";
+
+const pageData = await getEntry('pages', 'insights');
+const allPosts = await getCollection('insights');
+
+// Sort posts by publishedAt in descending order
+const sortedPosts = allPosts.sort((a, b) => 
+    new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime()
+);
+
+// Get featured post
+const featured = pageData?.data.featured 
+    ? sortedPosts.find(p => p.slug === pageData.data.featured)
+    : sortedPosts[0];
+
+// Get remaining posts (if there's only one post, include it in the list)
+const posts = sortedPosts.length > 1 && featured 
+    ? sortedPosts.filter(p => p.slug !== featured.slug)
+    : sortedPosts;
+
+// Map posts to BlogPost format for components
+const mapToBlogPost = (entry: typeof allPosts[0]) => ({
+    id: entry.slug,
+    slug: entry.slug,
+    title: entry.data.title,
+    excerpt: entry.data.excerpt,
+    publishedAt: entry.data.publishedAt.toISOString().split('T')[0],
+    author: entry.data.author,
+    image: entry.data.image,
+    tags: entry.data.tags,
+    readTime: entry.data.readTime,
+});
+
+const featuredPost = featured ? mapToBlogPost(featured) : null;
+
+const filteredPosts = posts.map(mapToBlogPost);
+
+---
+
+<MainLayout title={pageData!.data.seo.title} description={pageData!.data.seo.description}>
+    <div class="relative min-h-screen">
+        <!-- Hero Section -->
+        <PageHero
+            client:load
+            headline={pageData!.data.hero.headline}
+            subheadline={pageData!.data.hero.subheadline}
+        />
+
+        <!-- Featured Post -->
+        {
+            featuredPost && (
+                <section class="py-12 px-6 lg:px-12 border-t border-white/5">
+                    <div class="max-w-6xl mx-auto">
+                        <div class="mb-8">
+                            <span class="text-xs font-mono text-tenx-gold uppercase tracking-widest">
+                                FEATURED
+                            </span>
+                        </div>
+                        <BlogCard
+                            client:visible
+                            post={featuredPost}
+                            variant="featured"
+                        />
+                    </div>
+                </section>
+            )
+        }
+
+        <!-- Interactive Filter & Articles Grid -->
+        <InsightsFilter
+            client:load
+            posts={filteredPosts}
+            categories={pageData!.data.categories || []}
+        />
+
+        <!-- Newsletter Section -->
+        <section
+            class="py-20 px-6 lg:px-12 border-t border-white/5 bg-gradient-to-r from-tenx-gold/5 via-transparent to-slate-teal/5"
+        >
+            <div class="max-w-2xl mx-auto text-center">
+                <h2
+                    class="text-3xl md:text-4xl font-heading font-bold text-white mb-4"
+                >
+                    STAY INFORMED
+                </h2>
+                <p class="text-white/60 mb-8">
+                    Get our latest insights on technology, capital, and impact
+                    delivered to your inbox.
+                </p>
+                <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        class="flex-1 px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder:text-white/30 focus:border-tenx-gold/50 focus:outline-none focus:ring-1 focus:ring-tenx-gold/50 transition-colors"
+                    />
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-tenx-gold text-black font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-tenx-gold/90 transition-colors"
+                    >
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+</MainLayout>

@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+@theme {
+  --color-obsidian-void: #0a0f14;
+  --color-tenx-gold: #d68614;
+  --color-vapor-white: #F4F4F9;
+  --color-slate-teal: #2F4858;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Outfit", sans-serif;
+}
+
+/* Custom Utilities */
+@layer utilities {
+  .text-scramble {
+    /* Custom effect hooks if needed */
+  }
+}
+
+body {
+  @apply bg-obsidian-void text-vapor-white font-sans;
+  background-color: var(--color-obsidian-void);
+  color: var(--color-vapor-white);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  @apply bg-black/60 backdrop-blur-xl border border-tenx-gold/30 hover:border-tenx-gold/80 transition-colors duration-300;
+}
+
+/* Legal/markdown content styling (privacy/terms) */
+.legal-content h1 {
+  @apply text-3xl md:text-4xl font-heading font-bold text-white leading-tight mb-4;
+}
+
+.legal-content h2 {
+  @apply text-2xl md:text-3xl font-heading font-bold text-white mt-10 mb-4 border-l-4 border-tenx-gold pl-3;
+}
+
+.legal-content h3 {
+  @apply text-xl md:text-2xl font-heading font-bold text-white mt-6 mb-3;
+}
+
+.legal-content p {
+  @apply text-white/70 leading-relaxed mb-4;
+}
+
+.legal-content ul,
+.legal-content ol {
+  @apply text-white/70 leading-relaxed mb-6 pl-6 space-y-2;
+}
+
+.legal-content li {
+  @apply marker:text-tenx-gold;
+}
+
+.legal-content strong {
+  @apply text-white font-semibold;
+}
+
+.legal-content a {
+  @apply text-tenx-gold underline-offset-2 hover:underline;
+}

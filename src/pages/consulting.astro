@@ -1,0 +1,215 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { PageHero } from "../components/PageHero";
+import { ServiceCategoryCard } from "../components/ServiceCard";
+import { GlassCard } from "../components/GlassCard";
+import { GoldButton } from "../components/GoldButton";
+import { getEntry } from "astro:content";
+
+const consultingPage = await getEntry("pages", "consulting");
+
+if (!consultingPage) {
+    throw new Error("Consulting page content not found");
+}
+
+const { data } = consultingPage;
+---
+
+<MainLayout title={data.seo.title} description={data.seo.description}>
+    <div class="relative min-h-screen">
+        <!-- Hero Section -->
+        <PageHero
+            client:load
+            headline={data.hero.headline}
+            subheadline={data.hero.subheadline}
+        >
+            <a href={data.hero.cta!.href}>
+                <GoldButton client:load>{data.hero.cta!.label}</GoldButton>
+            </a>
+        </PageHero>
+
+        <!-- Back Office Assurance Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                        <h2
+                            class="text-3xl md:text-4xl font-heading font-bold text-white mb-6"
+                        >
+                            {data.backOffice!.title}
+                        </h2>
+                        <p class="text-lg text-white/60 leading-relaxed mb-8">
+                            {data.backOffice!.description}
+                        </p>
+                        <ul class="space-y-4">
+                            {
+                                data.backOffice!.points.map((point) => (
+                                    <li class="flex items-start gap-3">
+                                        <span class="w-2 h-2 bg-tenx-gold rounded-full mt-2 flex-shrink-0" />
+                                        <span class="text-white/80">
+                                            {point}
+                                        </span>
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+
+                    <!-- Visual Element -->
+                    <div class="relative">
+                        <GlassCard client:visible className="p-8">
+                            <div class="space-y-4">
+                                <div
+                                    class="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
+                                >
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-tenx-gold/20 flex items-center justify-center"
+                                    >
+                                        <svg
+                                            class="w-6 h-6 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white">
+                                            Enterprise Grade
+                                        </h4>
+                                        <p class="text-sm text-white/60">
+                                            Global standards, local delivery
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
+                                >
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-tenx-gold/20 flex items-center justify-center"
+                                    >
+                                        <svg
+                                            class="w-6 h-6 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white">
+                                            Curated Experts
+                                        </h4>
+                                        <p class="text-sm text-white/60">
+                                            Vetted independent specialists
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="flex items-center gap-4 p-4 bg-white/5 rounded-lg"
+                                >
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-tenx-gold/20 flex items-center justify-center"
+                                    >
+                                        <svg
+                                            class="w-6 h-6 text-tenx-gold"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            ></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-white">
+                                            African Context
+                                        </h4>
+                                        <p class="text-sm text-white/60">
+                                            Deep regional market knowledge
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </GlassCard>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Categories -->
+        <section
+            class="py-20 px-6 lg:px-12 bg-black/40 border-t border-white/5"
+        >
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-12">
+                    <h2
+                        class="text-3xl md:text-4xl font-heading font-bold text-white border-l-4 border-tenx-gold pl-4"
+                    >
+                        OUR CAPABILITIES
+                    </h2>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    {
+                        data.serviceCategories!.map((category, index) => (
+                            <ServiceCategoryCard
+                                client:visible
+                                title={category.title}
+                                description={category.description}
+                                services={category.services}
+                                index={index}
+                            />
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section
+            class="py-24 px-6 lg:px-12 border-t border-white/5 relative overflow-hidden"
+        >
+            <!-- Background gradient -->
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-tenx-gold/5 via-transparent to-slate-teal/5 pointer-events-none"
+            >
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <h2
+                    class="text-4xl md:text-5xl font-heading font-bold text-white mb-6"
+                >
+                    {data.cta!.title}
+                </h2>
+                <p class="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+                    {data.cta!.description}
+                </p>
+                <a href={data.cta!.button.href}>
+                    <GoldButton client:visible className="text-lg px-10 py-4">
+                        {data.cta!.button.label}
+                    </GoldButton>
+                </a>
+            </div>
+        </section>
+    </div>
+</MainLayout>
