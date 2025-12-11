@@ -12,6 +12,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss(), svgr()],
   },
-  site: 'https://tenxafrica.co.za',
+  site: 'http://tenxafrica.github.io/website/',
   integrations: [react()]
 });
