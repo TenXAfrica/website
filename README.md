@@ -57,6 +57,7 @@ If you want to run this project locally to test changes or view the code structu
 │   └── styles/       # Global CSS and Tailwind directives
 ├── astro.config.mjs  # Astro configuration
 └── tailwind.config.mjs # Tailwind configuration
+```
 
 ## 🐞 Bugs & Issues
 
@@ -73,7 +74,6 @@ Ten X Africa operates on a model of Independent Consultants (IDCs) and strategic
 -   **Open Source?** While this repository is public for transparency, direct pull requests are restricted to authorized team members.
 
 To inquire about joining the team or contributing to our ecosystem, please contact **Joash** at [joash@tenxafrica.co.za](mailto:joash@tenxafrica.co.za).
-
 ---
 
 © 2026 Ten X Africa. All Rights Reserved.
