@@ -133,6 +133,11 @@ const pages = defineCollection({
                 z.object({
                     value: z.enum(['consulting', 'network', 'catalyst', 'general']),
                     label: z.string(),
+                    description: z.string().optional(),
+                    subOptions: z.array(z.object({
+                        value: z.string(),
+                        label: z.string(),
+                    })).optional(),
                 })
             ),
             submitText: z.string(),

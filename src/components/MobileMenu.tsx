@@ -101,8 +101,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                                     <a
                                         href={link.href}
                                         className={`block py-3 px-4 text-lg rounded-lg transition-colors ${isActive(link.href)
-                                                ? 'text-tenx-gold bg-tenx-gold/10 font-medium'
-                                                : 'text-white/80 hover:text-tenx-gold hover:bg-white/5'
+                                            ? 'text-tenx-gold bg-tenx-gold/10 font-medium'
+                                            : 'text-white/80 hover:text-tenx-gold hover:bg-white/5'
                                             }`}
                                         onClick={onClose}
                                     >
@@ -119,7 +119,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose }) => {
                         style={{ backgroundColor: '#0a0f14' }}
                     >
                         <a
-                            href="/network"
+                            href="/contact?interest=network"
                             className="block w-full py-3 px-6 text-center bg-tenx-gold text-black font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-tenx-gold/90 transition-colors"
                             onClick={onClose}
                         >

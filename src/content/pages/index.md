@@ -56,7 +56,7 @@ idcNetwork:
   description: We offer a corporate-grade back office to Independent Consultants. You own the client relationship. We provide the legal framework, administrative support, and a suite of ready-to-sell tech products. Scale your revenue without increasing your overhead.
   cta:
     label: Partner With Us
-    href: /network
+    href: /contact?interest=network
 ---
 
 Home page content for Ten X Africa.

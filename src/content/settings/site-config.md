@@ -43,6 +43,8 @@ footer:
       links:
         - label: About Us
           href: /about
+        - label: Join Network
+          href: /contact?interest=network
         - label: Insights
           href: /insights
         - label: Contact
@@ -78,14 +80,10 @@ footer:
       url: https://twitter.com/tenxafrica
 
 quickLinks:
-  - label: Consulting Solutions
-    href: /consulting
-  - label: Catalyst Program
-    href: /catalyst
-  - label: Join Our Network
-    href: /network
-  - label: Latest Insights
-    href: /insights
+  - label: Careers
+    href: /contact?interest=general
+  - label: Partner
+    href: /contact?interest=general
 ---
 
 Global site configuration including navigation, footer, and social links.
