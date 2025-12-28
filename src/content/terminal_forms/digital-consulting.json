@@ -1,0 +1,150 @@
+{
+  "slug": "digital-consulting",
+  "title": "Digital Consulting Scoping",
+  "description": "Let's see if we can help. Chat with our assistant to scope your project.",
+  "webhookUrl": "https://example.com/webhooks/digital-consulting",
+  "trackingParams": [
+    "token",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign"
+  ],
+  "requireTurnstile": true,
+  "backButtonHref": "/consulting/digital-consulting",
+  "backButtonLabel": "Back",
+  "theme": {
+    "versionTag": "V1_CONSULTING_FLOW"
+  },
+  "stages": [
+    {
+      "id": "identity",
+      "prompt": "Hi there. I'm the Ten X digital assistant. I see you want to get started with digital consulting. Let's start with the basics—what is your full name?",
+      "historyLabel": "Name captured.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "placeholder": "Your Full Name",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "contact",
+      "prompt": "Nice to meet you. Where should we send the strategy briefing and calendar link?",
+      "historyLabel": "Email saved.",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "placeholder": "name@company.com",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "phone",
+      "prompt": "Got it. And what is the best phone number to reach you on? (We keep this as a backup channel).",
+      "historyLabel": "Phone number saved.",
+      "fields": [
+        {
+          "name": "phone",
+          "type": "phone",
+          "placeholder": "+27 00 000 0000",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "context",
+      "prompt": "Now, let's get some context. What is the name of your company and your website URL?",
+      "historyLabel": "Company details logged.",
+      "fields": [
+        {
+          "name": "company",
+          "type": "text",
+          "placeholder": "Company Name",
+          "required": true
+        },
+        {
+          "name": "website",
+          "type": "url",
+          "placeholder": "https://website.com",
+          "required": false,
+          "toggleLabel": "I don't have a website yet"
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "challenge",
+      "prompt": "Here is the important part. In a few sentences, describe the problem you are trying to solve or the outcome you need.",
+      "historyLabel": "Challenge description received.",
+      "fields": [
+        {
+          "name": "challenge",
+          "type": "textarea",
+          "placeholder": "e.g. I am trying to automate my companies various different processes and operations",
+          "minLength": 50,
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "qualification",
+      "prompt": "Almost done. To help us assign the right level of support, what is your estimated budget for this project?",
+      "historyLabel": "Budget preference logged.",
+      "fields": [
+        {
+          "name": "budget",
+          "type": "radio",
+          "options": [
+            {
+              "value": "< R50k",
+              "label": "< R50k (Micro)"
+            },
+            {
+              "value": "R50k - R200k",
+              "label": "R50k - R200k (SME)"
+            },
+            {
+              "value": "R200k+",
+              "label": "R200k+ (Corporate)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "prompt": "Just a quick security check to ensure you're human.",
+      "historyLabel": "Verification complete.",
+      "fields": []
+    }
+  ],
+  "success": {
+    "headline": "Thanks!",
+    "message": "We've received your info. Our team is reviewing it now and will email you shortly with the next steps.",
+    "ctaLabel": "Return Home",
+    "ctaHref": "/"
+  }
+}

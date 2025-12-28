@@ -1,78 +1,52 @@
 ---
 navigation:
-  - label: Home
+  - label: HOME
     href: /
-  - label: Consulting
+  - label: CONSULTING
     href: /consulting
     children:
-      - label: Digital Innovation
-        href: /consulting#digital
-      - label: Business Strategy
-        href: /consulting#strategy
-      - label: Products
-        href: /consulting#products
-  - label: Catalyst
+      - label: DIGITAL CONSULTING
+        href: /consulting/digital-consulting
+      - label: MANAGEMENT CONSULTING
+        href: /consulting/management-consulting
+  - label: CATALYST
     href: /catalyst
-    children:
-      - label: For Startups
-        href: /catalyst#startups
-      - label: For Investors
-        href: /catalyst#investors
-      - label: Portfolio
-        href: /catalyst#portfolio
-  - label: Impact
+  - label: IMPACT
     href: /impact
-  - label: Network
-    href: /network
-  - label: Insights
+  - label: INSIGHTS
     href: /insights
-  - label: Contact
+  - label: CONTACT
     href: /contact
 
 footer:
   columns:
-    - title: Ecosystem
+    - title: ECOSYSTEM
       links:
-        - label: Consulting
-          href: /consulting
+        - label: Digital Consulting
+          href: /digital-consulting
         - label: Ventures
           href: /catalyst
         - label: Impact Funding
           href: /impact
-    - title: Firm
+    - title: FIRM
       links:
-        - label: About Us
-          href: /about
-        - label: Join Network
-          href: /contact?interest=network
+        - label: Our Philosophy
+          href: /#about
         - label: Insights
           href: /insights
+        - label: Join Network
+          href: /contact?interest=network
         - label: Contact
           href: /contact
-    - title: Portals
+    - title: CONNECT
       links:
-        - label: Client Portal
-          href: /portal/client
-          external: true
-        - label: IDC Portal
-          href: /portal/idc
-          external: true
-        - label: Investor Dashboard
-          href: /portal/investor
-          external: true
-    - title: Legal
-      links:
-        - label: Privacy Policy
-          href: /privacy
-        - label: Terms of Engagement
-          href: /terms
-        - label: ESG Compliance
-          href: /esg
+        - label: hello@tenxafrica.co.za
+          href: mailto:hello@tenxafrica.co.za
   newsletter:
     title: Subscribe for Impact & Tech Trends
     placeholder: Enter your email
     buttonText: Subscribe
-  copyright: © 2026 Ten X Africa. All rights reserved.
+  copyright: © {year} Ten X Africa. All rights reserved.
   socials:
     - platform: linkedin
       url: https://linkedin.com/company/tenxafrica
@@ -80,10 +54,12 @@ footer:
       url: https://twitter.com/tenxafrica
 
 quickLinks:
-  - label: Careers
-    href: /contact?interest=general
-  - label: Partner
-    href: /contact?interest=general
+  - label: Join Network
+    href: /network
+  - label: Privacy Policy
+    href: /privacy
+  - label: Terms of Service
+    href: /terms
 ---
 
 Global site configuration including navigation, footer, and social links.

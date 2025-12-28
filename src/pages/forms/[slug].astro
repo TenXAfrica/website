@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+import TerminalLayout from "../../layouts/TerminalLayout.astro";
+import { TerminalFormChat } from "../../components/TerminalFormChat";
+import { CanvasHero } from "../../components/CanvasHero";
+
+export async function getStaticPaths() {
+  const forms = await getCollection("terminal_forms");
+  return forms.map((form) => ({
+    params: { slug: form.data.slug },
+    props: { form },
+  }));
+}
+
+const { form } = Astro.props;
+---
+
+<TerminalLayout title={form.data.title} description={form.data.description}>
+  <!-- Background Animation -->
+  <div class="fixed inset-0 z-0">
+    <CanvasHero client:load variant="shape" />
+  </div>
+
+  <!-- Form Content -->
+  <div class="relative z-10">
+    <TerminalFormChat client:load config={form.data} />
+  </div>
+</TerminalLayout>

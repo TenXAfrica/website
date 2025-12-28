@@ -8,10 +8,12 @@ export default {
                 'tenx-gold': '#d68614',
                 'vapor-white': '#F4F4F9',
                 'slate-teal': '#2F4858',
+                'red': '#FF0000',
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],
                 heading: ['Outfit', 'sans-serif'],
+                sys: ['Space Grotesk', 'monospace'],
             },
             backgroundImage: {
                 'glass-gradient': 'linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.00) 100%)',

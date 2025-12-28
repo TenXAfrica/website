@@ -329,7 +329,6 @@ const pages = defineCollection({
         categories: z.array(z.string()).optional(),
     }),
 });
-// Team members collection
 const team = defineCollection({
     type: 'data',
     schema: z.object({
@@ -341,12 +340,65 @@ const team = defineCollection({
     }),
 });
 
+// Terminal Forms collection for data-driven chat forms
+const terminal_forms = defineCollection({
+    type: 'data',
+    schema: z.object({
+        // Form metadata
+        slug: z.string(),
+        title: z.string(),
+        description: z.string().optional(),
+        
+        // Form behavior
+        webhookUrl: z.string().url(),
+        trackingParams: z.array(z.string()).default(['token', 'utm_source', 'utm_medium', 'utm_campaign']),
+        requireTurnstile: z.boolean().default(true),
+        backButtonHref: z.string().default('/'),
+        backButtonLabel: z.string().default('Back'),
+        
+        // Theming
+        theme: z.object({
+            versionTag: z.string().default('SECURE_UPLINK_V4.2'),
+        }).optional(),
+        
+        // Stages (ordered list)
+        stages: z.array(z.object({
+            id: z.string(),
+            prompt: z.string(),
+            historyLabel: z.string(),
+            fields: z.array(z.object({
+                name: z.string(),
+                type: z.enum(['text', 'email', 'phone', 'url', 'textarea', 'radio', 'select']),
+                placeholder: z.string().optional(),
+                label: z.string().optional(),
+                required: z.boolean().optional(),
+                minLength: z.number().optional(),
+                options: z.array(z.object({
+                    value: z.string(),
+                    label: z.string(),
+                })).optional(),
+                toggleLabel: z.string().optional(),
+            })).optional(),
+            advanceButton: z.object({
+                label: z.string().optional(),
+                showOnMobile: z.boolean().optional(),
+            }).optional(),
+        })),
+        
+        // Success state
+        success: z.object({
+            headline: z.string(),
+            message: z.string(),
+            ctaLabel: z.string().optional(),
+            ctaHref: z.string().optional(),
+        }),
+    }),
+});
+
 export const collections = {
-    ventures,
-    consultants,
-    impact_stories,
     insights,
     settings,
     pages,
     team,
+    terminal_forms,
 };
