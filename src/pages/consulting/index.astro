@@ -1,0 +1,173 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { ServiceCard } from "../../components/ServiceCard";
+import { AccordionSection } from "../../components/AccordionSection";
+import { GoldButton } from "../../components/GoldButton";
+import { CanvasHero } from "../../components/CanvasHero";
+import { getEntry } from "astro:content";
+
+const consultingPage = await getEntry('pages', 'consulting-overview');
+
+if (!consultingPage) {
+    throw new Error('Consulting page content not found');
+}
+
+const { data } = consultingPage;
+const consulting = data.consulting;
+
+if (!consulting) {
+    throw new Error('Consulting data not found in content');
+}
+---
+---
+
+<MainLayout title={data.seo.title} description={data.seo.description}>
+    <div class="relative min-h-screen">
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 lg:px-12 overflow-hidden">
+            <!-- Background mesh -->
+            <CanvasHero
+                client:only="react"
+                variant="shape"
+                className="absolute inset-0 z-0"
+            />
+
+            <!-- Content -->
+            <div class="relative z-10 text-center max-w-4xl mx-auto space-y-6">
+                <!-- Pillar tag -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-tenx-gold/15 border border-tenx-gold/40">
+                    <span class="w-2 h-2 rounded-full bg-tenx-gold animate-pulse"></span>
+                    <span class="text-xs tracking-[0.2em] uppercase font-bold text-tenx-gold">Pillar 01: Consulting</span>
+                </div>
+
+                <!-- Main headline -->
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter leading-tight text-white mb-4">
+                    {data.hero.headline}
+                </h1>
+
+                <!-- Subheadline -->
+                <p class="text-lg md:text-xl lg:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+                    {data.hero.subheadline}
+                </p>
+
+                <!-- CTAs -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                    {data.hero.primaryCta && (
+                        <a href={data.hero.primaryCta.href}>
+                            <GoldButton client:load>{data.hero.primaryCta.label}</GoldButton>
+                        </a>
+                    )}
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+                <span class="text-[10px] tracking-widest uppercase">Explore</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-d68614">
+                    <rect x="5" y="2" width="14" height="20" rx="7"></rect>
+                    <line x1="12" y1="6" x2="12" y2="10"></line>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Service Cards Section -->
+            <section class="py-20 px-6 lg:px-12 border-t border-white/5 bg-gradient-to-b from-transparent via-tenx-gold/5 to-transparent">
+            <div class="max-w-6xl mx-auto">
+                <!-- Section header -->
+                <div class="mb-16 max-w-2xl">
+                    <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white mb-4">
+                        The Transformation Journey
+                    </h2>
+                    <p class="text-white/70 text-lg leading-relaxed">
+                        From operational chaos to strategic automation. Three interconnected pillars that drive sustainable growth.
+                    </p>
+                </div>
+
+                <!-- Cards grid -->
+                <div class="grid md:grid-cols-3 gap-8">
+                    {consulting.services.map((card, index) => (
+                        <ServiceCard
+                            icon={card.icon}
+                            title={card.title}
+                            description={card.description}
+                            tags={card.tags}
+                            href={card.href}
+                            index={index}
+                            client:load
+                        />
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        <!-- Accordion / Deep Dive Section -->
+        <AccordionSection
+            client:load
+            headline={consulting.deepDive.headline}
+            items={consulting.deepDive.items}
+        />
+
+        <!-- How We Work Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <!-- Left side: Process steps -->
+                    <div class="space-y-8">
+                        <div>
+                            <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                            <h2 class="text-3xl md:text-4xl font-heading font-bold text-white">
+                                {consulting.process.headline}
+                            </h2>
+                        </div>
+
+                        <div class="space-y-6">
+                            {consulting.process.steps.map((step) => (
+                                <div class="rounded-xl border border-white/10 bg-gradient-to-r from-white/5 to-white/[0.02] backdrop-blur-md p-6 hover:border-tenx-gold/40 transition-colors">
+                                    <div class="flex gap-4 items-start">
+                                        <span class="text-3xl font-heading font-bold text-tenx-gold">{step.number}</span>
+                                        <div>
+                                            <h3 class="text-lg font-heading font-bold text-white mb-2">{step.title}</h3>
+                                            <p class="text-white/60 text-sm">{step.description}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <!-- Right side: Stats -->
+                    <div class="space-y-6">
+                        <div class="rounded-2xl border border-tenx-gold/30 bg-gradient-to-br from-tenx-gold/15 to-tenx-gold/5 backdrop-blur-md p-8 md:p-12">
+                            <div class="space-y-8">
+                                {consulting.metrics.map((stat) => (
+                                    <div class="space-y-2">
+                                        <div class="text-4xl font-heading font-bold text-tenx-gold">{stat.metric}</div>
+                                        <div class="text-white/70 text-sm uppercase tracking-wide">{stat.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-4xl mx-auto">
+                <div class="rounded-2xl border border-tenx-gold/40 bg-gradient-to-r from-tenx-gold/10 to-white/5 backdrop-blur-md p-12 md:p-16 text-center space-y-6">
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold text-white">
+                        {consulting.finalCta.headline}
+                    </h2>
+                    <p class="text-lg text-white/70 max-w-2xl mx-auto">
+                        {consulting.finalCta.description}
+                    </p>
+                    <a href={consulting.finalCta.buttonHref}>
+                        <GoldButton client:load>{consulting.finalCta.buttonLabel}</GoldButton>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</MainLayout>

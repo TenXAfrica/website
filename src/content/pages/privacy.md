@@ -1,51 +1,122 @@
 ---
 seo:
   title: Privacy Policy
-  description: How Ten X Africa collects, uses, and protects your information.
+  description: How Ten X Africa collects, uses, and protects your information in compliance with POPIA and South African legislation.
 hero:
   headline: Privacy Policy
-  subheadline: How we collect, use, and safeguard your information.
+  subheadline: Your data, your rights, our commitment.
 ---
 
-## Overview
-We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains what we collect, how we use it, and the choices you have.
+## Introduction
+
+Ten X Africa ("we," "us," or "our") is committed to protecting the privacy of our clients, partners, and website visitors. We process personal information in compliance with the **Protection of Personal Information Act 4 of 2013 (POPIA)** and the **Promotion of Access to Information Act 2 of 2000 (PAIA)**.
+
+By using our website or services (Consulting, Venture Studio, or Partner Network), you agree to the processing of your data as outlined below.
+
+---
 
 ## Information We Collect
-- **Contact details**: name, email, phone, company.
-- **Engagement data**: messages you submit, meeting requests, and form selections.
-- **Usage data**: site interactions, device/browser metadata, and approximate location from IP.
-- **Cookies**: limited to essential and performance purposes.
+
+To operate our services and deliver value across our three pillars, we collect the following:
+
+**Information You Provide:**
+- Name, email address, phone number
+- Company registration details (CIPC)
+- Financial data (for Venture Studio/Funding applications)
+- CV/Resume data (for Partner Network applicants)
+- Project specifications and service requests
+
+**Automated Information:**
+- IP address, browser type, and device information
+- Site interactions and usage patterns
+- Cookies (to optimize performance and user experience)
+
+---
 
 ## How We Use Your Information
-- Respond to inquiries and provide requested services.
-- Improve site experience and performance.
-- Send relevant updates where permitted; you can opt out anytime.
-- Protect our platform and prevent abuse or fraud.
 
-## Sharing Your Information
-- Service providers who help us operate the site (hosting, analytics, email delivery) under confidentiality.
-- Legal compliance or to protect rights, safety, and security.
-- We do **not** sell your personal data.
+We use your data strictly for the following Business Purposes under POPIA:
 
-## Data Retention
-We retain data only as long as needed for the purposes described or as required by law. When no longer needed, we delete or de-identify it.
+**Consulting:**
+- To diagnose operational challenges and deliver digital transformation strategies
+- To analyze business processes and recommend solutions
 
-## Cookies & Tracking
-You can control cookies through your browser settings. Disabling some cookies may affect site functionality.
+**Venture Studio:**
+- To process compliance services (CIPC, Tax, COIDA)
+- To assess eligibility for funding and incubation support
 
-## Your Choices
-- Access, update, or correct your information.
-- Opt out of marketing communications at any time.
-- Request deletion where applicable laws permit.
+**Partner Network:**
+- To vet skills and experience
+- To match consultants with project opportunities
+
+**General:**
+- To send service updates, newsletters, or deal flow alerts (you may opt-out at any time)
+- To improve our platform and services
+- To ensure security and prevent fraud
+
+---
+
+## Sharing of Information
+
+We do not sell your data. We may share your information with:
+
+**Trusted Partners:**
+- Members of the Ten X Partner Network (only when necessary to deliver requested services)
+- Service providers who help us operate (hosting, analytics, email delivery)
+
+**Regulatory Bodies:**
+- CIPC, SARS, or the Department of Labour (strictly for Compliance Factory services as required by law)
+
+**Cross-Border Transfer:**
+- As we operate across Africa (SADC, West Africa) and internationally, data may be processed in these jurisdictions
+- We ensure all cross-border transfers comply with POPIA Section 72, maintaining adequate data protection standards
+
+---
 
 ## Security
-We use industry-standard safeguards to protect your data. No system is perfectly secure, so please contact us if you suspect an issue.
 
-## International Transfers
-If data is processed outside your country, we use appropriate safeguards to protect it.
+We employ reasonable technical and organizational measures to secure your data against unauthorized access, loss, or damage. However, no digital transmission is 100% secure. We recommend protecting your login credentials and reporting any suspicious activity immediately.
 
-## Contact
-Questions or requests: **hello@tenxafrica.co.za**
+---
+
+## Your Rights (POPIA)
+
+As a Data Subject, you have the right to:
+
+**Access:**
+Request a copy of the personal information we hold about you
+
+**Correction:**
+Request we update or correct inaccurate information
+
+**Deletion:**
+Request we delete your data (subject to legal retention requirements for compliance records)
+
+**Objection:**
+Object to the processing of your personal information
+
+**Data Portability:**
+Receive your data in a structured, portable format
+
+---
+
+## Contact Our Information Officer
+
+For any privacy concerns or to exercise your rights, please contact:
+
+**Email:** hello@tenxafrica.co.za  
+**Response Time:** We aim to respond to all data subject requests within 20 business days as per POPIA requirements
+
+---
+
+## Data Retention
+
+We retain data only as long as needed for the purposes described or as required by law. For compliance-related data (CIPC, tax records), retention periods are determined by South African legislation. When no longer needed, we delete or de-identify information.
+
+---
 
 ## Updates to This Policy
-We may update this policy from time to time. The effective date will be reflected here, and material changes will be communicated when required.
+
+We may update this policy from time to time to reflect changes in our practices or applicable legislation. The effective date will be updated here, and material changes will be communicated to affected data subjects.
+
+**Effective Date:** January 2026

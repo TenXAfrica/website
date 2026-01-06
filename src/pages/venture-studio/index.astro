@@ -1,0 +1,243 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { CanvasHero } from "../../components/CanvasHero";
+import { GoldButton } from "../../components/GoldButton";
+import { StatsCounter } from "../../components/StatsCounter";
+import { getEntry } from "astro:content";
+
+const ventureStudioPage = await getEntry('pages', 'venture-studio');
+
+if (!ventureStudioPage) {
+    throw new Error('Venture Studio page content not found');
+}
+
+const { data } = ventureStudioPage;
+---
+
+<MainLayout title={data.seo.title} description={data.seo.description}>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    <div class="relative min-h-screen">
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-20 lg:px-12 overflow-hidden">
+            <!-- Background mesh -->
+            <CanvasHero
+                client:only="react"
+                variant="shape"
+                className="absolute inset-0 z-0"
+            />
+
+            <!-- Content -->
+            <div class="relative z-10 text-center max-w-5xl mx-auto space-y-6">
+                <!-- Main headline -->
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter leading-tight text-white mb-4">
+                    {data.hero.headline}
+                </h1>
+
+                <!-- Subheadline -->
+                <p class="text-lg md:text-xl lg:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed">
+                    {data.hero.subheadline}
+                </p>
+
+                <!-- Scroll CTA -->
+                <div class="pt-8">
+                    <a href="#choose-path" class="inline-flex items-center gap-2 text-tenx-gold hover:text-tenx-gold/80 transition-colors">
+                        <span class="text-sm font-medium uppercase tracking-wide">Choose Your Path</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Scroll indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+                <span class="text-[10px] tracking-widest uppercase">Explore</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-tenx-gold">
+                    <rect x="5" y="2" width="14" height="20" rx="7"></rect>
+                    <line x1="12" y1="6" x2="12" y2="10"></line>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="py-16 px-6 lg:px-12 border-t border-white/5 bg-black/40">
+            <div class="max-w-6xl mx-auto">
+                <StatsCounter client:visible stats={data.stats ?? []} />
+            </div>
+        </section>
+
+        <!-- The Fork Section -->
+        <section id="choose-path" class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-7xl mx-auto">
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <div class="w-12 h-1 bg-tenx-gold mb-6 mx-auto"></div>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white mb-4">
+                        THE FORK IN THE ROAD
+                    </h2>
+                    <p class="text-white/60 text-lg max-w-2xl mx-auto">
+                        Two paths. One destination: Growth.
+                    </p>
+                </div>
+
+                <!-- Split Columns -->
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- LEFT: Compliance Factory -->
+                    <div class="group relative">
+                        <div class="relative h-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-md p-8 lg:p-10 transition-all duration-300 hover:border-white/30">
+                            <!-- Glow effect on hover -->
+                            <div class="absolute -inset-4 rounded-2xl bg-gradient-to-br from-white/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+                            <!-- Tag -->
+                            <div class="mb-6">
+                                <span class="text-xs font-mono text-white/70 uppercase tracking-widest">
+                                    {data.foundations?.tagline}
+                                </span>
+                            </div>
+
+                            <!-- Icon -->
+                            <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-white/10 text-white group-hover:bg-white/20 transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+
+                            <!-- Title -->
+                            <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-3">
+                                {data.foundations?.headline}
+                            </h3>
+
+                            <!-- Subtitle -->
+                            <p class="text-white/80 text-lg font-medium mb-4">
+                                {data.foundations?.subtitle}
+                            </p>
+
+                            <!-- Description -->
+                            <p class="text-white/60 mb-8 leading-relaxed">
+                                {data.foundations?.description}
+                            </p>
+
+                            <!-- Services List -->
+                            <ul class="space-y-3 mb-8">
+                                {data.foundations?.services.map((service) => (
+                                    <li class="flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-white/70 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span class="text-white/80 text-sm">{service}</span>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <!-- CTA -->
+                            <a href="/venture-studio/compliance-and-registration">
+                                <GoldButton client:visible variant="outline">
+                                    {data.foundations?.cta.label}
+                                </GoldButton>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Incubation Engine -->
+                    <div class="group relative">
+                        <div class="relative h-full rounded-2xl border border-tenx-gold/40 bg-gradient-to-br from-tenx-gold/10 to-white/[0.02] backdrop-blur-md p-8 lg:p-10 transition-all duration-300 hover:border-tenx-gold/60 hover:from-tenx-gold/15">
+                            <!-- Glow effect on hover -->
+                            <div class="absolute -inset-4 rounded-2xl bg-gradient-to-br from-tenx-gold/20 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+                            <!-- Tag -->
+                            <div class="mb-6">
+                                <span class="text-xs font-mono text-tenx-gold uppercase tracking-widest">
+                                    {data.catalyst?.tagline}
+                                </span>
+                            </div>
+
+                            <!-- Icon -->
+                            <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-tenx-gold/15 text-tenx-gold group-hover:bg-tenx-gold/25 transition-colors">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+
+                            <!-- Title -->
+                            <h3 class="text-2xl md:text-3xl font-heading font-bold text-white mb-3">
+                                {data.catalyst?.headline}
+                            </h3>
+
+                            <!-- Subtitle -->
+                            <p class="text-tenx-gold/90 text-lg font-medium mb-4">
+                                {data.catalyst?.subtitle}
+                            </p>
+
+                            <!-- Description -->
+                            <p class="text-white/70 mb-8 leading-relaxed">
+                                {data.catalyst?.description}
+                            </p>
+
+                            <!-- Services List -->
+                            <ul class="space-y-3 mb-8">
+                                {data.catalyst?.services.map((service) => (
+                                    <li class="flex items-start gap-3">
+                                        <svg class="w-5 h-5 text-tenx-gold flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span class="text-white text-sm font-medium">{service}</span>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <!-- CTA -->
+                            <a href="/venture-studio/incubation-and-funding">
+                                <GoldButton client:visible>
+                                    {data.catalyst?.cta.label}
+                                </GoldButton>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bridge Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5 bg-gradient-to-b from-transparent via-tenx-gold/5 to-transparent">
+            <div class="max-w-4xl mx-auto">
+                <div class="rounded-2xl border border-tenx-gold/40 bg-gradient-to-r from-tenx-gold/10 to-white/5 backdrop-blur-md p-12 md:p-16 text-center">
+                    <div class="w-12 h-1 bg-tenx-gold mb-8 mx-auto"></div>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white mb-6">
+                        {data.bridge?.headline}
+                    </h2>
+                    <p class="text-lg md:text-xl text-white/70 leading-relaxed max-w-3xl mx-auto">
+                        {data.bridge?.description}
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-24 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl md:text-5xl font-heading font-bold text-white mb-6">
+                    READY TO BUILD?
+                </h2>
+                <p class="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+                    Whether you need compliance infrastructure or growth capital, we're ready to architect your path to scale.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/venture-studio/compliance-and-registration">
+                        <GoldButton client:visible variant="outline" className="text-lg px-8 py-4">
+                            Get Compliant
+                        </GoldButton>
+                    </a>
+                    <a href="/venture-studio/incubation-and-funding">
+                        <GoldButton client:visible className="text-lg px-8 py-4">
+                            Apply for Funding
+                        </GoldButton>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</MainLayout>

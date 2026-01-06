@@ -1,6 +1,7 @@
 ---
 import { CanvasHero } from "../components/CanvasHero";
 import { Navigation } from "../components/MobileMenu";
+import { GetStartedModalController } from "../components/GetStartedModalController";
 import "../styles/global.css";
 import { getEntry } from "astro:content";
 
@@ -49,6 +50,9 @@ const { navigation, footer } = siteConfig.data;
 	<body
 		class="bg-obsidian-void text-vapor-white min-h-screen flex flex-col overflow-x-hidden selection:bg-tenx-gold selection:text-obsidian-void"
 	>
+		<!-- Get Started Modal Controller -->
+		<GetStartedModalController client:load />
+
 		<!-- Sticky Glass Nav -->
 		<nav
 			class="fixed top-0 left-0 right-0 z-50 h-[80px] bg-black/50 backdrop-blur-md border-b border-white/5 flex items-center px-6 lg:px-12 justify-between"
@@ -143,21 +147,31 @@ const { navigation, footer } = siteConfig.data;
 			</div>
 
 			<!-- Desktop CTA -->
-			<div class="hidden lg:block">
+			<div class="hidden lg:flex items-center gap-4">
+				<button
+					id="get-started-btn"
+					onclick="window.dispatchEvent(new CustomEvent('openGetStartedModal'))"
+					class="border border-white/20 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-white hover:border-tenx-gold hover:text-tenx-gold transition-all"
+				>
+					Get Started
+				</button>
 				<a
-					href="/network"
+					href="/coming-soon"
 					class:list={[
 						"border border-tenx-gold/50 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-tenx-gold hover:text-black transition-all",
 						currentPath.startsWith("/network") &&
 							"bg-tenx-gold text-black",
 					]}
 				>
-					Join Network
+					Login
 				</a>
 			</div>
 
 			<!-- Mobile Menu Toggle -->
-			<Navigation client:load navLinks={navigation} />
+			<Navigation client:load navLinks={navigation} onGetStartedClick={() => {
+				const btn = document.getElementById('get-started-btn');
+				btn?.click();
+			}} />
 		</nav>
 
 		<main class="flex-grow pt-[80px]">

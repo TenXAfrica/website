@@ -5,18 +5,26 @@ navigation:
   - label: CONSULTING
     href: /consulting
     children:
-      - label: DIGITAL CONSULTING
-        href: /consulting/digital-consulting
-      - label: MANAGEMENT CONSULTING
-        href: /consulting/management-consulting
-  - label: CATALYST
-    href: /catalyst
+      - label: DIGITAL TRANSFORMATION
+        href: /consulting/digital-transformation
+      - label: OPERATIONS EXCELLENCE
+        href: /consulting/operations-excellence
+      - label: TECH IMPLEMENTATION
+        href: /consulting/tech-implementation
+  - label: VENTURE STUDIO
+    href: /venture-studio
+    children:
+      - label: COMPLIANCE & REGISTRATION
+        href: /venture-studio/compliance-and-registration
+      - label: INCUBATION & FUNDING
+        href: /venture-studio/incubation-and-funding
+  - label: PARTNER NETWORK
+    href: /partner-network
   - label: IMPACT
     href: /impact
   - label: INSIGHTS
     href: /insights
-  - label: CONTACT
-    href: /contact
+
 
 footer:
   columns:
@@ -55,7 +63,7 @@ footer:
 
 quickLinks:
   - label: Join Network
-    href: /network
+    href: /partner-network
   - label: Privacy Policy
     href: /privacy
   - label: Terms of Service

@@ -1,12 +1,12 @@
 ---
 seo:
-  title: Home
-  description: Ten X Africa combines technology consulting, venture building, and impact investment to drive growth across the continent.
+  title: Ten X Africa | Strategy, Compliance & Venture Building
+  description: The operating system for African business. We bridge the gap between Operational Excellence, Regulatory Compliance, and Venture Capital. Build, Fund, and Grow with Ten X.
 
 hero:
-  headline: 10X-ING AFRICA.
-  highlightedText: BUILD. FUND. GROW.
-  subheadline: The hybrid engine for innovation. We bridge the gap between Strategy, Technology, and Impact Investment to empower consultants and scale startups.
+  headline: FROM STRATEGY
+  highlightedText: TO RESULTS. FAST.
+  subheadline: The hybrid engine for African Business. We don't just advise. We build infrastructure, unblock compliance, and fund growth.
   primaryCta:
     label: Explore Ecosystem
     href: '#ecosystem'

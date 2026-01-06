@@ -15,12 +15,13 @@ interface MobileMenuProps {
     isOpen: boolean;
     onClose: () => void;
     navLinks: NavItem[];
+    onGetStartedClick?: () => void;
 }
 
 /**
  * Mobile navigation menu rendered as a portal for full-screen coverage.
  */
-export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navLinks }) => {
+export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navLinks, onGetStartedClick }) => {
     const [mounted, setMounted] = useState(false);
     const [expandedItems, setExpandedItems] = useState<string[]>([]);
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
@@ -174,15 +175,24 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, navLink
 
                     {/* CTA */}
                     <div
-                        className="p-6 border-t border-white/10"
+                        className="p-4 sm:p-6 border-t border-white/10 space-y-3"
                         style={{ backgroundColor: '#0a0f14' }}
                     >
+                        <button
+                            onClick={() => {
+                                window.dispatchEvent(new CustomEvent('openGetStartedModal'));
+                                onClose();
+                            }}
+                            className="block w-full py-3 px-6 text-center border border-white/20 text-white font-bold uppercase tracking-wider text-sm rounded-lg hover:border-tenx-gold hover:text-tenx-gold transition-all active:scale-95"
+                        >
+                            Get Started
+                        </button>
                         <a
-                            href="/contact?interest=network"
-                            className="block w-full py-4 px-6 text-center bg-tenx-gold text-black font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-tenx-gold/90 transition-all active:scale-95 shadow-lg shadow-tenx-gold/20"
+                            href="/coming-soon"
+                            className="block w-full py-3 px-6 text-center bg-tenx-gold text-black font-bold uppercase tracking-wider text-sm rounded-lg hover:bg-tenx-gold/90 transition-all active:scale-95 shadow-lg shadow-tenx-gold/20"
                             onClick={onClose}
                         >
-                            Join Network
+                            Login
                         </a>
                     </div>
                 </motion.div>
@@ -225,15 +235,16 @@ export const MenuToggle: React.FC<MenuToggleProps> = ({ isOpen, onClick }) => {
  */
 interface NavigationProps {
     navLinks: NavItem[];
+    onGetStartedClick?: () => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ navLinks }) => {
+export const Navigation: React.FC<NavigationProps> = ({ navLinks, onGetStartedClick }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <>
             <MenuToggle isOpen={isMenuOpen} onClick={() => setIsMenuOpen(!isMenuOpen)} />
-            <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} navLinks={navLinks} />
+            <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} navLinks={navLinks} onGetStartedClick={onGetStartedClick} />
         </>
     );
 };

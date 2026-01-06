@@ -1,0 +1,64 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { CanvasHero } from "../components/CanvasHero";
+import { ComingSoon as ComingSoonComponent } from "../components/ComingSoon";
+import type { ComingSoonMilestone } from "../components/ComingSoon";
+import { getEntry } from "astro:content";
+
+const entry = await getEntry("pages", "coming-soon");
+
+if (!entry) {
+	throw new Error("Coming Soon page content not found");
+}
+
+const { data } = entry;
+
+const meta = {
+	title: data.seo.title,
+	description: data.seo.description,
+};
+
+const coming = data.comingSoon || {} as {
+	eyebrow?: string;
+	headline?: string;
+	highlight?: string;
+	description?: string;
+	targetDate?: string;
+	statusText?: string;
+	primaryCta?: { label: string; href: string };
+	secondaryCta?: { label: string; href: string };
+	contactEmail?: string;
+	milestones?: ComingSoonMilestone[];
+};
+
+const milestones: ComingSoonMilestone[] = coming.milestones || [
+	{ label: "Experience architecture locked in", status: "complete" },
+	{ label: "Interface build and polish", status: "in-progress", eta: "This week" },
+	{ label: "Early access invitations", status: "queued", eta: "Next" },
+];
+---
+
+<MainLayout title={meta.title} description={meta.description}>
+	<div class="relative isolate min-h-screen overflow-hidden bg-gradient-to-b from-black via-obsidian-void to-obsidian-void">
+		<CanvasHero
+			client:only="react"
+			variant="shape"
+			className="absolute inset-0 z-0"
+		/>
+
+		<ComingSoonComponent
+			client:load
+			eyebrow={coming.eyebrow || "Ten X Africa"}
+			headline={coming.headline || "A new experience is almost here"}
+			highlight={coming.highlight || "Coming Soon"}
+			description={coming.description || "We are finalizing the next release across our ecosystem. The focus: clearer navigation, deeper intelligence, and faster support for the builders and operators we back."}
+			targetDate={coming.targetDate || "Q1 2026"}
+			statusText={coming.statusText || "In final build"}
+			primaryCta={coming.primaryCta || { label: "Back to home", href: "/" }}
+			secondaryCta={coming.secondaryCta || { label: "Talk to us", href: "/contact?interest=general" }}
+			contactEmail={coming.contactEmail || "hello@tenxafrica.co.za"}
+			milestones={milestones}
+			className="pb-28"
+		/>
+	</div>
+</MainLayout>

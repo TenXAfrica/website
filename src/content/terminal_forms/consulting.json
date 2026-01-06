@@ -1,16 +1,22 @@
 {
-  "slug": "digital-consulting",
-  "title": "Digital Consulting Scoping",
+  "slug": "consulting",
+  "title": "Consulting Scoping",
   "description": "Let's see if we can help. Chat with our assistant to scope your project.",
-  "webhookUrl": "https://example.com/webhooks/digital-consulting",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/consulting-form-submission",
+  "emailCheckWebhookUrl": "https://n8n.tenxafrica.co.za/webhook/check-email",
   "trackingParams": [
     "token",
     "utm_source",
     "utm_medium",
     "utm_campaign"
   ],
+  "errorMessages": {
+    "invalidCaptcha": "Captcha failed. Please retry.",
+    "processingError": "We hit a snag processing your lead. Try again in a minute or email hello@tenxafrica.co.za.",
+    "generic": "Transmission failed. Please retry or email hello@tenxafrica.co.za."
+  },
   "requireTurnstile": true,
-  "backButtonHref": "/consulting/digital-consulting",
+  "backButtonHref": "/consulting",
   "backButtonLabel": "Back",
   "theme": {
     "versionTag": "V1_CONSULTING_FLOW"
@@ -93,19 +99,19 @@
     },
     {
       "id": "challenge",
-      "prompt": "Here is the important part. In a few sentences, describe the problem you are trying to solve or the outcome you need.",
-      "historyLabel": "Challenge description received.",
+      "prompt": "To ensure our Research Agent generates an accurate Strategy Report, we need context. Please describe what your business does, the specific challenge you are facing, and the outcome you are looking for.",
+      "historyLabel": "Challenge context received.",
       "fields": [
         {
           "name": "challenge",
           "type": "textarea",
-          "placeholder": "e.g. I am trying to automate my companies various different processes and operations",
-          "minLength": 50,
+          "placeholder": "e.g., We are a logistics provider in SADC. We currently track fleet maintenance via spreadsheets, which results in missed services and downtime. We want to implement a digital system to automate alerts and improve fleet uptime.",
+          "minLength": 100,
           "required": true
         }
       ],
       "advanceButton": {
-        "label": "Next",
+        "label": "Generate Report",
         "showOnMobile": true
       }
     },
@@ -119,15 +125,15 @@
           "type": "radio",
           "options": [
             {
-              "value": "< R50k",
+              "value": "Micro",
               "label": "< R50k (Micro)"
             },
             {
-              "value": "R50k - R200k",
+              "value": "SME",
               "label": "R50k - R200k (SME)"
             },
             {
-              "value": "R200k+",
+              "value": "Corporate",
               "label": "R200k+ (Corporate)"
             }
           ]

@@ -53,7 +53,13 @@ interface TerminalFormConfig {
     title: string;
     description?: string;
     webhookUrl: string;
+    emailCheckWebhookUrl?: string;
     trackingParams?: string[];
+    errorMessages?: {
+        invalidCaptcha?: string;
+        processingError?: string;
+        generic?: string;
+    };
     requireTurnstile?: boolean;
     backButtonHref?: string;
     backButtonLabel?: string;
@@ -100,6 +106,7 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
     const [formData, setFormData] = useState<Record<string, string>>({});
     const [trackingData, setTrackingData] = useState<Record<string, string>>({});
     const [emailCheckMessage, setEmailCheckMessage] = useState('');
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
     const [isTyping, setIsTyping] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -147,16 +154,34 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
     }, [currentStageIndex, isTyping, history]);
 
     // Helper: Advance to next stage
-    const advanceStage = () => {
+    const advanceStage = async () => {
         // Email duplication guard
         const emailField = currentStage?.fields?.find(f => f.type === 'email');
-        if (emailField) {
-            const value = (formData[emailField.name] || '').trim().toLowerCase();
-            const existingStub = ['joash@test.com'];
-            const isKnown = value && existingStub.includes(value);
-            if (isKnown) {
-                setEmailCheckMessage('We already have this email on file. Reach us directly at hello@tenxafrica.co.za to continue.');
-                return;
+        if (emailField && config.emailCheckWebhookUrl) {
+            const email = (formData[emailField.name] || '').trim();
+            if (email) {
+                setIsCheckingEmail(true);
+                setEmailCheckMessage('');
+                try {
+                    const response = await fetch(config.emailCheckWebhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email }),
+                    });
+                    const result = await response.json();
+                    
+                    if (result.exists) {
+                        const name = result.name || 'this contact';
+                        setEmailCheckMessage(`We already have ${name} on file. Reach us directly at hello@tenxafrica.co.za to continue.`);
+                        setIsCheckingEmail(false);
+                        return;
+                    }
+                } catch (err) {
+                    console.warn('Email check failed:', err);
+                    // Continue anyway on error
+                } finally {
+                    setIsCheckingEmail(false);
+                }
             }
             setEmailCheckMessage('');
         }
@@ -168,6 +193,8 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
 
     // Helper: Check if current stage is valid
     const isStageValid = (): boolean => {
+        if (isCheckingEmail) return false; // Block during email check
+        
         if (!currentStage?.fields || currentStage.fields.length === 0) {
             return true; // Stages without fields (like security) are always valid
         }
@@ -279,14 +306,33 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-            
-            if (!response.ok) throw new Error('Transmission failed');
+
+            let result: any = null;
+            try {
+                result = await response.json();
+            } catch {
+                // ignore JSON parse issues
+            }
+
+            const status = result?.status;
+            const message = result?.message;
+
+            if (!response.ok || status === 'error') {
+                const msgKey = message === 'Invalid Captcha'
+                    ? 'invalidCaptcha'
+                    : message === 'Lead processing error'
+                        ? 'processingError'
+                        : 'generic';
+                const configured = config.errorMessages?.[msgKey];
+                const fallback = message || 'TRANSMISSION_FAILED. RETRY?';
+                throw new Error(configured || fallback);
+            }
             
             setSubmitStatus('success');
 
-        } catch (err) {
+        } catch (err: any) {
             setSubmitStatus('error');
-            setErrorMessage('TRANSMISSION_FAILED. RETRY?');
+            setErrorMessage(err?.message || 'TRANSMISSION_FAILED. RETRY?');
             setIsSubmitting(false);
         }
     };
