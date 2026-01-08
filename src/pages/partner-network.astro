@@ -149,6 +149,43 @@ const data = pageData!.data;
             </div>
         </section>
 
+        <!-- Network Roles Section -->
+        <section class="py-20 px-6 lg:px-12 border-t border-white/5">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-12">
+                    <div class="w-12 h-1 bg-tenx-gold mb-6"></div>
+                    <h2
+                        class="text-3xl md:text-4xl font-heading font-bold text-white mb-4"
+                    >
+                        {data.networkRoles!.title}
+                    </h2>
+                    <p class="text-lg text-white/60 max-w-2xl">
+                        {data.networkRoles!.description}
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    {
+                        data.networkRoles!.roles.map((role) => (
+                            <GlassCard client:visible className="p-8 hover:border-tenx-gold/30 transition-colors">
+                                <div class="mb-4">
+                                    <span class="text-xs font-mono text-tenx-gold/80 uppercase tracking-wider">
+                                        {role.focus}
+                                    </span>
+                                </div>
+                                <h3 class="text-2xl font-heading font-bold text-white mb-3">
+                                    {role.title}
+                                </h3>
+                                <p class="text-white/70 leading-relaxed">
+                                    {role.description}
+                                </p>
+                            </GlassCard>
+                        ))
+                    }
+                </div>
+            </div>
+        </section>
+
         <!-- Ideal Candidate Section -->
         <section
             class="py-20 px-6 lg:px-12 bg-black/40 border-t border-white/5"

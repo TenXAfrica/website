@@ -20,7 +20,6 @@ programs:
       icon: "🔬"
       stage: "Concept to Prototype"
       duration: "8-12 Weeks"
-      investment: "R50,000 - R150,000"
       deliverables:
         - "Market research & competitive analysis"
         - "Customer discovery & validation interviews"
@@ -36,7 +35,6 @@ programs:
       icon: "🚀"
       stage: "Prototype to Product"
       duration: "4-6 Months"
-      investment: "R250,000 - R750,000"
       deliverables:
         - "Investor pitch deck (10-15 slides)"
         - "3-year financial model with scenarios"
@@ -52,7 +50,6 @@ programs:
       icon: "⚡"
       stage: "Product to Scale"
       duration: "6-12 Months"
-      investment: "Custom"
       deliverables:
         - "Investor deal room (financial, legal, product)"
         - "Unit economics & cohort analysis"

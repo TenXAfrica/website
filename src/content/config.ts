@@ -170,6 +170,17 @@ const pages = defineCollection({
                 })
             ),
         }).optional(),
+        networkRoles: z.object({
+            title: z.string(),
+            description: z.string(),
+            roles: z.array(
+                z.object({
+                    title: z.string(),
+                    description: z.string(),
+                    focus: z.string(),
+                })
+            ),
+        }).optional(),
         idealCandidate: z.object({
             title: z.string(),
             description: z.string(),
@@ -485,7 +496,6 @@ const pages = defineCollection({
                     icon: z.string(),
                     stage: z.string(),
                     duration: z.string(),
-                    investment: z.string(),
                     deliverables: z.array(z.string()),
                     outcomes: z.array(z.string()),
                 })

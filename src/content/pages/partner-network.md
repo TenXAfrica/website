@@ -30,6 +30,23 @@ valueProp:
       description: Go to market under the Ten X banner, giving you instant credibility and perceived scale with senior stakeholders.
       icon: megaphone
 
+networkRoles:
+  title: WAYS TO JOIN THE NETWORK
+  description: Whether you're a strategic advisor, technical expert, or specialist implementor, there's a place for you in the Ten X ecosystem.
+  roles:
+    - title: Strategic Consultant
+      description: Lead business transformation, strategy development, and executive advisory engagements with enterprise clients.
+      focus: Strategy & Leadership
+    - title: Technical Implementor
+      description: Deploy and customize Ten X products, integrate systems, and provide hands-on technical delivery for digital transformation projects.
+      focus: Implementation & Integration
+    - title: Domain Specialist
+      description: Provide deep expertise in specific verticals like finance, operations, compliance, or industry-specific consulting.
+      focus: Specialized Knowledge
+    - title: Product Partner
+      description: Resell and implement Ten X software solutions as part of your service offering, earning recurring revenue.
+      focus: Product Sales & Delivery
+
 idealCandidate:
   title: WHO WE ARE LOOKING FOR
   description: We are not a recruitment agency. We are a network of peers. We are looking for established experts who want to build a sustainable practice.
@@ -65,9 +82,9 @@ onboarding:
 
 cta:
   title: SCALE YOUR PRACTICE.
-  description: Stop getting bogged down in administration. Apply to join the Ten X Alliance today.
+  description: Stop getting bogged down in administration. Join the Ten X Network today.
   button:
-    label: Apply for Partnership
+    label: Join Network
     href: /contact?interest=network
 ---
 
