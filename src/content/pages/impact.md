@@ -82,7 +82,7 @@ esg:
   description: Transparency is not optional. We are building our operations to align strictly with the UN Sustainable Development Goals (SDGs).
   downloadLink:
     label: View Impact Framework
-    href: /downloads/tenx-impact-framework.pdf
+    href: https://drive.google.com/uc?export=download&id=1sujjecqLl5IndTkXsQlzdT46FWIaD0Pv
 ---
 
 Impact and investment page content.

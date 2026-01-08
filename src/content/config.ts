@@ -607,7 +607,7 @@ const terminal_forms = defineCollection({
             historyLabel: z.string(),
             fields: z.array(z.object({
                 name: z.string(),
-                type: z.enum(['text', 'email', 'phone', 'url', 'textarea', 'radio', 'select']),
+                type: z.enum(['text', 'email', 'phone', 'url', 'textarea', 'radio', 'select', 'file']),
                 placeholder: z.string().optional(),
                 label: z.string().optional(),
                 required: z.boolean().optional(),
@@ -617,6 +617,11 @@ const terminal_forms = defineCollection({
                     label: z.string(),
                 })).optional(),
                 toggleLabel: z.string().optional(),
+                // File-specific options
+                accept: z.string().optional(),
+                multiple: z.boolean().optional(),
+                maxSizeMB: z.number().optional(),
+                helperText: z.string().optional(),
             })).optional(),
             advanceButton: z.object({
                 label: z.string().optional(),

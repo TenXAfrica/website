@@ -40,6 +40,41 @@
       }
     },
     {
+      "id": "services",
+      "prompt": "Which of our services are you interested in?",
+      "historyLabel": "Service interest recorded.",
+      "fields": [
+        {
+          "name": "services",
+          "type": "select",
+          "placeholder": "Select services...",
+          "required": true,
+          "options": [
+            {
+              "value": "digital-transformation",
+              "label": "Digital Transformation"
+            },
+            {
+              "value": "operations-excellence",
+              "label": "Operations Excellence"
+            },
+            {
+              "value": "tech-implementation",
+              "label": "Tech Implementation"
+            },
+            {
+              "value": "all",
+              "label": "All of the above"
+            }
+          ]
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
       "id": "contact",
       "prompt": "Nice to meet you. Where should we send the strategy briefing and calendar link?",
       "historyLabel": "Email saved.",

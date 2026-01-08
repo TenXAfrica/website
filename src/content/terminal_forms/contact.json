@@ -1,0 +1,162 @@
+{
+  "slug": "contact",
+  "title": "Contact Us",
+  "description": "Get in touch with the Ten X Africa team.",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/contact-form-submission",
+  "trackingParams": [
+    "token",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign"
+  ],
+  "errorMessages": {
+    "invalidCaptcha": "Captcha failed. Please retry.",
+    "processingError": "We hit a snag processing your message. Try again in a minute or email hello@tenxafrica.co.za.",
+    "generic": "Transmission failed. Please retry or email hello@tenxafrica.co.za."
+  },
+  "requireTurnstile": true,
+  "backButtonHref": "/impact",
+  "backButtonLabel": "Back",
+  "theme": {
+    "versionTag": "V1_CONTACT_FLOW"
+  },
+  "stages": [
+    {
+      "id": "identity",
+      "prompt": "Thanks for reaching out. What's your full name?",
+      "historyLabel": "Name captured.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "placeholder": "Your Full Name",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "contact",
+      "prompt": "Where can we reach you?",
+      "historyLabel": "Email saved.",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "placeholder": "name@company.com",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "phone",
+      "prompt": "And your phone number? (optional but helpful).",
+      "historyLabel": "Phone saved.",
+      "fields": [
+        {
+          "name": "phone",
+          "type": "phone",
+          "placeholder": "+27 00 000 0000",
+          "required": false
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "inquiry",
+      "prompt": "What's this about?",
+      "historyLabel": "Inquiry type noted.",
+      "fields": [
+        {
+          "name": "inquiryType",
+          "type": "select",
+          "placeholder": "Select inquiry type",
+          "required": true,
+          "options": [
+            {
+              "value": "consulting",
+              "label": "Consulting / Services"
+            },
+            {
+              "value": "partnership",
+              "label": "Partnership Opportunity"
+            },
+            {
+              "value": "venture",
+              "label": "Venture Studio / Funding"
+            },
+            {
+              "value": "support",
+              "label": "Technical Support"
+            },
+            {
+              "value": "general",
+              "label": "General Inquiry"
+            }
+          ]
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "message",
+      "prompt": "Tell us what's on your mind.",
+      "historyLabel": "Message received.",
+      "fields": [
+        {
+          "name": "message",
+          "type": "textarea",
+          "placeholder": "Your message here...",
+          "minLength": 20,
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "company",
+      "prompt": "Quick context: what's your company or organization? (optional).",
+      "historyLabel": "Company info saved.",
+      "fields": [
+        {
+          "name": "company",
+          "type": "text",
+          "placeholder": "Company Name",
+          "required": false
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "security",
+      "prompt": "Final step: verify you're human.",
+      "historyLabel": "Verification complete.",
+      "fields": []
+    }
+  ],
+  "success": {
+    "headline": "Message Sent!",
+    "message": "Thanks for getting in touch. We'll review your message and get back to you soon.",
+    "ctaLabel": "Return Home",
+    "ctaHref": "/"
+  }
+}

@@ -30,22 +30,22 @@ footer:
   columns:
     - title: ECOSYSTEM
       links:
-        - label: Digital Consulting
-          href: /digital-consulting
+        - label: Digital Transformation
+          href: /consulting/digital-transformation
         - label: Ventures
-          href: /catalyst
+          href: /venture-studio
         - label: Impact Funding
           href: /impact
     - title: FIRM
       links:
         - label: Our Philosophy
-          href: /#about
+          href: /impact
         - label: Insights
           href: /insights
         - label: Join Network
-          href: /contact?interest=network
+          href: /partner-network
         - label: Contact
-          href: /contact
+          href: /forms/contact
     - title: CONNECT
       links:
         - label: hello@tenxafrica.co.za

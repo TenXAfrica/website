@@ -1,0 +1,185 @@
+{
+  "slug": "venture-application",
+  "title": "Venture Studio Application",
+  "description": "Start your journey. We stress-test ideas for Founders and analyze growth gaps for SMEs.",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/venture-form-submission",
+  "emailCheckWebhookUrl": "https://n8n.tenxafrica.co.za/webhook/check-email",
+  "trackingParams": [
+    "token",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign"
+  ],
+  "errorMessages": {
+    "invalidCaptcha": "Captcha failed. Please retry.",
+    "processingError": "We couldn't process your application. Please try again or contact support.",
+    "generic": "Transmission failed. Please retry."
+  },
+  "requireTurnstile": true,
+  "backButtonHref": "/venture-studio",
+  "backButtonLabel": "Back",
+  "theme": {
+    "versionTag": "V1_VENTURE_INTAKE"
+  },
+  "stages": [
+    {
+      "id": "identity",
+      "prompt": "Welcome to the Venture Portal. I am the Intake Assistant. Let's build your profile—what is your full name?",
+      "historyLabel": "Name captured.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "placeholder": "Your Full Name",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "intent",
+      "prompt": "How can we best assist you today?",
+      "historyLabel": "Primary interest logged.",
+      "fields": [
+        {
+          "name": "primary_interest",
+          "type": "select",
+          "placeholder": "Select an option...",
+          "required": true,
+          "options": [
+            {
+              "value": "compliance_registration",
+              "label": "Compliance and Registration"
+            },
+            {
+              "value": "incubation_funding",
+              "label": "Incubation and Funding"
+            }
+          ]
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "profile_type",
+      "prompt": "To route you to the correct track, which profile best describes you?",
+      "historyLabel": "Maturity stage classified.",
+      "fields": [
+        {
+          "name": "maturity_stage",
+          "type": "select",
+          "placeholder": "Select your stage...",
+          "required": true,
+          "options": [
+            {
+              "value": "founder_idea",
+              "label": "Founder (Idea Stage) - I need validation & design"
+            },
+            {
+              "value": "sme_growth",
+              "label": "Existing SME (Growth Stage) - I need funding or market access"
+            }
+          ]
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "contact",
+      "prompt": "Great. Where should we send your AI-generated Viability Score or Gap Analysis report?",
+      "historyLabel": "Email saved.",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "placeholder": "name@company.com",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "context",
+      "prompt": "Let's log your venture details. What is the name of your venture or company?",
+      "historyLabel": "Venture name logged.",
+      "fields": [
+        {
+          "name": "company",
+          "type": "text",
+          "placeholder": "Venture / Company Name",
+          "required": true
+        },
+        {
+          "name": "website",
+          "type": "url",
+          "placeholder": "https://website.com",
+          "required": false,
+          "toggleLabel": "I don't have a website yet"
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "venture_details",
+      "prompt": "This is the most important step. Our AI Analyst needs context to run the stress test.\n\n• If Idea Stage: Describe your Concept and Vision.\n• If Growth Stage: Describe your Financial Traction and current Resource Gaps.",
+      "historyLabel": "Deep intake data captured.",
+      "fields": [
+        {
+          "name": "challenge",
+          "type": "textarea",
+          "placeholder": "e.g., We are building a fintech app for gig workers (Concept) ... OR ... We are generating R2M revenue but need capital for fleet expansion (Growth)...",
+          "minLength": 100,
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Analyze Venture",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "documents",
+      "prompt": "Do you have an existing Pitch Deck or Financial Model hosted online? (Optional)",
+      "historyLabel": "Documentation linked.",
+      "fields": [
+        {
+          "name": "deck_url",
+          "type": "url",
+          "placeholder": "Link to Drive/DocSend (Optional)",
+          "required": false
+        }
+      ],
+      "advanceButton": {
+        "label": "Submit Application",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "security",
+      "prompt": "Final security check to ensure you aren't a bot.",
+      "historyLabel": "Verification complete.",
+      "fields": []
+    }
+  ],
+  "success": {
+    "headline": "Application Received",
+    "message": "Our AI is currently processing your intake. You will receive your 'Pre-Read' dossier via email shortly, followed by next steps from a Venture Architect.",
+    "ctaLabel": "Return to Site",
+    "ctaHref": "/"
+  }
+}

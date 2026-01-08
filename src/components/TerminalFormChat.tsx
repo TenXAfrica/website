@@ -21,13 +21,18 @@ interface FieldOption {
 
 interface FormField {
     name: string;
-    type: 'text' | 'email' | 'phone' | 'url' | 'textarea' | 'radio' | 'select';
+    type: 'text' | 'email' | 'phone' | 'url' | 'textarea' | 'radio' | 'select' | 'file';
     placeholder?: string;
     label?: string;
     required?: boolean;
     minLength?: number;
     options?: FieldOption[];
     toggleLabel?: string;
+    // File-specific options
+    accept?: string; // e.g. "application/pdf,image/*"
+    multiple?: boolean; // allow multiple file selection
+    maxSizeMB?: number; // per-file size cap
+    helperText?: string; // helper copy under the control
 }
 
 interface FormStage {
@@ -74,17 +79,26 @@ interface TerminalFormChatProps {
     config: TerminalFormConfig;
 }
 
-// Typewriter effect component
+// Typewriter effect component with LLM-style chunked streaming
 const TypewriterText: React.FC<{ text: string; onComplete?: () => void; className?: string }> = ({ text, onComplete, className }) => {
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         if (currentIndex < text.length) {
+            // Generate random chunk size between 2-6 characters (avg ~4)
+            const chunkSize = Math.floor(Math.random() * 5) + 2;
+            // Variable delay between 40-80ms for more natural feel
+            const delay = Math.floor(Math.random() * 40) + 40;
+            
             const timeout = setTimeout(() => {
-                setDisplayedText(prev => prev + text[currentIndex]);
-                setCurrentIndex(prev => prev + 1);
-            }, 30);
+                const remainingChars = text.length - currentIndex;
+                const actualChunkSize = Math.min(chunkSize, remainingChars);
+                const chunk = text.slice(currentIndex, currentIndex + actualChunkSize);
+                
+                setDisplayedText(prev => prev + chunk);
+                setCurrentIndex(prev => prev + actualChunkSize);
+            }, delay);
             return () => clearTimeout(timeout);
         } else if (onComplete) {
             onComplete();
@@ -119,6 +133,9 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
     
     // Toggle states for optional fields
     const [toggledFields, setToggledFields] = useState<Record<string, boolean>>({});
+    // Files selected per field
+    const [uploadedFiles, setUploadedFiles] = useState<Record<string, File[]>>({});
+    const [fileErrors, setFileErrors] = useState<Record<string, string | undefined>>({});
     
     // Refs
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -127,6 +144,24 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
     const currentStage = config.stages[currentStageIndex];
     const isComplete = currentStageIndex >= config.stages.length;
 
+    // Helpers for files
+    const getFieldByName = (name: string): FormField | undefined => {
+        for (const stage of config.stages) {
+            const found = stage.fields?.find(f => f.name === name);
+            if (found) return found;
+        }
+        return undefined;
+    };
+
+    const fileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve((reader.result as string).split(',')[1] || '');
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
     // Capture tracking params from URL once on mount
     useEffect(() => {
         const keys = config.trackingParams && config.trackingParams.length > 0
@@ -134,12 +169,29 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
             : ['token', 'utm_source', 'utm_medium', 'utm_campaign'];
         const params = new URLSearchParams(window.location.search);
         const collected: Record<string, string> = {};
+        const prefilled: Record<string, string> = {};
+        
+        // Collect tracking params (separate from form data)
         keys.forEach(key => {
             const value = params.get(key);
             if (value) collected[key] = value;
         });
+        
+        // Only prefill actual form fields (not tracking params)
+        const allFieldNames = config.stages
+            .flatMap(stage => stage.fields || [])
+            .map(field => field.name);
+        
+        allFieldNames.forEach(fieldName => {
+            const value = params.get(fieldName);
+            if (value) prefilled[fieldName] = value;
+        });
+        
         setTrackingData(collected);
-    }, [config.trackingParams]);
+        if (Object.keys(prefilled).length > 0) {
+            setFormData(prev => ({ ...prev, ...prefilled }));
+        }
+    }, [config.trackingParams, config.stages]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -241,6 +293,25 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
             if (field.type === 'textarea' && field.minLength) {
                 return value.length >= field.minLength;
             }
+            if (field.type === 'file') {
+                const files = uploadedFiles[field.name] || [];
+                if (!field.required && files.length === 0) return true;
+                if (field.required && files.length === 0) return false;
+                const maxSizeMB = field.maxSizeMB ?? 10; // default 10MB per file
+                const maxBytes = maxSizeMB * 1024 * 1024;
+                // All files must be within size, and if accept is provided, must match types
+                const accepted = (mime: string): boolean => {
+                    if (!field.accept) return true;
+                    return field.accept.split(',').map(s => s.trim()).some(mask => {
+                        if (mask.endsWith('/*')) {
+                            const prefix = mask.replace('/*','');
+                            return mime.startsWith(prefix);
+                        }
+                        return mime === mask || mask === '*/*';
+                    });
+                };
+                return files.every(f => f.size <= maxBytes && accepted(f.type));
+            }
             return value.trim().length > 0;
         });
     };
@@ -292,14 +363,63 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
                 setIsSubmitting(false);
                 return;
             }
-            const payload = { 
-                ...formData, 
-                submittedAt: new Date().toISOString(),
-                source: `terminal-form-${config.slug}`,
-                tracking: trackingData
+            
+            // Build clean payload with no duplicates - separate form data from metadata
+            const payload: any = {
+                formData: formData,
+                metadata: {
+                    submittedAt: new Date().toISOString(),
+                    source: `terminal-form-${config.slug}`,
+                    turnstileToken: formData.turnstileToken
+                }
             };
 
-            console.log('Terminal form payload →', payload);
+            // Attach files (convert to base64 up to size cap)
+            const allFiles: { field: string; files: File[] }[] = Object.keys(uploadedFiles).map(name => ({ field: name, files: uploadedFiles[name] || [] }));
+            if (allFiles.some(entry => entry.files.length)) {
+                const attachments: any[] = [];
+                for (const entry of allFiles) {
+                    const fdef = getFieldByName(entry.field);
+                    const maxSizeMB = fdef?.maxSizeMB ?? 10;
+                    const maxBytes = maxSizeMB * 1024 * 1024;
+                    for (const f of entry.files) {
+                        const includeContent = f.size <= maxBytes && f.size <= 5 * 1024 * 1024; // hard safety cap 5MB for console/loggers
+                        let base64: string | undefined = undefined;
+                        if (includeContent) {
+                            try {
+                                base64 = await fileToBase64(f);
+                            } catch {}
+                        }
+                        attachments.push({
+                            field: entry.field,
+                            name: f.name,
+                            size: f.size,
+                            type: f.type,
+                            contentBase64: base64,
+                            contentIncluded: Boolean(base64)
+                        });
+                    }
+                }
+                if (attachments.length) payload.attachments = attachments;
+            }
+            
+            // Only include tracking if we have it
+            if (Object.keys(trackingData).length > 0) {
+                payload.tracking = trackingData;
+            }
+            
+            // Remove turnstileToken from formData since it's in metadata
+            delete payload.formData.turnstileToken;
+
+            console.log('=== TERMINAL FORM SUBMISSION ===');
+            console.log('Webhook URL:', webhookUrl);
+            console.log('Payload:', payload);
+            console.log('================================');
+
+            // TODO: Remove this return statement once backend is ready
+            setSubmitStatus('success');
+            setIsSubmitting(false);
+            return;
 
             const response = await fetch(webhookUrl, {
                 method: 'POST',
@@ -468,6 +588,93 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
                     </div>
                 );
 
+            case 'file':
+                if (isToggled) return null;
+                return (
+                    <div key={field.name} className="flex items-start gap-3">
+                        <span className="text-tenx-gold font-mono">{'>'}</span>
+                        <div className="flex-1">
+                            <input
+                                id={`file-${field.name}`}
+                                type="file"
+                                className="hidden"
+                                multiple={field.multiple}
+                                accept={field.accept || 'application/pdf,.pdf'}
+                                disabled={isHistory}
+                                onChange={(e) => {
+                                    const files = Array.from(e.target.files || []);
+                                    const fdef = getFieldByName(field.name);
+                                    const maxSizeMB = fdef?.maxSizeMB ?? 10;
+                                    const maxBytes = maxSizeMB * 1024 * 1024;
+                                    const acceptMask = (fdef?.accept || 'application/pdf,.pdf').split(',').map(s => s.trim());
+                                    const accept = (file: File) => {
+                                        const mime = file.type || '';
+                                        const ext = file.name.toLowerCase().split('.').pop();
+                                        return acceptMask.some(mask => {
+                                            if (mask === '.pdf') return ext === 'pdf';
+                                            if (mask.endsWith('/*')) {
+                                                const prefix = mask.replace('/*','');
+                                                return mime.startsWith(prefix);
+                                            }
+                                            return mime === mask || mask === '*/*';
+                                        });
+                                    };
+                                    let invalidType = 0, tooBig = 0;
+                                    const valid = files.filter(f => {
+                                        const okType = accept(f);
+                                        const okSize = f.size <= maxBytes;
+                                        if (!okType) invalidType++;
+                                        if (!okSize) tooBig++;
+                                        return okType && okSize;
+                                    });
+                                    setUploadedFiles(prev => ({ ...prev, [field.name]: valid }));
+                                    if (files.length === 0) {
+                                        setFileErrors(prev => ({ ...prev, [field.name]: undefined }));
+                                    } else if (valid.length === 0) {
+                                        const msg = invalidType > 0
+                                            ? `Unsupported file type. Please attach a PDF.`
+                                            : `File too large. Max ${maxSizeMB}MB.`;
+                                        setFileErrors(prev => ({ ...prev, [field.name]: msg }));
+                                    } else {
+                                        const notes: string[] = [];
+                                        if (invalidType > 0) notes.push(`${invalidType} file(s) ignored (type)`);
+                                        if (tooBig > 0) notes.push(`${tooBig} file(s) ignored (size)`);
+                                        setFileErrors(prev => ({ ...prev, [field.name]: notes.length ? notes.join(', ') : undefined }));
+                                    }
+                                }}
+                            />
+                            <div className={twMerge(
+                                "w-full bg-black/40 border border-tenx-gold/30 rounded px-3 py-3 font-mono text-sm",
+                                isHistory ? "border-white/10 text-white/50" : "hover:border-tenx-gold/50"
+                            )}>
+                                <label htmlFor={`file-${field.name}`} className={twMerge(
+                                    "inline-flex items-center gap-2 px-3 py-2 rounded border border-tenx-gold/30 text-tenx-gold cursor-pointer hover:bg-tenx-gold/10 transition-colors",
+                                    isHistory ? "pointer-events-none opacity-60" : ""
+                                )}>
+                                    <span>+ Attach File{field.multiple ? 's' : ''}</span>
+                                </label>
+                                {field.helperText && (
+                                    <div className="text-white/40 text-xs mt-2">{field.helperText}</div>
+                                )}
+                                <div className="mt-3 space-y-1">
+                                    {(uploadedFiles[field.name] || []).map((f, idx) => (
+                                        <div key={idx} className="flex items-center justify-between text-white/80">
+                                            <span className="truncate mr-3">{f.name}</span>
+                                            <span className="text-white/40 text-xs">{(f.size/1024/1024).toFixed(2)} MB</span>
+                                        </div>
+                                    ))}
+                                    {!uploadedFiles[field.name]?.length && (
+                                        <div className="text-white/40 text-xs">No file selected</div>
+                                    )}
+                                    {fileErrors[field.name] && (
+                                        <div className="text-red-400 text-xs">{fileErrors[field.name]}</div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
             case 'radio':
                 return (
                     <div key={field.name} className="flex flex-wrap gap-4">
@@ -489,6 +696,34 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
                                 {opt.label}
                             </button>
                         ))}
+                    </div>
+                );
+
+            case 'select':
+                if (isToggled) return null;
+                return (
+                    <div key={field.name} className="flex items-center gap-3">
+                        <span className="text-tenx-gold font-mono">{'>'}</span>
+                        <select
+                            value={formData[field.name] || ''}
+                            onChange={e => setFormData({ ...formData, [field.name]: e.target.value })}
+                            onKeyDown={handleKeyDown}
+                            className={twMerge(
+                                "w-full bg-black/40 border border-tenx-gold/30 text-white p-2 rounded outline-none font-mono transition-all focus:border-tenx-gold focus:bg-black/60",
+                                isHistory ? "border-white/10 text-white/50 cursor-not-allowed" : "cursor-pointer hover:border-tenx-gold/50"
+                            )}
+                            autoFocus={shouldAutoFocus}
+                            disabled={isHistory}
+                        >
+                            <option value="" disabled>
+                                {field.placeholder || 'Select an option'}
+                            </option>
+                            {field.options?.map(opt => (
+                                <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 );
 

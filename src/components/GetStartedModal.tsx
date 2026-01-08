@@ -20,13 +20,13 @@ const defaultPillars: GetStartedPillar[] = [
 		id: 'venture-studio',
 		title: 'Venture Studio',
 		description: 'Build and scale startups with our hands-on support.',
-		href: '/catalyst',
+		href: '/venture-studio',
 	},
 	{
 		id: 'network',
 		title: 'Partner Network',
 		description: 'Join our network of bold operators across Africa.',
-		href: '/network',
+		href: '/partner-network',
 	},
 ];
 

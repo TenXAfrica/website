@@ -177,7 +177,7 @@ const { data } = impactPage;
                         </p>
                         {
                             data.esg!.downloadLink && (
-                                <a href={data.esg!.downloadLink.href}>
+                                <a href={data.esg!.downloadLink.href} download>
                                     <GoldButton
                                         client:visible
                                         variant="outline"
@@ -285,7 +285,7 @@ const { data } = impactPage;
                     Partner with us to drive sustainable development while
                     generating returns.
                 </p>
-                <a href="/contact?interest=general">
+                <a href="/forms/contact?token=website_direct&utm_source=tenxafrica&utm_medium=website&utm_campaign=impact_page">
                     <GoldButton client:visible className="text-lg px-10 py-4">
                         Partner With Us
                     </GoldButton>

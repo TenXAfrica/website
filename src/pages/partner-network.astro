@@ -6,7 +6,7 @@ import { GoldButton } from "../components/GoldButton";
 import { OnboardingSteps } from "../components/OnboardingSteps";
 import { getEntry } from "astro:content";
 
-const pageData = await getEntry("pages", "network");
+const pageData = await getEntry("pages", "partner-network");
 const data = pageData!.data;
 ---
 
@@ -18,7 +18,7 @@ const data = pageData!.data;
             headline={data.hero.headline}
             subheadline={data.hero.subheadline}
         >
-            <a href={data.cta!.button.href}>
+            <a href="/forms/idc-partner?token=website_direct&utm_source=tenxafrica&utm_medium=website&utm_campaign=partner_network">
                 <GoldButton client:load>{data.cta!.button.label}</GoldButton>
             </a>
         </PageHero>
@@ -267,7 +267,7 @@ const data = pageData!.data;
                 <p class="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
                     {data.cta!.description}
                 </p>
-                <a href={data.cta!.button.href}>
+                <a href="/forms/idc-partner?token=website_direct&utm_source=tenxafrica&utm_medium=website&utm_campaign=partner_network">
                     <GoldButton client:visible className="text-lg px-10 py-4">
                         {data.cta!.button.label}
                     </GoldButton>
