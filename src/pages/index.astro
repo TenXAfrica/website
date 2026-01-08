@@ -7,7 +7,7 @@ import { NetworkCube } from "../components/NetworkCube";
 import { BranchingTree } from "../components/BranchingTree";
 import { TenXCoreProcessor } from "../components/TenXCoreProcessor";
 import { AfricaMap } from "../components/AfricaMap";
-import { TeamMember } from "../components/TeamMember";
+import { SystemStatusPill } from "../components/SystemStatusPill";
 import { getEntry, getCollection } from "astro:content";
 
 const homePage = await getEntry("pages", "index");
@@ -35,17 +35,7 @@ const { data } = homePage;
 		>
 			<div class="max-w-4xl mx-auto space-y-6">
 				<!-- Animated Pill -->
-				<div
-					class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6 animate-fade-in-up"
-				>
-					<span
-						class="w-1.5 h-1.5 rounded-full bg-tenx-gold animate-pulse"
-					></span>
-					<span
-						class="text-xs font-mono tracking-widest text-white/70"
-						>ALL_SYSTEMS_ONLINE</span
-					>
-				</div>
+				<SystemStatusPill client:load />
 
 				<h1
 					class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter leading-tight text-white mb-6"
@@ -192,8 +182,10 @@ const { data } = homePage;
 		</section>
 
 		<!-- Pan-African Footprint Section (From About) -->
-		<section class="relative z-10 py-20 border-t border-white/5 backdrop-blur bg-black/10">
-			<div class="container mx-auto px-6 ">
+		<section
+			class="relative z-10 py-20 border-t border-white/5 backdrop-blur bg-black/10"
+		>
+			<div class="container mx-auto px-6">
 				<div class="grid md:grid-cols-2 gap-12 items-center">
 					<div class="">
 						<AfricaMap client:visible />

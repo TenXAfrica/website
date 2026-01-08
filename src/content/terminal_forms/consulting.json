@@ -1,0 +1,191 @@
+{
+  "slug": "consulting",
+  "title": "Consulting Scoping",
+  "description": "Let's see if we can help. Chat with our assistant to scope your project.",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/consulting-form-submission",
+  "emailCheckWebhookUrl": "https://n8n.tenxafrica.co.za/webhook/check-email",
+  "trackingParams": [
+    "token",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign"
+  ],
+  "errorMessages": {
+    "invalidCaptcha": "Captcha failed. Please retry.",
+    "processingError": "We hit a snag processing your lead. Try again in a minute or email hello@tenxafrica.co.za.",
+    "generic": "Transmission failed. Please retry or email hello@tenxafrica.co.za."
+  },
+  "requireTurnstile": true,
+  "backButtonHref": "/consulting",
+  "backButtonLabel": "Back",
+  "theme": {
+    "versionTag": "V1_CONSULTING_FLOW"
+  },
+  "stages": [
+    {
+      "id": "identity",
+      "prompt": "Hi there. I'm the Ten X digital assistant. I see you want to get started with digital consulting. Let's start with the basics—what is your full name?",
+      "historyLabel": "Name captured.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "placeholder": "Your Full Name",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "services",
+      "prompt": "Which of our services are you interested in?",
+      "historyLabel": "Service interest recorded.",
+      "fields": [
+        {
+          "name": "services",
+          "type": "select",
+          "placeholder": "Select services...",
+          "required": true,
+          "options": [
+            {
+              "value": "digital-transformation",
+              "label": "Digital Transformation"
+            },
+            {
+              "value": "operations-excellence",
+              "label": "Operations Excellence"
+            },
+            {
+              "value": "tech-implementation",
+              "label": "Tech Implementation"
+            },
+            {
+              "value": "all",
+              "label": "All of the above"
+            }
+          ]
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "contact",
+      "prompt": "Nice to meet you. Where should we send the strategy briefing and calendar link?",
+      "historyLabel": "Email saved.",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "placeholder": "name@company.com",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "phone",
+      "prompt": "Got it. And what is the best phone number to reach you on? (We keep this as a backup channel).",
+      "historyLabel": "Phone number saved.",
+      "fields": [
+        {
+          "name": "phone",
+          "type": "phone",
+          "placeholder": "+27 00 000 0000",
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "context",
+      "prompt": "Now, let's get some context. What is the name of your company and your website URL?",
+      "historyLabel": "Company details logged.",
+      "fields": [
+        {
+          "name": "company",
+          "type": "text",
+          "placeholder": "Company Name",
+          "required": true
+        },
+        {
+          "name": "website",
+          "type": "url",
+          "placeholder": "https://website.com",
+          "required": false,
+          "toggleLabel": "I don't have a website yet"
+        }
+      ],
+      "advanceButton": {
+        "label": "Next",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "challenge",
+      "prompt": "To ensure our Research Agent generates an accurate Strategy Report, we need context. Please describe what your business does, the specific challenge you are facing, and the outcome you are looking for.",
+      "historyLabel": "Challenge context received.",
+      "fields": [
+        {
+          "name": "challenge",
+          "type": "textarea",
+          "placeholder": "e.g., We are a logistics provider in SADC. We currently track fleet maintenance via spreadsheets, which results in missed services and downtime. We want to implement a digital system to automate alerts and improve fleet uptime.",
+          "minLength": 100,
+          "required": true
+        }
+      ],
+      "advanceButton": {
+        "label": "Generate Report",
+        "showOnMobile": true
+      }
+    },
+    {
+      "id": "qualification",
+      "prompt": "Almost done. To help us assign the right level of support, what is your estimated budget for this project?",
+      "historyLabel": "Budget preference logged.",
+      "fields": [
+        {
+          "name": "budget",
+          "type": "radio",
+          "options": [
+            {
+              "value": "Micro",
+              "label": "< R50k (Micro)"
+            },
+            {
+              "value": "SME",
+              "label": "R50k - R200k (SME)"
+            },
+            {
+              "value": "Corporate",
+              "label": "R200k+ (Corporate)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "prompt": "Just a quick security check to ensure you're human.",
+      "historyLabel": "Verification complete.",
+      "fields": []
+    }
+  ],
+  "success": {
+    "headline": "Thanks!",
+    "message": "We've received your info. Our team is reviewing it now and will email you shortly with the next steps.",
+    "ctaLabel": "Return Home",
+    "ctaHref": "/"
+  }
+}

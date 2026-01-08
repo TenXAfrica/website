@@ -1,0 +1,147 @@
+{
+  "slug": "idc-partner",
+  "title": "Partner Network Application",
+  "description": "Join the Ten X Africa Partner Network (Independent Digital Consultants & Specialists).",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/partner-application",
+  "trackingParams": [
+    "token",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign"
+  ],
+  "errorMessages": {
+    "invalidCaptcha": "Captcha failed. Please retry.",
+    "processingError": "We hit a snag processing your application. Try again in a minute or email hello@tenxafrica.co.za.",
+    "generic": "Transmission failed. Please retry or email hello@tenxafrica.co.za."
+  },
+  "requireTurnstile": true,
+  "backButtonHref": "/partner-network",
+  "backButtonLabel": "Back",
+  "theme": {
+    "versionTag": "V1_PARTNER_FLOW"
+  },
+  "stages": [
+    {
+      "id": "identity",
+      "prompt": "Welcome! Tell us your full name to start your Partner application.",
+      "historyLabel": "Name captured.",
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "placeholder": "Your Full Name",
+          "required": true
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "contact",
+      "prompt": "Where should we send next steps and onboarding details?",
+      "historyLabel": "Email saved.",
+      "fields": [
+        {
+          "name": "email",
+          "type": "email",
+          "placeholder": "name@company.com",
+          "required": true
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "phone",
+      "prompt": "And your best phone number? (Used for coordination only).",
+      "historyLabel": "Phone saved.",
+      "fields": [
+        {
+          "name": "phone",
+          "type": "phone",
+          "placeholder": "+27 00 000 0000",
+          "required": true
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "profile",
+      "prompt": "Quick profile: your primary specialization and any public links.",
+      "historyLabel": "Profile noted.",
+      "fields": [
+        {
+          "name": "specialization",
+          "type": "select",
+          "placeholder": "Select your specialization",
+          "required": true,
+          "options": [
+            { "value": "strategy", "label": "Strategy / Advisory" },
+            { "value": "operations", "label": "Operations" },
+            { "value": "engineering", "label": "Engineering" },
+            { "value": "data-ai", "label": "Data / AI" },
+            { "value": "design-ux", "label": "Design / UX" },
+            { "value": "pmo", "label": "PMO / Delivery" },
+            { "value": "generalist", "label": "All-rounder" }
+          ]
+        },
+        {
+          "name": "linkedin",
+          "type": "url",
+          "placeholder": "LinkedIn URL (optional)",
+          "required": false
+        },
+        {
+          "name": "portfolio",
+          "type": "url",
+          "placeholder": "Portfolio / Website (optional)",
+          "required": false
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "experience",
+      "prompt": "Tell us briefly about your experience, industries, and tools you work with.",
+      "historyLabel": "Experience captured.",
+      "fields": [
+        {
+          "name": "experience",
+          "type": "textarea",
+          "placeholder": "e.g., 6+ years implementing ERP, CRM (HubSpot/Twenty), BI (Metabase), workflow automation (n8n), in fintech and logistics.",
+          "minLength": 80,
+          "required": true
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "cv",
+      "prompt": "Upload your CV (PDF or DOCX).",
+      "historyLabel": "CV attached.",
+      "fields": [
+        {
+          "name": "cv",
+          "type": "file",
+          "placeholder": "Attach CV",
+          "helperText": "Accepted: PDF only. Max 10MB.",
+          "accept": "application/pdf,.pdf",
+          "multiple": false,
+          "required": true,
+          "maxSizeMB": 10
+        }
+      ],
+      "advanceButton": { "label": "Next", "showOnMobile": true }
+    },
+    {
+      "id": "security",
+      "prompt": "Quick verification before you submit.",
+      "historyLabel": "Verification complete.",
+      "fields": []
+    }
+  ],
+  "success": {
+    "headline": "Thanks!",
+    "message": "Your application is in. Our team will review and get back to you with next steps.",
+    "ctaLabel": "Return Home",
+    "ctaHref": "/"
+  }
+}

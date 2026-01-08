@@ -111,6 +111,7 @@ const pages = defineCollection({
             description: z.string(),
         }),
         hero: z.object({
+            tag: z.string().optional(),
             headline: z.string(),
             subheadline: z.string(),
             highlightedText: z.string().optional(),
@@ -263,6 +264,33 @@ const pages = defineCollection({
                 metrics: z.record(z.string(), z.union([z.string(), z.number()])),
             })
         ).optional(),
+        // Venture Studio Fork structure
+        foundations: z.object({
+            headline: z.string(),
+            tagline: z.string(),
+            subtitle: z.string(),
+            description: z.string(),
+            services: z.array(z.string()),
+            cta: z.object({
+                label: z.string(),
+                href: z.string(),
+            }),
+        }).optional(),
+        catalyst: z.object({
+            headline: z.string(),
+            tagline: z.string(),
+            subtitle: z.string(),
+            description: z.string(),
+            services: z.array(z.string()),
+            cta: z.object({
+                label: z.string(),
+                href: z.string(),
+            }),
+        }).optional(),
+        bridge: z.object({
+            headline: z.string(),
+            description: z.string(),
+        }).optional(),
         // Consulting page fields
         backOffice: z.object({
             title: z.string(),
@@ -284,6 +312,185 @@ const pages = defineCollection({
                 ),
             })
         ).optional(),
+        consulting: z.object({
+            // Service cards
+            services: z.array(
+                z.object({
+                    icon: z.string(),
+                    title: z.string(),
+                    description: z.string(),
+                    tags: z.array(z.string()),
+                    href: z.string().optional(),
+                })
+            ),
+            // Deep dive accordion sections
+            deepDive: z.object({
+                headline: z.string(),
+                items: z.array(
+                    z.object({
+                        title: z.string(),
+                        description: z.string(),
+                        details: z.array(z.string()),
+                    })
+                ),
+            }),
+            // Process steps
+            process: z.object({
+                headline: z.string(),
+                steps: z.array(
+                    z.object({
+                        number: z.string(),
+                        title: z.string(),
+                        description: z.string(),
+                    })
+                ),
+            }),
+            // Statistics
+            metrics: z.array(
+                z.object({
+                    metric: z.string(),
+                    label: z.string(),
+                })
+            ),
+            // Final CTA section
+            finalCta: z.object({
+                headline: z.string(),
+                description: z.string(),
+                buttonLabel: z.string(),
+                buttonHref: z.string(),
+            }),
+        }).optional(),
+        // Digital Transformation page fields
+        tag: z.string().optional(),
+        philosophy: z.object({
+            headline: z.string(),
+            description: z.string(),
+        }).optional(),
+        capabilities: z.object({
+            headline: z.string(),
+            description: z.string(),
+            cards: z.array(
+                z.object({
+                    title: z.string(),
+                    subtitle: z.string(),
+                    description: z.string(),
+                    keywords: z.array(z.string()),
+                    icon: z.string(),
+                })
+            ),
+        }).optional(),
+        comparison: z.object({
+            headline: z.string(),
+            subtitle: z.string(),
+            bottleneck: z.object({
+                title: z.string(),
+                items: z.array(z.string()),
+            }),
+            accelerator: z.object({
+                title: z.string(),
+                items: z.array(z.string()),
+            }),
+        }).optional(),
+        techStack: z.object({
+            headline: z.string(),
+            description: z.string(),
+            technologies: z.array(
+                z.object({
+                    name: z.string(),
+                    category: z.string(),
+                })
+            ),
+        }).optional(),
+        standards: z.object({
+            headline: z.string(),
+            description: z.string(),
+            certifications: z.array(
+                z.object({
+                    name: z.string(),
+                    category: z.string(),
+                })
+            ),
+        }).optional(),
+        process: z.object({
+            headline: z.string(),
+            steps: z.array(
+                z.object({
+                    number: z.string(),
+                    title: z.string(),
+                    description: z.string(),
+                })
+            ),
+        }).optional(),
+        painPoints: z.array(z.string()).optional(),
+        finalCta: z.object({
+            headline: z.string(),
+            description: z.string(),
+            buttonLabel: z.string(),
+            buttonHref: z.string(),
+            painPoints: z.array(z.string()).optional(),
+        }).optional(),
+        // Services field (used by compliance & incubation pages with different structures)
+        services: z.union([
+            // Compliance page structure
+            z.object({
+                headline: z.string(),
+                description: z.string(),
+                categories: z.array(
+                    z.object({
+                        title: z.string(),
+                        icon: z.string(),
+                        items: z.array(z.string()),
+                    })
+                ),
+            }),
+            // Incubation page structure
+            z.object({
+                headline: z.string(),
+                description: z.string().optional(),
+                cards: z.array(
+                    z.object({
+                        title: z.string(),
+                        icon: z.string(),
+                        subtitle: z.string(),
+                        description: z.string(),
+                        keywords: z.array(z.string()),
+                    })
+                ),
+            }),
+        ]).optional(),
+        // Pricing field (compliance page)
+        pricing: z.object({
+            headline: z.string(),
+            tiers: z.array(
+                z.object({
+                    name: z.string(),
+                    price: z.string(),
+                    description: z.string(),
+                    features: z.array(z.string()),
+                    featured: z.boolean().optional(),
+                    cta: z.object({
+                        label: z.string(),
+                        href: z.string(),
+                    }),
+                })
+            ),
+        }).optional(),
+        // Programs field (incubation page)
+        programs: z.object({
+            headline: z.string(),
+            description: z.string(),
+            tracks: z.array(
+                z.object({
+                    title: z.string(),
+                    icon: z.string(),
+                    stage: z.string(),
+                    duration: z.string(),
+                    investment: z.string(),
+                    deliverables: z.array(z.string()),
+                    outcomes: z.array(z.string()),
+                })
+            ),
+        }).optional(),
         // Home page fields (used only by pages/index)
         ecosystem: z.object({
             title: z.string(),
@@ -327,9 +534,34 @@ const pages = defineCollection({
         featured: z.string().optional(),
         posts: z.string().optional(),
         categories: z.array(z.string()).optional(),
+
+        // Coming Soon page fields
+        comingSoon: z.object({
+            eyebrow: z.string().optional(),
+            headline: z.string(),
+            highlight: z.string().optional(),
+            description: z.string().optional(),
+            targetDate: z.string().optional(),
+            statusText: z.string().optional(),
+            contactEmail: z.string().email().optional(),
+            primaryCta: z.object({
+                label: z.string(),
+                href: z.string(),
+            }).optional(),
+            secondaryCta: z.object({
+                label: z.string(),
+                href: z.string(),
+            }).optional(),
+            milestones: z.array(
+                z.object({
+                    label: z.string(),
+                    eta: z.string().optional(),
+                    status: z.enum(['complete', 'in-progress', 'queued']).optional(),
+                })
+            ).optional(),
+        }).optional(),
     }),
 });
-// Team members collection
 const team = defineCollection({
     type: 'data',
     schema: z.object({
@@ -341,12 +573,76 @@ const team = defineCollection({
     }),
 });
 
+// Terminal Forms collection for data-driven chat forms
+const terminal_forms = defineCollection({
+    type: 'data',
+    schema: z.object({
+        // Form metadata
+        slug: z.string(),
+        title: z.string(),
+        description: z.string().optional(),
+        
+        // Form behavior
+        webhookUrl: z.string().url(),
+        emailCheckWebhookUrl: z.string().url().optional(),
+        trackingParams: z.array(z.string()).default(['token', 'utm_source', 'utm_medium', 'utm_campaign']),
+        errorMessages: z.object({
+            invalidCaptcha: z.string().optional(),
+            processingError: z.string().optional(),
+            generic: z.string().optional(),
+        }).optional(),
+        requireTurnstile: z.boolean().default(true),
+        backButtonHref: z.string().default('/'),
+        backButtonLabel: z.string().default('Back'),
+        
+        // Theming
+        theme: z.object({
+            versionTag: z.string().default('SECURE_UPLINK_V4.2'),
+        }).optional(),
+        
+        // Stages (ordered list)
+        stages: z.array(z.object({
+            id: z.string(),
+            prompt: z.string(),
+            historyLabel: z.string(),
+            fields: z.array(z.object({
+                name: z.string(),
+                type: z.enum(['text', 'email', 'phone', 'url', 'textarea', 'radio', 'select', 'file']),
+                placeholder: z.string().optional(),
+                label: z.string().optional(),
+                required: z.boolean().optional(),
+                minLength: z.number().optional(),
+                options: z.array(z.object({
+                    value: z.string(),
+                    label: z.string(),
+                })).optional(),
+                toggleLabel: z.string().optional(),
+                // File-specific options
+                accept: z.string().optional(),
+                multiple: z.boolean().optional(),
+                maxSizeMB: z.number().optional(),
+                helperText: z.string().optional(),
+            })).optional(),
+            advanceButton: z.object({
+                label: z.string().optional(),
+                showOnMobile: z.boolean().optional(),
+            }).optional(),
+        })),
+        
+        // Success state
+        success: z.object({
+            headline: z.string(),
+            message: z.string(),
+            ctaLabel: z.string().optional(),
+            ctaHref: z.string().optional(),
+        }),
+    }),
+});
+
 export const collections = {
-    ventures,
-    consultants,
-    impact_stories,
     insights,
     settings,
     pages,
     team,
+    terminal_forms,
 };

@@ -51,7 +51,7 @@ export const BentoGrid: React.FC = () => {
             {/* =========================================
                 Tile 2: Catalyst (Image Only, Updated Hover)
             ========================================= */}
-            <a href="/catalyst" className="contents">
+            <a href="/venture-studio" className="contents">
             <GlassCard className="col-span-1 md:col-span-1 lg:col-span-1 min-h-[300px] relative overflow-hidden group cursor-pointer">
 
                 {/* --- Image Layer --- */}
@@ -67,9 +67,9 @@ export const BentoGrid: React.FC = () => {
                 </div>
 
                 <div className="relative z-20 h-full flex flex-col justify-end">
-                    <h3 className="text-xl font-heading font-bold mb-2 text-white group-hover:text-tenx-gold transition-colors">Catalyst</h3>
+                    <h3 className="text-xl font-heading font-bold mb-2 text-white group-hover:text-tenx-gold transition-colors">Venture Studio</h3>
                     <p className="text-xs text-white/80 leading-relaxed">
-                        Empowering 50K+ lives through sustainable tech.
+                        Empowering lives through sustainable tech.
                     </p>
                 </div>
 
@@ -106,12 +106,12 @@ export const BentoGrid: React.FC = () => {
             {/* =========================================
                 Tile 4: Network (Text Only - No changes)
             ========================================= */}
-            <a href="/network" className="contents">
+            <a href="/partner-network" className="contents">
             <GlassCard className="col-span-1 md:col-span-2 lg:col-span-4 min-h-[auto] md:min-h-[200px] flex flex-col md:flex-row items-start md:items-center justify-between p-6 md:px-10 gap-6 border-white/10 bg-obsidian-void/60 bg-gradient-to-r from-obsidian-void to-slate-teal/20">
                 <div className="max-w-xl">
                     <h3 className="text-2xl md:text-3xl font-heading font-bold mb-2 text-white">THE IDC NETWORK</h3>
                     <p className="text-white/60 text-sm md:text-base">
-                        Join 500+ elite consultants powering the continent's growth.
+                        Join elite consultants powering the continent's growth.
                     </p>
                 </div>
 
