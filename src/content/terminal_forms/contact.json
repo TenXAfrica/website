@@ -2,7 +2,7 @@
   "slug": "contact",
   "title": "Contact Us",
   "description": "Get in touch with the Ten X Africa team.",
-  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/contact-form-submission",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook/contact-form",
   "trackingParams": [
     "token",
     "utm_source",

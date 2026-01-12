@@ -197,6 +197,24 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     };
 
+    // Normalize a website/url to bare domain (e.g., https://www.example.com/path -> example.com)
+    const normalizeWebsite = (value: string): string => {
+        const trimmed = (value || '').trim();
+        if (!trimmed) return '';
+        const prefixed = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+        try {
+            const url = new URL(prefixed);
+            const hostname = url.hostname.replace(/^www\./i, '');
+            return hostname || '';
+        } catch {
+            // Fallback: strip protocol/www and path heuristically
+            return trimmed
+                .replace(/^https?:\/\/?/i, '')
+                .replace(/^www\./i, '')
+                .split('/')[0];
+        }
+    };
+
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -365,8 +383,17 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
             }
             
             // Build clean payload with no duplicates - separate form data from metadata
+            // Ensure `website` is explicitly sent as empty string when not provided
+            const sanitizedFormData: Record<string, string> = { ...formData };
+            const hasWebsiteField = config.stages.some(s => s.fields?.some(f => f.name === 'website'));
+            if (hasWebsiteField) {
+                const isWebsiteToggledOff = Boolean(toggledFields['website']);
+                const currentWebsite = sanitizedFormData['website'] || '';
+                sanitizedFormData['website'] = isWebsiteToggledOff ? '' : normalizeWebsite(currentWebsite);
+            }
+
             const payload: any = {
-                formData: formData,
+                formData: sanitizedFormData,
                 metadata: {
                     submittedAt: new Date().toISOString(),
                     source: `terminal-form-${config.slug}`,
@@ -416,11 +443,6 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
             console.log('Payload:', payload);
             console.log('================================');
 
-            // TODO: Remove this return statement once backend is ready
-            setSubmitStatus('success');
-            setIsSubmitting(false);
-            return;
-
             const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -453,6 +475,7 @@ export const TerminalFormChat: React.FC<TerminalFormChatProps> = ({ config }) =>
         } catch (err: any) {
             setSubmitStatus('error');
             setErrorMessage(err?.message || 'TRANSMISSION_FAILED. RETRY?');
+        } finally {
             setIsSubmitting(false);
         }
     };

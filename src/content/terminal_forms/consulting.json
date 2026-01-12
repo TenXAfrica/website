@@ -2,8 +2,7 @@
   "slug": "consulting",
   "title": "Consulting Scoping",
   "description": "Let's see if we can help. Chat with our assistant to scope your project.",
-  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/consulting-form-submission",
-  "emailCheckWebhookUrl": "https://n8n.tenxafrica.co.za/webhook/check-email",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook/consulting-form",
   "trackingParams": [
     "token",
     "utm_source",
@@ -51,19 +50,19 @@
           "required": true,
           "options": [
             {
-              "value": "digital-transformation",
+              "value": "Digital-transformation",
               "label": "Digital Transformation"
             },
             {
-              "value": "operations-excellence",
+              "value": "Operations-excellence",
               "label": "Operations Excellence"
             },
             {
-              "value": "tech-implementation",
+              "value": "Tech-implementation",
               "label": "Tech Implementation"
             },
             {
-              "value": "all",
+              "value": "All",
               "label": "All of the above"
             }
           ]
@@ -160,15 +159,15 @@
           "type": "radio",
           "options": [
             {
-              "value": "Micro",
+              "value": "50000",
               "label": "< R50k (Micro)"
             },
             {
-              "value": "SME",
+              "value": "200000",
               "label": "R50k - R200k (SME)"
             },
             {
-              "value": "Corporate",
+              "value": "300000",
               "label": "R200k+ (Corporate)"
             }
           ]

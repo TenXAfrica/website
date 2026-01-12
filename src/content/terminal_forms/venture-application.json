@@ -2,8 +2,7 @@
   "slug": "venture-application",
   "title": "Venture Studio Application",
   "description": "Start your journey. We stress-test ideas for Founders and analyze growth gaps for SMEs.",
-  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/venture-form-submission",
-  "emailCheckWebhookUrl": "https://n8n.tenxafrica.co.za/webhook/check-email",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook/venture-studio-form",
   "trackingParams": [
     "token",
     "utm_source",
@@ -154,14 +153,15 @@
     },
     {
       "id": "documents",
-      "prompt": "Do you have an existing Pitch Deck or Financial Model hosted online? (Optional)",
-      "historyLabel": "Documentation linked.",
+      "prompt": "Do you have an existing Pitch Deck or Financial Model? Upload a PDF file. (Optional)",
+      "historyLabel": "Documentation uploaded.",
       "fields": [
         {
-          "name": "deck_url",
-          "type": "url",
-          "placeholder": "Link to Drive/DocSend (Optional)",
-          "required": false
+          "name": "deck_upload",
+          "type": "file",
+          "placeholder": "Upload PDF (Optional)",
+          "required": false,
+          "accept": "application/pdf"
         }
       ],
       "advanceButton": {

@@ -2,7 +2,7 @@
   "slug": "idc-partner",
   "title": "Partner Network Application",
   "description": "Join the Ten X Africa Partner Network (Independent Digital Consultants & Specialists).",
-  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook-test/partner-application",
+  "webhookUrl": "https://n8n.tenxafrica.co.za/webhook/idc-form",
   "trackingParams": [
     "token",
     "utm_source",
@@ -115,7 +115,7 @@
     },
     {
       "id": "cv",
-      "prompt": "Upload your CV (PDF or DOCX).",
+      "prompt": "Upload your CV (PDF).",
       "historyLabel": "CV attached.",
       "fields": [
         {
