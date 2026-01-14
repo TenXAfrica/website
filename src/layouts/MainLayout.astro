@@ -79,7 +79,15 @@ const { navigation, footer } = siteConfig.data;
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
-			gtag('config', 'G-DSYSCC30V3');
+			gtag('config', 'G-DSYSCC30V3', {
+				'debug_mode': true,
+				'anonymize_ip': false,
+				'allow_google_signals': true,
+				'allow_ad_personalization_signals': true
+			});
+			// Log to console for debugging
+			console.log('Google Analytics initialized with ID: G-DSYSCC30V3');
+			console.log('Data layer:', window.dataLayer);
 		</script>
 
 		<!-- Organization Structured Data -->
