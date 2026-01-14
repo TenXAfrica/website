@@ -2,6 +2,7 @@
 import { CanvasHero } from "../components/CanvasHero";
 import { Navigation } from "../components/MobileMenu";
 import { GetStartedModalController } from "../components/GetStartedModalController";
+import { CookiesBanner } from "../components/CookiesBanner";
 import "../styles/global.css";
 import { getEntry } from "astro:content";
 
@@ -33,25 +34,89 @@ const { navigation, footer } = siteConfig.data;
 <html lang="en" class="scroll-smooth">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<title>{title} | Ten X Africa</title>
 
-		<!-- Google Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<!-- Preconnect for performance -->
+		<link rel="preconnect" href="https://www.googletagmanager.com" />
+		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+		<!-- Critical inline CSS for above-the-fold content -->
+		<style is:inline>
+			body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0f14;color:#F4F4F9;margin:0}
+			.hero-skeleton{min-height:100vh;display:flex;align-items:center;justify-content:center}
+			@font-face{font-family:'Inter-fallback';size-adjust:106.84%;ascent-override:95%;src:local('Arial')}
+			@font-face{font-family:'Outfit-fallback';size-adjust:100%;ascent-override:100%;src:local('Arial')}
+		</style>
+
+		<!-- Google Fonts with optimized loading strategy -->
+		<link
+			rel="preload"
+			as="style"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+		/>
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
 			rel="stylesheet"
+			media="print" 
+			onload="this.media='all';this.onload=null"
 		/>
+		<noscript>
+			<link
+				href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+				rel="stylesheet"
+			/>
+		</noscript>
+
+		<!-- Google tag (gtag.js) - Deferred for performance -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-DSYSCC30V3"></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'G-DSYSCC30V3');
+		</script>
+
+		<!-- Organization Structured Data -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "Organization",
+				"name": "Ten X Africa",
+				"url": "https://tenxafrica.co.za",
+				"logo": "https://tenxafrica.co.za/logo.png",
+				"description": "Strategy. Technology. Capital. Impact. Driving sustainable development and digital transformation in Africa.",
+				"sameAs": [
+					"https://www.linkedin.com/company/tenxafrica",
+					"https://twitter.com/tenxafrica"
+				],
+				"contactPoint": {
+					"@type": "ContactPoint",
+					"email": "hello@tenxafrica.co.za",
+					"contactType": "Business Inquiries"
+				},
+				"address": {
+					"@type": "PostalAddress",
+					"addressCountry": "ZA"
+				}
+			}
+		</script>
+
+		<slot name="head" />
 	</head>
 	<body
 		class="bg-obsidian-void text-vapor-white min-h-screen flex flex-col overflow-x-hidden selection:bg-tenx-gold selection:text-obsidian-void"
 	>
 		<!-- Get Started Modal Controller -->
-		<GetStartedModalController client:load />
+		<GetStartedModalController client:idle />
+
+		<!-- Cookies Banner -->
+		<CookiesBanner client:idle />
 
 		<!-- Sticky Glass Nav -->
 		<nav
@@ -66,6 +131,10 @@ const { navigation, footer } = siteConfig.data;
 					src={logoImage.src}
 					alt="TEN X Logo"
 					class="h-10 w-auto object-contain"
+					loading="eager"
+					decoding="async"
+					width="40"
+					height="40"
 				/>
 				<span class="hidden sm:inline">Ten X Africa</span>
 			</a>
@@ -168,7 +237,7 @@ const { navigation, footer } = siteConfig.data;
 			</div>
 
 			<!-- Mobile Menu Toggle -->
-			<Navigation client:load navLinks={navigation} onGetStartedClick={() => {
+			<Navigation client:idle navLinks={navigation} onGetStartedClick={() => {
 				const btn = document.getElementById('get-started-btn');
 				btn?.click();
 			}} />
@@ -183,7 +252,7 @@ const { navigation, footer } = siteConfig.data;
 		>
 			<!-- Footer Mesh (Chaos Mode) -->
 			<CanvasHero
-				client:only="react"
+				client:visible
 				variant="chaos"
 				className="absolute inset-0 z-0 opacity-50"
 			/>
@@ -198,6 +267,10 @@ const { navigation, footer } = siteConfig.data;
 							src={logoImage.src}
 							alt="TEN X Logo"
 							class="h-10 w-auto object-contain"
+							loading="lazy"
+							decoding="async"
+							width="40"
+							height="40"
 						/>
 						<span class="hidden sm:inline">Ten X Africa</span>
 					</a>

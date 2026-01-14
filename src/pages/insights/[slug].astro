@@ -1,5 +1,6 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
+import SEOHead from "../../components/SEOHead.astro";
 import { GlassCard } from "../../components/GlassCard";
 import { GoldButton } from "../../components/GoldButton";
 import { getCollection, type CollectionEntry } from "astro:content";
@@ -30,6 +31,21 @@ const { Content } = await entry.render();
 ---
 
 <MainLayout title={data.title} description={data.excerpt}>
+    <SEOHead
+        slot="head"
+        title={data.title}
+        description={data.excerpt}
+        image={data.image?.src}
+        imageAlt={data.image?.alt}
+        publishedDate={data.publishedAt.toISOString()}
+        author={{
+            name: data.author.name,
+            role: data.author.role
+        }}
+        tags={data.tags}
+        type="article"
+        canonicalURL={`https://tenxafrica.co.za/insights/${slug}`}
+    />
     <article class="relative min-h-screen">
         <!-- Hero Image -->
         <div class="relative h-[40vh] md:h-[50vh] overflow-hidden">

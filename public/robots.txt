@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin or private pages if any
+# Disallow: /admin/
+
+# Sitemap
+Sitemap: https://tenxafrica.co.za/sitemap-index.xml

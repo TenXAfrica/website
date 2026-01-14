@@ -1,4 +1,5 @@
 ---
+import { CookiesBanner } from "../components/CookiesBanner";
 import "../styles/global.css";
 
 interface Props {
@@ -14,23 +15,57 @@ const { title, description = "Ten X Africa - Digital Consulting Terminal" } =
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title} | Ten X Africa</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Critical inline CSS -->
+    <style is:inline>
+      body{font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0f14;color:#F4F4F9;margin:0}
+    </style>
+
+    <!-- Google Fonts with font-display swap -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
+      media="print" 
+      onload="this.media='all';this.onload=null"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Google tag (gtag.js) - Deferred -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DSYSCC30V3"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-DSYSCC30V3');
+    </script>
   </head>
   <body
     class="bg-obsidian-void text-vapor-white min-h-screen flex flex-col overflow-x-hidden selection:bg-tenx-gold selection:text-obsidian-void"
   >
+    <!-- Cookies Banner -->
+    <CookiesBanner client:idle />
+    
     <main class="flex-grow relative">
       <slot />
     </main>

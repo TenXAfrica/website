@@ -22,9 +22,9 @@ const { data } = homePage;
 
 <MainLayout title={data.seo.title} description={data.seo.description}>
 	<div class="relative w-full min-h-screen flex flex-col">
-		<!-- Canvas Background -->
+		<!-- Canvas Background - Loads during idle time for better performance -->
 		<CanvasHero
-			client:only="react"
+			client:idle
 			variant="shape"
 			className="fixed inset-0 z-0"
 		/>
@@ -35,7 +35,7 @@ const { data } = homePage;
 		>
 			<div class="max-w-4xl mx-auto space-y-6">
 				<!-- Animated Pill -->
-				<SystemStatusPill client:load />
+				<SystemStatusPill client:idle />
 
 				<h1
 					class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter leading-tight text-white mb-6"
@@ -57,12 +57,12 @@ const { data } = homePage;
 					class="flex flex-col md:flex-row gap-4 justify-center pt-8"
 				>
 					<a href={data.hero.primaryCta!.href}>
-						<GoldButton client:load
+						<GoldButton client:idle
 							>{data.hero.primaryCta!.label}</GoldButton
 						>
 					</a>
 					<a href={data.hero.secondaryCta!.href}>
-						<GoldButton variant="outline" client:load
+						<GoldButton variant="outline" client:idle
 							>{data.hero.secondaryCta!.label}</GoldButton
 						>
 					</a>
