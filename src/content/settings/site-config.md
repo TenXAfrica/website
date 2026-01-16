@@ -5,10 +5,10 @@ navigation:
   - label: CONSULTING
     href: /consulting
     children:
-      - label: DIGITAL TRANSFORMATION
-        href: /consulting/digital-transformation
       - label: OPERATIONS EXCELLENCE
         href: /consulting/operations-excellence
+      - label: DIGITAL TRANSFORMATION
+        href: /consulting/digital-transformation
       - label: TECH IMPLEMENTATION
         href: /consulting/tech-implementation
   - label: VENTURE STUDIO
