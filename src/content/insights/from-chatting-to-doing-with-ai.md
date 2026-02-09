@@ -31,6 +31,8 @@ But the good news is that AI is evolving fast. We are moving past the phase of j
 
 This is the shift to **Agentic AI**. And for African businesses looking for efficiency and a competitive edge, this changes everything.
 
+![Agentic AI illustration](/assets/insights/agentic-ai.png)
+
 ## The Big Picture: Understanding the Evolution
 
 At Ten X Africa, we spend a lot of time demystifying technology. The easiest way to understand where we are going is to look at where we've come from. Think of AI as having layers, like an onion.
