@@ -69,7 +69,7 @@ export const BentoGrid: React.FC = () => {
                 <div className="relative z-20 h-full flex flex-col justify-end">
                     <h3 className="text-xl font-heading font-bold mb-2 text-white group-hover:text-tenx-gold transition-colors">Venture Studio</h3>
                     <p className="text-xs text-white/80 leading-relaxed">
-                        Empowering lives through sustainable tech.
+                        Finding and nurturing Africa's next big tech ventures.
                     </p>
                 </div>
 
@@ -97,7 +97,7 @@ export const BentoGrid: React.FC = () => {
                 <div className="relative z-20 h-full flex flex-col justify-end">
                     <h3 className="text-xl font-heading font-bold mb-2 text-white group-hover:text-tenx-gold transition-colors">Impact</h3>
                     <p className="text-xs text-white/80 leading-relaxed">
-                        Empowering 50K+ lives through sustainable tech.
+                        Empowering lives through sustainable tech.
                     </p>
                 </div>
             </GlassCard>
