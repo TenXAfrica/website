@@ -30,12 +30,13 @@ lead half-written into Twenty is worth far more than a lead rejected because a
 Validates the payload defensively (it is public browser input), scores it with
 `scoreSelfServe`, then writes, in order and tolerating partial failure:
 
-1. **Company** — reused if one already matches on domain or name, otherwise
-   created with `size`, `sector`, `signals`, `fitScore`, `relationship:
-   PROSPECT`, `address.addressCountry`, and `contactConsent` set to
-   `CONSENTED` when they ticked the box and `ASKED` when they did not.
-2. **Person** — reused if one already has that primary email, otherwise
-   created and linked to the Company as `DECISION_MAKER`.
+1. **Company** — reused only when the submitter is entitled to it (see *Who a
+   submission is allowed to touch* below), otherwise created with `size`,
+   `sector`, `signals`, `fitScore`, `relationship: PROSPECT`,
+   `address.addressCountry`, and `contactConsent` set to `CONSENTED` when they
+   ticked the box and `ASKED` when they did not.
+2. **Person** — reused only when they are unattached or already belong to the
+   resolved Company, otherwise created and linked as `DECISION_MAKER`.
 3. **Opportunity** — `"<Company> — Digital Maturity Score <overall>"`, stage
    `NEW`, source `INBOUND`, service line `AI_SYSTEM`, deal type `PROJECT`.
    `need` is their own words for the biggest time-sink, falling back to the
@@ -43,11 +44,48 @@ Validates the payload defensively (it is public browser input), scores it with
 4. **Note** — the human-readable score report, then three `noteTargets`
    linking it to the Company, the Person and the Opportunity.
 5. **Task** — `"@claude Follow up DMA score: <Company>"`, `TODO`, due the next
-   working day, plus task targets on the Company and Opportunity.
+   working day, plus task targets on the Company and Opportunity. Every piece
+   of submitter-controlled text in a Note or Task **title or body** is escaped
+   first: that body is the brief an unattended routine reads, so an unescaped
+   name is an injection into Claude's own work queue.
 
 The response is `{ok: true, result: ScoreResult}` and nothing else. **No CRM
 ids are ever returned to the browser**, so the result page renders without a
 second round trip and without learning anything about the CRM.
+
+### Who a submission is allowed to touch
+
+A submission can only reuse an existing Company when the submitter has shown
+some connection to it. A domain match is trusted. A bare **name** match is
+not — anyone can type a known client's company name — so it is only trusted
+when the submitter's own email domain matches the domain already on that
+Company. Otherwise a separate record is created. Person reuse works the same
+way: an existing Person is reused only when they are unattached or already
+belong to the resolved Company.
+
+The cost is worth naming: two legitimate submissions from the same company,
+neither giving a website, now create two Companies. Deduplicating those by
+hand is a chore; silently welding a stranger onto a client's record is a
+breach.
+
+### Opt-out
+
+Per CLAUDE.md, an opt-out means never contact again. If the matched Company
+is `OPTED_OUT`, the score Note is still written — the submission happened and
+the Note is the evidence — but the task becomes
+`@claude OPTED OUT - do not contact: <name>` and its first body line says so,
+so a downstream routine cannot read it as an instruction to draft an invite.
+
+### If the CRM is down
+
+"Never lose a lead" has to mean something. If neither the Note nor the Task
+landed, nothing in the CRM records the submission and the submitter has
+already been told it worked. That case logs
+`selfserve-lead-recovery-required` at error level carrying the whole
+validated submission, **including the email address** — `redact()` takes an
+option to keep it, because a redacted copy of a lost lead is worthless. There
+is a TODO to stash the raw submission in KV once the namespace exists, so
+recovery stops depending on log retention.
 
 ### `POST /api/dma/full`
 
@@ -58,8 +96,9 @@ Company when `companyId` was given), PATCHes the Opportunity to `QUALIFIED`,
 and raises `"@claude Process DMA: <companyName>"`.
 
 The `@claude Process DMA` routine parses that JSON block, so `src/notes.ts`
-escapes backticks inside the payload as ```. An interviewer who pastes a
-code fence into their notes cannot close the block early, and the routine's
+escapes backticks inside the payload as the JSON escape `u0060` (backslash
+included). An interviewer who pastes a code fence into their notes cannot
+close the block early, and the routine's
 `JSON.parse` still sees the original text. There is a test for exactly this.
 
 ## Secrets
@@ -124,9 +163,15 @@ allows the request.
 
 ## CORS
 
-Allowed: `https://tenxafrica.co.za`, `https://www.tenxafrica.co.za`, any
-`*.pages.dev` preview, and `http://localhost:4321` for `astro dev`. `OPTIONS`
-preflight is handled; anything else gets a 403 with no CORS headers.
+Allowed: `https://tenxafrica.co.za`, `https://www.tenxafrica.co.za`, and
+`http://localhost:4321` for `astro dev`. `OPTIONS` preflight is handled;
+anything else gets a 403 with no CORS headers.
+
+There is deliberately **no `*.pages.dev` wildcard**. pages.dev is open
+registration, so a wildcard over it is not an allowlist — anyone can claim a
+subdomain and be trusted. The site deploys to GitHub Pages and does not need
+it. If a Cloudflare Pages preview is ever wanted, name that exact origin in
+the `ALLOWED_PREVIEW_ORIGINS` var (comma-separated, exact origins only).
 
 A request with **no** `Origin` header is allowed through, because that is what
 server-to-server callers look like — `curl`, and Joash's internal DMA tool.
@@ -136,7 +181,7 @@ Those are gated on the admin bearer instead.
 
 ```bash
 npm install
-npx vitest run     # 158 tests, no network
+npx vitest run     # 195 tests, no network
 npm run typecheck  # tsc --noEmit
 npm run dev        # wrangler dev, needs .dev.vars
 ```
@@ -158,8 +203,13 @@ exactly that reason.
   100 and recommends nothing.
 - `notes.test.ts` — markdown rendering, escaping of hostile free text, and the
   JSON block round-tripping for the processing routine.
-- `router.test.ts` — CORS allowlist, the constant-time admin bearer check,
-  Turnstile verification, rate limiting, and the client's timeout and retry.
+- `router.test.ts` — CORS allowlist (including that no pages.dev subdomain is
+  trusted by wildcard), the admin bearer check, Turnstile verification and its
+  hostname check, rate limiting, body-size and Content-Length gating, filter
+  round-tripping, and the client's timeout and retry.
+- `crmwrites.test.ts` — the write sequence against a fake Twenty: record
+  hijack via a name match, opt-out handling, injection into a task body, and
+  the lead-recovery log when every CRM write fails.
 
 ## Layout
 
