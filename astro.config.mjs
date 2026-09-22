@@ -49,6 +49,9 @@ export default defineConfig({
       changefreq: 'weekly',
       priority: 0.7,
       lastmod: new Date(),
+      // /internal/* is Joash's tooling, not marketing. The pages also carry
+      // a noindex meta tag; this keeps them out of the sitemap as well.
+      filter: (page) => !page.includes('/internal/'),
       customPages: [
         'https://tenxafrica.co.za',
         'https://tenxafrica.co.za/consulting',
