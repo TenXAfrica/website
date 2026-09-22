@@ -49,6 +49,8 @@ const description =
 	   -------------------------------------------------------------- */
 
 	.dma-shell {
+		/* Each step should own the screen, so the footer stays below it. */
+		min-height: calc(100svh - 80px);
 		padding-left: max(1.25rem, env(safe-area-inset-left));
 		padding-right: max(1.25rem, env(safe-area-inset-right));
 		padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5rem));
@@ -63,14 +65,27 @@ const description =
 
 	/* ---- Focus ------------------------------------------------- */
 
-	.dma-option:focus-visible,
 	.dma-button-primary:focus-visible,
 	.dma-button-quiet:focus-visible,
 	.dma-inline-link:focus-visible,
-	.dma-checkbox:focus-visible,
-	.dma-result:focus-visible {
+	.dma-checkbox:focus-visible {
 		outline: 2px solid #d68614;
 		outline-offset: 3px;
+	}
+
+	/* Answer cards get a white ring rather than a gold one: gold already
+	   means "chosen" here, and a gold ring on an unchosen card reads as a
+	   selection that was never made. */
+	.dma-option:focus-visible {
+		outline: 2px solid #f4f4f9;
+		outline-offset: 2px;
+	}
+
+	/* The result container is only focused to move the reading position
+	   after submit. It is not an interactive control, so it gets no ring. */
+	.dma-result:focus,
+	.dma-result:focus-visible {
+		outline: none;
 	}
 
 	/* ---- Answer cards ------------------------------------------ */
@@ -212,12 +227,25 @@ const description =
 	   chrome and flips to ink on paper.
 	   ------------------------------------------------------------- */
 
+	.dma-print-only {
+		display: none;
+	}
+
 	@media print {
+		/* body > astro-island is the site chrome (cookie notice, the get
+		   started modal). The assessment island lives inside <main>. */
 		nav,
 		footer,
+		body > astro-island,
+		astro-dev-toolbar,
 		.dma-no-print,
+		.dma-button-quiet,
 		.sr-only {
 			display: none !important;
+		}
+
+		.dma-print-only {
+			display: block;
 		}
 
 		html,
@@ -231,27 +259,33 @@ const description =
 		}
 
 		.dma-shell {
+			min-height: 0 !important;
 			max-width: none !important;
 			padding: 0 !important;
 		}
 
-		.dma-result,
-		.dma-result h1,
-		.dma-result h2,
-		.dma-result h3,
-		.dma-result p,
-		.dma-result li,
-		.dma-result span {
+		/* Every step has to survive Ctrl+P, not just the result, so the
+		   whole island flips to ink rather than only .dma-result. */
+		.dma-shell,
+		.dma-shell * {
 			color: #12171c !important;
+			border-color: #d5d5da !important;
 		}
 
-		.dma-result .text-tenx-gold {
+		.dma-shell .text-tenx-gold {
 			color: #8a5a0d !important;
 		}
 
-		.dma-result section {
-			border-color: #d5d5da !important;
+		.dma-shell section {
 			page-break-inside: avoid;
+		}
+
+		.dma-button-primary {
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+			background-color: #8a5a0d !important;
+			border-color: #8a5a0d !important;
+			color: #ffffff !important;
 		}
 
 		.dma-bar-track {

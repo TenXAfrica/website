@@ -99,6 +99,12 @@ export const SelfServeAssessment: React.FC = () => {
   const advanceTimer = useRef<number | undefined>(undefined);
   const resultRef = useRef<HTMLDivElement | null>(null);
   const hasStarted = useRef(false);
+  /**
+   * Focus only follows the step when the person is driving from the
+   * keyboard. A pointer user who lands on a freshly focused answer card
+   * reads the ring as "this one is already picked", which it is not.
+   */
+  const keyboardNav = useRef(false);
 
   const question = SELF_SERVE_QUESTIONS[questionIndex];
   const result = serverResult ?? localResult;
@@ -108,13 +114,19 @@ export const SelfServeAssessment: React.FC = () => {
   /* ---------------------------------------------------------------- */
 
   useEffect(() => {
-    const decoded = decodeAnswers(window.location.hash);
-    if (!decoded || !selfServeIsComplete(decoded)) return;
-    hasStarted.current = true;
-    setAnswers(decoded);
-    setLocalResult(scoreSelfServe(decoded));
-    setSaveState('restored');
-    setPhase('result');
+    const rehydrate = () => {
+      const decoded = decodeAnswers(window.location.hash);
+      if (!decoded || !selfServeIsComplete(decoded)) return;
+      hasStarted.current = true;
+      setAnswers(decoded);
+      setLocalResult(scoreSelfServe(decoded));
+      setSaveState('restored');
+      setPhase('result');
+    };
+    rehydrate();
+    // A same-document hash change never remounts us, so catch it too.
+    window.addEventListener('hashchange', rehydrate);
+    return () => window.removeEventListener('hashchange', rehydrate);
   }, []);
 
   /* Score locally as soon as the last question lands. */
@@ -139,9 +151,11 @@ export const SelfServeAssessment: React.FC = () => {
     setLive(`Question ${questionIndex + 1} of ${TOTAL}`);
 
     if (hasStarted.current) {
-      window.requestAnimationFrame(() => {
-        optionRefs.current[next]?.focus({ preventScroll: true });
-      });
+      if (keyboardNav.current) {
+        window.requestAnimationFrame(() => {
+          optionRefs.current[next]?.focus({ preventScroll: true });
+        });
+      }
       window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
     }
     // Answers deliberately excluded: re-running on every pick would steal focus.
@@ -405,10 +419,12 @@ export const SelfServeAssessment: React.FC = () => {
   /* Derived                                                           */
   /* ---------------------------------------------------------------- */
 
+  /* The contact step is the thirteenth screen, so the bar never sits at
+     zero on question one and never hits full before the end. */
   const progress =
     phase === 'contact' || phase === 'result'
       ? 100
-      : Math.round((questionIndex / TOTAL) * 100);
+      : Math.round(((questionIndex + 1) / (TOTAL + 1)) * 100);
 
   const mailtoHref = useMemo(() => {
     if (!result) return `mailto:${CONTACT_EMAIL}`;
@@ -438,7 +454,22 @@ export const SelfServeAssessment: React.FC = () => {
   /* ---------------------------------------------------------------- */
 
   return (
-    <div className="dma-shell mx-auto w-full max-w-[44rem] px-5 pt-10 pb-24 sm:px-8 sm:pt-16">
+    <div
+      className="dma-shell mx-auto w-full max-w-[44rem] px-5 pt-10 pb-24 sm:px-8 sm:pt-16"
+      onPointerDownCapture={() => {
+        keyboardNav.current = false;
+      }}
+      onKeyDownCapture={(event) => {
+        if (
+          event.key === 'Tab' ||
+          event.key === 'Enter' ||
+          event.key === ' ' ||
+          event.key.startsWith('Arrow')
+        ) {
+          keyboardNav.current = true;
+        }
+      }}
+    >
       <p className="sr-only" role="status" aria-live="polite">
         {live}
       </p>
@@ -1006,7 +1037,7 @@ const Result: React.FC<{
       )}
     </section>
 
-    <section className="dma-no-print mt-14 border border-tenx-gold/35 p-6 sm:p-8">
+    <section className="mt-14 border border-tenx-gold/35 p-6 sm:p-8">
       <h2 className={SECTION_HEADING}>Book your full assessment</h2>
       <p className="mt-3 font-sans text-[0.9375rem] leading-relaxed text-white/75">
         Twelve questions can only get you so far. On the call we go through the
@@ -1027,7 +1058,15 @@ const Result: React.FC<{
         Free · 45 minutes · on Teams, at a time you choose
         <span className="sr-only"> (opens in a new tab)</span>
       </p>
+      <p className="dma-print-only mt-3 font-sans text-[0.8125rem] break-all">
+        {BOOKING_URL}
+      </p>
     </section>
+
+    <p className="dma-print-only mt-10 border-t pt-4 font-sans text-[0.75rem] leading-relaxed">
+      Ten X Africa (Pty) Ltd, 9 Roosevelt Street, Robindale Ext 1, Randburg,
+      Johannesburg, 2194, South Africa · {CONTACT_EMAIL} · tenxafrica.co.za
+    </p>
 
     <div className="dma-no-print mt-10 border-t border-white/10 pt-6">
       <SaveNote state={saveState} mailtoHref={mailtoHref} />
