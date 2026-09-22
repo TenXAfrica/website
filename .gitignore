@@ -31,6 +31,7 @@ worker/.dev.vars
 worker/.dev.vars.*
 !worker/.dev.vars.example
 .wrangler/
+worker/.wrangler/
 
 # local verification screenshots
 .screenshots/

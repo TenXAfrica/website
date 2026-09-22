@@ -1,0 +1,20 @@
+{
+  "name": "tenx-dma-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cloudflare Worker: Digital Maturity Assessment intake -> Twenty CRM",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250920.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9",
+    "wrangler": "^3.114.14"
+  }
+}

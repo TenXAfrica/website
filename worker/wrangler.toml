@@ -1,0 +1,54 @@
+# Ten X Africa -- Digital Maturity Assessment intake Worker.
+#
+# Secrets are NOT in this file and must never be. Push them with:
+#   pwsh scripts/push-worker-secret.ps1                            # TWENTY_API_KEY
+#   pwsh scripts/push-worker-secret.ps1 -Name TURNSTILE_SECRET_KEY
+#   pwsh scripts/push-worker-secret.ps1 -Name DMA_ADMIN_TOKEN
+
+name = "tenx-dma"
+main = "src/index.ts"
+compatibility_date = "2026-09-22"
+workers_dev = false
+
+# Cloudflare account "Ten X Africa - Main". An account id is not a secret and
+# belongs in this file; it just saves wrangler an interactive account prompt.
+account_id = "b9cdaef0ff634f13dfbc1261e8723051"
+
+[observability]
+enabled = true
+
+[vars]
+# Non-secret configuration only.
+TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
+WORKER_VERSION = "dma-worker-0.1.0"
+
+# --------------------------------------------------------------------------
+# TODO(Joash): the KV namespace below does not exist yet. Before the first
+# deploy, run:
+#
+#   cd worker
+#   npx wrangler kv namespace create DMA_RATELIMIT
+#   npx wrangler kv namespace create DMA_RATELIMIT --preview
+#
+# and paste the two ids wrangler prints over the placeholders. Until then the
+# Worker still runs: src/index.ts treats a missing binding as "allow" and logs
+# a warning, because losing a lead is worse than serving a duplicate.
+# --------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "DMA_RATELIMIT"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_PREVIEW_NAMESPACE_ID"
+
+# --------------------------------------------------------------------------
+# TODO(Joash): attach a route once the Worker is deployed and you are happy
+# with it. The site is on GitHub Pages behind Cloudflare, so the Worker takes
+# the /api/* path on the apex zone:
+#
+# [[routes]]
+# pattern = "tenxafrica.co.za/api/*"
+# zone_name = "tenxafrica.co.za"
+#
+# [[routes]]
+# pattern = "www.tenxafrica.co.za/api/*"
+# zone_name = "tenxafrica.co.za"
+# --------------------------------------------------------------------------
