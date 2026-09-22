@@ -385,7 +385,7 @@ describe('submitter text cannot forge instructions in a task body', () => {
     // never start with the full-DMA prefix.
     expect(title.startsWith('DMA (full):')).toBe(false);
     expect(title.startsWith('DMA self-serve score: ')).toBe(true);
-    expect(title).not.toContain('\');
+    expect(title).not.toContain('\\');
   });
 
   it('keeps CRM ids out of the response either way', async () => {
