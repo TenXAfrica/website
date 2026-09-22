@@ -50,11 +50,33 @@ export function mdEscape(value: string): string {
     .trim();
 }
 
-/** Single-line version for table cells and headings. */
-function mdInline(value: string, maxLen = 300): string {
+/**
+ * Single-line version for table cells, headings and record titles.
+ *
+ * Exported because note and task TITLES need it too: a title is the same
+ * injection channel as a body. An unescaped companyName of
+ * `DMA (full): Acme` would otherwise let a submitter collide with the
+ * full-DMA note title namespace that the processing routine looks up by.
+ */
+export function mdInline(value: string, maxLen = 300): string {
   const flat = value.replace(/\s+/g, ' ').trim();
   const clipped = flat.length > maxLen ? flat.slice(0, maxLen) + '...' : flat;
   return mdEscape(clipped);
+}
+
+/**
+ * Render untrusted multi-line text as a blockquote.
+ *
+ * Uses mdEscape rather than mdInline so real line breaks survive -- mdInline
+ * collapses all whitespace, which silently turned every long contact message
+ * into a single line.
+ */
+export function blockquote(value: string, maxLen = 2000): string {
+  const clipped = value.length > maxLen ? value.slice(0, maxLen) + '...' : value;
+  return mdEscape(clipped)
+    .split('\n')
+    .map((line) => '> ' + line)
+    .join('\n');
 }
 
 /**
@@ -151,9 +173,11 @@ export interface SelfServeNoteInput {
 }
 
 export function selfServeNoteTitle(contact: SelfServeContact, result: ScoreResult): string {
+  // A title is the same injection channel as a body, so the company name is
+  // escaped and length-capped exactly like body text.
   return (
     'DMA self-serve score: ' +
-    contact.companyName +
+    mdInline(contact.companyName, 120) +
     ' (' +
     result.overall +
     '/100)'
@@ -211,7 +235,7 @@ export function renderSelfServeNote(input: SelfServeNoteInput): string {
       '',
       '## Biggest weekly time-sink, in their words',
       '',
-      '> ' + mdInline(contact.biggestTimeSink, 2000)
+      blockquote(contact.biggestTimeSink)
     );
   }
 
@@ -309,7 +333,7 @@ export interface FullNoteInput {
 }
 
 export function fullNoteTitle(submission: FullSubmission): string {
-  return 'DMA (full): ' + submission.companyName;
+  return 'DMA (full): ' + mdInline(submission.companyName, 120);
 }
 
 export function renderFullNote(input: FullNoteInput): string {
@@ -365,7 +389,7 @@ export function renderFullNote(input: FullNoteInput): string {
     if (!answers && !note) continue;
 
     sections.push('### ' + mdInline(meta.label), '');
-    if (note) sections.push('> ' + mdInline(note, 2000), '');
+    if (note) sections.push(blockquote(note), '');
     for (const answer of answers ?? []) {
       sections.push(
         '- **' +
@@ -445,7 +469,7 @@ export interface ContactNoteInput {
 }
 
 export function contactNoteTitle(input: ContactNoteInput): string {
-  return 'Contact form: ' + input.companyLabel;
+  return 'Contact form: ' + mdInline(input.companyLabel, 120);
 }
 
 export function renderContactNote(input: ContactNoteInput): string {
@@ -464,7 +488,7 @@ export function renderContactNote(input: ContactNoteInput): string {
     '',
     '## Message',
     '',
-    '> ' + mdInline(input.message, 2000).split('\n').join('\n> '),
+    blockquote(input.message),
     '',
     '_Written by the DMA Worker from the website contact form._'
   );
