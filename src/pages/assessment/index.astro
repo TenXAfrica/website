@@ -1,0 +1,279 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import SEOHead from "../../components/SEOHead.astro";
+import { SelfServeAssessment } from "../../components/dma/SelfServeAssessment";
+
+const title = "Digital Maturity Score — Ten X Africa";
+const description =
+	"Twelve questions, under three minutes, no login. Score how much of your business still runs on people remembering things, and see the two things worth automating first.";
+---
+
+<MainLayout title={title} description={description}>
+	<SEOHead
+		slot="head"
+		title={title}
+		description={description}
+		imageAlt="Ten X Africa Digital Maturity Score"
+	/>
+
+	<SelfServeAssessment client:load />
+
+	<noscript>
+		<div class="mx-auto w-full max-w-[44rem] px-5 pb-24 sm:px-8">
+			<p class="font-heading text-xl font-semibold text-vapor-white">
+				This assessment needs JavaScript.
+			</p>
+			<p class="mt-3 text-white/70">
+				It scores your answers in the browser as you go. If you would
+				rather skip it, book the full 45-minute assessment instead — it
+				is free, and it covers far more ground.
+			</p>
+			<p class="mt-4">
+				<a
+					class="text-tenx-gold underline underline-offset-2"
+					href="https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/"
+					target="_blank"
+					rel="noopener">Book the full assessment</a
+				>
+			</p>
+		</div>
+	</noscript>
+</MainLayout>
+
+<style is:global>
+	/* --------------------------------------------------------------
+	   Digital Maturity Assessment
+	   Restrained on purpose: rules, type and spacing carry the page.
+	   Gold is the only accent and never carries small text on a light
+	   surface. Every rule here is scoped to a .dma- class.
+	   -------------------------------------------------------------- */
+
+	.dma-shell {
+		padding-left: max(1.25rem, env(safe-area-inset-left));
+		padding-right: max(1.25rem, env(safe-area-inset-right));
+		padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5rem));
+	}
+
+	@media (min-width: 640px) {
+		.dma-shell {
+			padding-left: max(2rem, env(safe-area-inset-left));
+			padding-right: max(2rem, env(safe-area-inset-right));
+		}
+	}
+
+	/* ---- Focus ------------------------------------------------- */
+
+	.dma-option:focus-visible,
+	.dma-button-primary:focus-visible,
+	.dma-button-quiet:focus-visible,
+	.dma-inline-link:focus-visible,
+	.dma-checkbox:focus-visible,
+	.dma-result:focus-visible {
+		outline: 2px solid #d68614;
+		outline-offset: 3px;
+	}
+
+	/* ---- Answer cards ------------------------------------------ */
+
+	.dma-option {
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.dma-option[aria-checked="true"] {
+		border-color: #d68614;
+		background-color: rgba(214, 134, 20, 0.1);
+	}
+
+	.dma-marker {
+		position: relative;
+		flex: none;
+		width: 1.125rem;
+		height: 1.125rem;
+		border: 1px solid rgba(244, 244, 249, 0.38);
+		border-radius: 9999px;
+		transition: border-color 150ms ease;
+	}
+
+	.dma-option[aria-checked="true"] .dma-marker {
+		border-color: #d68614;
+	}
+
+	.dma-option[aria-checked="true"] .dma-marker::after {
+		content: "";
+		position: absolute;
+		inset: 3px;
+		border-radius: 9999px;
+		background-color: #d68614;
+	}
+
+	.dma-progress-fill {
+		transition: width 400ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	/* ---- Fields ------------------------------------------------- */
+
+	.dma-field:focus {
+		outline: 2px solid #d68614;
+		outline-offset: 2px;
+		border-color: #d68614;
+	}
+
+	.dma-select {
+		appearance: none;
+		-webkit-appearance: none;
+		padding-right: 2.5rem;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23d68614' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 0.95rem center;
+	}
+
+	.dma-select option,
+	.dma-select optgroup {
+		background-color: #0a0f14;
+		color: #f4f4f9;
+	}
+
+	.dma-checkbox {
+		accent-color: #d68614;
+	}
+
+	/* ---- Buttons ------------------------------------------------ */
+
+	.dma-button-primary {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 48px;
+		padding: 0.75rem 1.75rem;
+		border: 1px solid #d68614;
+		border-radius: 2px;
+		background-color: #d68614;
+		color: #0a0f14;
+		font-family: "Outfit", sans-serif;
+		font-size: 0.8125rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			background-color 160ms ease,
+			border-color 160ms ease;
+	}
+
+	.dma-button-primary:hover:not(:disabled) {
+		background-color: #e59c34;
+		border-color: #e59c34;
+	}
+
+	.dma-button-primary:disabled {
+		opacity: 0.6;
+		cursor: progress;
+	}
+
+	.dma-button-quiet {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		min-height: 44px;
+		padding: 0 2px;
+		border: 0;
+		background: none;
+		color: rgba(244, 244, 249, 0.75);
+		font-family: "Inter", sans-serif;
+		font-size: 0.875rem;
+		text-decoration: underline;
+		text-underline-offset: 5px;
+		text-decoration-color: rgba(244, 244, 249, 0.3);
+		cursor: pointer;
+		transition: color 150ms ease;
+	}
+
+	.dma-button-quiet:hover {
+		color: #d68614;
+		text-decoration-color: #d68614;
+	}
+
+	/* ---- Motion ------------------------------------------------- */
+
+	@media (prefers-reduced-motion: reduce) {
+		.dma-shell *,
+		.dma-shell *::before,
+		.dma-shell *::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
+	/* ---- Print --------------------------------------------------
+	   The result is the thing worth keeping, so printing drops the
+	   chrome and flips to ink on paper.
+	   ------------------------------------------------------------- */
+
+	@media print {
+		nav,
+		footer,
+		.dma-no-print,
+		.sr-only {
+			display: none !important;
+		}
+
+		html,
+		body {
+			background: #ffffff !important;
+			color: #12171c !important;
+		}
+
+		main {
+			padding-top: 0 !important;
+		}
+
+		.dma-shell {
+			max-width: none !important;
+			padding: 0 !important;
+		}
+
+		.dma-result,
+		.dma-result h1,
+		.dma-result h2,
+		.dma-result h3,
+		.dma-result p,
+		.dma-result li,
+		.dma-result span {
+			color: #12171c !important;
+		}
+
+		.dma-result .text-tenx-gold {
+			color: #8a5a0d !important;
+		}
+
+		.dma-result section {
+			border-color: #d5d5da !important;
+			page-break-inside: avoid;
+		}
+
+		.dma-bar-track {
+			background-color: #e3e3e8 !important;
+		}
+
+		.dma-bar-fill,
+		.dma-dial-value {
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+
+		.dma-bar-fill {
+			background-color: #8a5a0d !important;
+		}
+
+		.dma-dial-value {
+			stroke: #8a5a0d !important;
+		}
+
+		.dma-dial-track {
+			stroke: #e3e3e8 !important;
+		}
+	}
+</style>
