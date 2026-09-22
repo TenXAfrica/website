@@ -378,8 +378,14 @@ describe('submitter text cannot forge instructions in a task body', () => {
     });
 
     const title = String(crm.of('notes')[0]!.body['title']);
-    expect(title).not.toContain('DMA (full): Acme');
+    // Titles are plain text in Twenty (no markdown escaping), so a company
+    // name may legitimately contain the words "DMA (full):". The namespace
+    // contract is therefore a PREFIX: routines look notes up with
+    // title[startsWith], never a contains-match, and a self-serve note can
+    // never start with the full-DMA prefix.
+    expect(title.startsWith('DMA (full):')).toBe(false);
     expect(title.startsWith('DMA self-serve score: ')).toBe(true);
+    expect(title).not.toContain('\');
   });
 
   it('keeps CRM ids out of the response either way', async () => {

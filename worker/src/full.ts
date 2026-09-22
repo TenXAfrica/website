@@ -19,6 +19,7 @@ import { scoreFull } from '../../shared/dma/scoring';
 import {
   fullNoteTitle,
   mdInline,
+  plainInline,
   renderFullNote,
   renderFullTaskBody,
   type FullNoteInput,
@@ -289,7 +290,7 @@ export async function handleFull(body: unknown, deps: FullDeps): Promise<FullHan
   const now = new Date(receivedAt);
   const task = await attempt('full-create-task', () =>
     deps.twenty.createTask({
-      title: '@claude Process DMA: ' + mdInline(submission.companyName, 120),
+      title: '@claude Process DMA: ' + plainInline(submission.companyName, 120),
       status: 'TODO',
       dueAt: nextWorkingDay(Number.isNaN(now.getTime()) ? new Date() : now).toISOString(),
       bodyV2: { markdown: renderFullTaskBody(noteInput) },

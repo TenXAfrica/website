@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Push a secret into the tenx-dma Cloudflare Worker without it ever touching
     the console, the clipboard, a file, or PowerShell history.
@@ -131,7 +131,9 @@ else {
 # --------------------------------------------------------------------------
 # Push it. The value goes to wrangler on stdin only.
 # --------------------------------------------------------------------------
-$wranglerArgs = @('wrangler', 'secret', 'put', $Name)
+$wranglerArgs = @('secret', 'put', $Name, '--config', (Join-Path $workerDir 'wrangler.toml'))
+$wranglerJs = Join-Path $workerDir 'node_modules/wrangler/bin/wrangler.js'
+if (-not (Test-Path -LiteralPath $wranglerJs)) { throw "worker/node_modules is missing; run npm ci in worker/ first." }
 if (-not [string]::IsNullOrWhiteSpace($Environment)) {
     $wranglerArgs += @('--env', $Environment)
 }
@@ -141,7 +143,22 @@ try {
     # Piping keeps the value off the command line, out of the process table,
     # and out of PSReadLine history. stdout/stderr from wrangler is left alone
     # so a real failure is still visible.
-    $secretValue | & npx --yes @wranglerArgs
+    # Always the worker's own pinned wrangler with its own config: a global
+    # wrangler run from the wrong folder once rewrote the Astro project.
+    # Windows PowerShell 5.1 turns anything a native command writes to stderr
+    # (wrangler prints its update nag there) into an ErrorRecord, and with
+    # ErrorActionPreference = Stop that aborts the script before the exit code
+    # is checked. Relax it for the one call and judge by $LASTEXITCODE only.
+    $previousEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $secretValue | & node $wranglerJs @wranglerArgs 2>&1 |
+            ForEach-Object { $_.ToString() } |
+            Where-Object { $_ -notmatch 'out-of-date|wrangler@4|npx wrangler|prevent critical|After installation|^\s*$|^-+$' }
+    }
+    finally {
+        $ErrorActionPreference = $previousEap
+    }
 
     if ($LASTEXITCODE -ne 0) {
         throw "wrangler exited with code $LASTEXITCODE. $Name was not pushed."

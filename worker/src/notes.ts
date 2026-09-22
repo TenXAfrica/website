@@ -65,6 +65,23 @@ export function mdInline(value: string, maxLen = 300): string {
 }
 
 /**
+ * For record TITLES. A Twenty title is a plain-text field, not markdown, so
+ * markdown escaping there just leaves stray backslashes in the CRM
+ * ("Acme \\(Pty\\) Ltd"), and a title filter such as title[eq] would then
+ * never match the real name. What a title still needs: one line, no control
+ * characters, no backticks (a routine may quote it into a note), a length
+ * cap. The injection risk lives in bodies, which keep mdInline.
+ */
+export function plainInline(value: string, maxLen = 120): string {
+  const flat = value
+    .replace(/[\u0000-\u001f\u007f\u2028\u2029]+/g, ' ')
+    .replace(/`/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  return flat.length > maxLen ? flat.slice(0, maxLen) + '...' : flat;
+}
+
+/**
  * Render untrusted multi-line text as a blockquote.
  *
  * Uses mdEscape rather than mdInline so real line breaks survive -- mdInline
@@ -177,7 +194,7 @@ export function selfServeNoteTitle(contact: SelfServeContact, result: ScoreResul
   // escaped and length-capped exactly like body text.
   return (
     'DMA self-serve score: ' +
-    mdInline(contact.companyName, 120) +
+    plainInline(contact.companyName, 120) +
     ' (' +
     result.overall +
     '/100)'
@@ -350,7 +367,7 @@ export interface FullNoteInput {
 }
 
 export function fullNoteTitle(submission: FullSubmission): string {
-  return 'DMA (full): ' + mdInline(submission.companyName, 120);
+  return 'DMA (full): ' + plainInline(submission.companyName, 120);
 }
 
 export function renderFullNote(input: FullNoteInput): string {
@@ -486,7 +503,7 @@ export interface ContactNoteInput {
 }
 
 export function contactNoteTitle(input: ContactNoteInput): string {
-  return 'Contact form: ' + mdInline(input.companyLabel, 120);
+  return 'Contact form: ' + plainInline(input.companyLabel, 120);
 }
 
 export function renderContactNote(input: ContactNoteInput): string {

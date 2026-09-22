@@ -19,6 +19,7 @@ import { scoreSelfServe, selfServeIsComplete } from '../../shared/dma/scoring';
 import {
   contactNoteTitle,
   mdInline,
+  plainInline,
   renderContactNote,
   renderSelfServeNote,
   renderSelfServeTaskBody,
@@ -605,7 +606,8 @@ export async function writeSelfServeToCrm(
 
   /* --- e. Task for the @claude queue --- */
   const now = new Date(input.receivedAt);
-  const safeName = mdInline(contact.companyName, 120);
+  // Titles are plain text in Twenty, so they get plainInline, not mdInline.
+  const safeName = plainInline(contact.companyName, 120);
 
   // An opted-out company must never produce a task that reads like an
   // instruction to make contact. The title itself carries the warning, so a
@@ -870,7 +872,7 @@ export async function handleContact(
   // instructions straight into Claude's work queue.
   const safeName = mdInline(input.fullName, 120);
   const safeEmail = mdInline(input.email, 320);
-  const safeLabel = mdInline(companyLabel, 120);
+  const safeLabel = plainInline(companyLabel, 120); // title only: plain text in Twenty
 
   const taskLines = optedOut
     ? [
