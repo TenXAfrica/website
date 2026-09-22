@@ -25,11 +25,23 @@
  */
 const REGISTERED_SECRETS = new Set<string>();
 
-/** Register a secret value for scrubbing. Short values are ignored. */
+/**
+ * Register a secret value for scrubbing. Short values are ignored.
+ *
+ * Also registers the JSON-escaped spelling, because `redact()` scrubs after
+ * `JSON.stringify`: a secret containing a quote or a backslash appears in the
+ * serialised text as `\"` or `\\` and would otherwise slip through the
+ * literal match.
+ */
 export function registerSecret(value: string | undefined | null): void {
-  if (typeof value === 'string' && value.trim().length >= 8) {
-    REGISTERED_SECRETS.add(value.trim());
-  }
+  if (typeof value !== 'string') return;
+  const trimmed = value.trim();
+  if (trimmed.length < 8) return;
+
+  REGISTERED_SECRETS.add(trimmed);
+
+  const jsonEscaped = JSON.stringify(trimmed).slice(1, -1);
+  if (jsonEscaped !== trimmed) REGISTERED_SECRETS.add(jsonEscaped);
 }
 
 /** Test seam. Not used by the Worker. */
@@ -83,7 +95,22 @@ function redactStructure(value: unknown, seen: WeakSet<object>): unknown {
  * addresses (we log about leads, we do not log the leads themselves). The
  * result is truncated so a large upstream error body cannot flood the log.
  */
-export function redact(value: unknown, maxLen = 2000): string {
+export interface RedactOptions {
+  /**
+   * Mask email addresses. On by default.
+   *
+   * Set false ONLY on the lead-recovery path, where the whole point of the
+   * log line is to preserve the contact details of a lead the CRM refused to
+   * accept. Registered secrets are still scrubbed either way.
+   */
+  maskEmails?: boolean;
+}
+
+export function redact(
+  value: unknown,
+  maxLen = 2000,
+  options: RedactOptions = {}
+): string {
   let text: string;
   try {
     const structured = redactStructure(value, new WeakSet<object>());
@@ -100,7 +127,9 @@ export function redact(value: unknown, maxLen = 2000): string {
   }
 
   text = text.replace(BEARER_RE, (_match, kind: string) => kind + ' ' + REDACTED);
-  text = text.replace(EMAIL_RE, '[email]');
+  if (options.maskEmails !== false) {
+    text = text.replace(EMAIL_RE, '[email]');
+  }
 
   if (text.length > maxLen) {
     return text.slice(0, maxLen) + '...(+' + (text.length - maxLen) + ' more)';
@@ -112,13 +141,26 @@ export function redact(value: unknown, maxLen = 2000): string {
 export function logEvent(
   level: 'info' | 'warn' | 'error',
   event: string,
-  detail?: unknown
+  detail?: unknown,
+  options: RedactOptions = {}
 ): void {
   const line =
-    detail === undefined ? '[dma] ' + event : '[dma] ' + event + ' ' + redact(detail);
+    detail === undefined
+      ? '[dma] ' + event
+      : '[dma] ' + event + ' ' + redact(detail, 2000, options);
   if (level === 'error') console.error(line);
   else if (level === 'warn') console.warn(line);
   else console.log(line);
+}
+
+/**
+ * Log a lead the CRM would not accept, with enough detail to re-enter it by
+ * hand. Deliberately keeps the email address: a redacted copy of a lost lead
+ * is not a recovery record, it is just a sad log line. Secrets are still
+ * scrubbed.
+ */
+export function logLeadRecovery(event: string, detail: unknown): void {
+  logEvent('error', event, detail, { maskEmails: false });
 }
 
 /* ------------------------------------------------------------------ */
@@ -351,6 +393,7 @@ export class TwentyClient {
   }
 
   findCompanyByDomain(primaryLinkUrl: string): Promise<TwentyRecord | null> {
+    if (!isFilterSafe(primaryLinkUrl)) return Promise.resolve(null);
     return this.findFirst(
       'companies',
       'domainName.primaryLinkUrl[eq]:"' + escapeFilterValue(primaryLinkUrl) + '"',
@@ -359,6 +402,7 @@ export class TwentyClient {
   }
 
   findCompanyByName(name: string): Promise<TwentyRecord | null> {
+    if (!isFilterSafe(name)) return Promise.resolve(null);
     return this.findFirst(
       'companies',
       'name[eq]:"' + escapeFilterValue(name) + '"',
@@ -367,6 +411,7 @@ export class TwentyClient {
   }
 
   findPersonByEmail(email: string): Promise<TwentyRecord | null> {
+    if (!isFilterSafe(email)) return Promise.resolve(null);
     return this.findFirst(
       'people',
       'emails.primaryEmail[eq]:"' + escapeFilterValue(email) + '"',
@@ -431,7 +476,37 @@ function singular(collection: string): string {
   return collection.replace(/s$/, '');
 }
 
-/** Keep a user-supplied value from breaking out of a quoted filter term. */
+/**
+ * Keep a user-supplied value from breaking out of a quoted filter term.
+ *
+ * Verified against the live CRM rather than guessed. Filtering a task whose
+ * title contained "(DMA)":
+ *
+ *   title[eq] with parentheses intact             -> matched
+ *   title[eq] with parentheses stripped           -> no match
+ *   title[eq] with parentheses backslash-escaped  -> no match
+ *
+ * So Twenty handles commas, parentheses and ampersands correctly inside a
+ * quoted value, and backslash-escaping actively breaks matching. Touching
+ * them was a real bug: the write path stores the raw name, so "Acme, Inc"
+ * could never match itself and created a duplicate Company on every single
+ * resubmission.
+ *
+ * The only characters left to defend against are the two that could
+ * terminate the quoted string.
+ */
 export function escapeFilterValue(value: string): string {
-  return value.replace(/["\\,()]/g, '').trim();
+  return value.replace(/["\\]/g, '').trim();
+}
+
+/**
+ * True when the value survives `escapeFilterValue` unchanged.
+ *
+ * When it does not, an `[eq]` lookup on the stripped value is not a weaker
+ * lookup -- it is a different question, and it could match some *other*
+ * record that happens to be named the stripped spelling. Callers skip the
+ * lookup instead, which at worst creates a duplicate.
+ */
+export function isFilterSafe(value: string): boolean {
+  return !/["\\]/.test(value) && value.trim().length > 0;
 }
