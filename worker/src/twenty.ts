@@ -1,0 +1,430 @@
+/**
+ * Minimal Twenty CRM REST client for the DMA Worker.
+ *
+ * Design rules, in priority order:
+ *   1. The bearer token never leaves this module. It is not in any thrown
+ *      error, any log line, or any response body. Everything that is logged
+ *      goes through `redact()` first.
+ *   2. Twenty's response envelope is decoded in exactly one place
+ *      (`unwrapOne` / `unwrapMany`), so a shape change on the CRM side is a
+ *      one-function fix rather than a hunt.
+ *   3. Every call is bounded: 8s AbortController timeout, one retry on 5xx or
+ *      a network failure, then give up. The caller decides what a failure
+ *      means -- for lead capture it means "log and carry on".
+ */
+
+/* ------------------------------------------------------------------ */
+/* Redaction                                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Values registered here are scrubbed out of anything `redact()` renders,
+ * wherever they appear. The Worker registers its secrets at request entry so
+ * a token that leaks into, say, an upstream error body still never reaches a
+ * log line.
+ */
+const REGISTERED_SECRETS = new Set<string>();
+
+/** Register a secret value for scrubbing. Short values are ignored. */
+export function registerSecret(value: string | undefined | null): void {
+  if (typeof value === 'string' && value.trim().length >= 8) {
+    REGISTERED_SECRETS.add(value.trim());
+  }
+}
+
+/** Test seam. Not used by the Worker. */
+export function clearRegisteredSecrets(): void {
+  REGISTERED_SECRETS.clear();
+}
+
+const SENSITIVE_KEY =
+  /(authorization|auth|token|secret|password|passwd|api[_-]?key|apikey|bearer|cookie|credential|signature)/i;
+
+const BEARER_RE = /\b(bearer|token)\s+[^\s"',;}\]]+/gi;
+const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
+
+const REDACTED = '[redacted]';
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function redactStructure(value: unknown, seen: WeakSet<object>): unknown {
+  if (value === null || value === undefined) return value;
+
+  if (value instanceof Error) {
+    return { name: value.name, message: value.message };
+  }
+
+  if (Array.isArray(value)) {
+    if (seen.has(value)) return '[circular]';
+    seen.add(value);
+    return value.map((v) => redactStructure(v, seen));
+  }
+
+  if (typeof value === 'object') {
+    if (seen.has(value as object)) return '[circular]';
+    seen.add(value as object);
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      out[k] = SENSITIVE_KEY.test(k) ? REDACTED : redactStructure(v, seen);
+    }
+    return out;
+  }
+
+  return value;
+}
+
+/**
+ * Render anything as a log-safe string.
+ *
+ * Removes, in order: values under sensitive-looking keys, any registered
+ * secret wherever it appears, `Bearer <...>` runs inside free text, and email
+ * addresses (we log about leads, we do not log the leads themselves). The
+ * result is truncated so a large upstream error body cannot flood the log.
+ */
+export function redact(value: unknown, maxLen = 2000): string {
+  let text: string;
+  try {
+    const structured = redactStructure(value, new WeakSet<object>());
+    text =
+      typeof structured === 'string'
+        ? structured
+        : JSON.stringify(structured) ?? String(structured);
+  } catch {
+    text = '[unserialisable]';
+  }
+
+  for (const secret of REGISTERED_SECRETS) {
+    text = text.replace(new RegExp(escapeRegExp(secret), 'g'), REDACTED);
+  }
+
+  text = text.replace(BEARER_RE, (_match, kind: string) => kind + ' ' + REDACTED);
+  text = text.replace(EMAIL_RE, '[email]');
+
+  if (text.length > maxLen) {
+    return text.slice(0, maxLen) + '...(+' + (text.length - maxLen) + ' more)';
+  }
+  return text;
+}
+
+/** Single logging entry point. Everything it prints is redacted. */
+export function logEvent(
+  level: 'info' | 'warn' | 'error',
+  event: string,
+  detail?: unknown
+): void {
+  const line =
+    detail === undefined ? '[dma] ' + event : '[dma] ' + event + ' ' + redact(detail);
+  if (level === 'error') console.error(line);
+  else if (level === 'warn') console.warn(line);
+  else console.log(line);
+}
+
+/* ------------------------------------------------------------------ */
+/* Envelope decoding                                                   */
+/* ------------------------------------------------------------------ */
+
+export interface TwentyRecord {
+  id: string;
+  [key: string]: unknown;
+}
+
+function isRecordLike(v: unknown): v is TwentyRecord {
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    !Array.isArray(v) &&
+    typeof (v as { id?: unknown }).id === 'string'
+  );
+}
+
+/**
+ * Pull one record out of whatever Twenty returned.
+ *
+ * Handles, in order of preference:
+ *   { data: { createCompany: { id } } }   <- documented REST shape
+ *   { data: { company: { id } } }
+ *   { data: { id } }
+ *   { id }                                <- bare record
+ *
+ * ASSUMPTION worth verifying against the live CRM: the create endpoints wrap
+ * in `data.create<Object>`. If that is wrong, this function is the only place
+ * that needs to change.
+ */
+export function unwrapOne(json: unknown, hints: string[] = []): TwentyRecord | null {
+  if (!json || typeof json !== 'object') return null;
+
+  const root = json as Record<string, unknown>;
+  const candidates: unknown[] = [];
+
+  const data = root['data'];
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    const dataObj = data as Record<string, unknown>;
+    for (const hint of hints) {
+      if (hint in dataObj) candidates.push(dataObj[hint]);
+    }
+    candidates.push(data);
+    // Last resort: a single-key envelope whose key we did not predict.
+    const keys = Object.keys(dataObj);
+    if (keys.length === 1) candidates.push(dataObj[keys[0] as string]);
+  }
+
+  for (const hint of hints) {
+    if (hint in root) candidates.push(root[hint]);
+  }
+  candidates.push(root);
+
+  for (const candidate of candidates) {
+    if (isRecordLike(candidate)) return candidate;
+  }
+  return null;
+}
+
+/**
+ * Pull a list of records out of whatever Twenty returned.
+ *
+ * Handles { data: { companies: [...] } }, { data: [...] }, and a bare array.
+ */
+export function unwrapMany(json: unknown, hints: string[] = []): TwentyRecord[] {
+  if (!json) return [];
+  if (Array.isArray(json)) return json.filter(isRecordLike);
+  if (typeof json !== 'object') return [];
+
+  const root = json as Record<string, unknown>;
+  const candidates: unknown[] = [];
+
+  const data = root['data'];
+  if (Array.isArray(data)) {
+    candidates.push(data);
+  } else if (data && typeof data === 'object') {
+    const dataObj = data as Record<string, unknown>;
+    for (const hint of hints) {
+      if (hint in dataObj) candidates.push(dataObj[hint]);
+    }
+    const keys = Object.keys(dataObj);
+    if (keys.length === 1) candidates.push(dataObj[keys[0] as string]);
+  }
+  for (const hint of hints) {
+    if (hint in root) candidates.push(root[hint]);
+  }
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) return candidate.filter(isRecordLike);
+  }
+  return [];
+}
+
+/* ------------------------------------------------------------------ */
+/* Client                                                              */
+/* ------------------------------------------------------------------ */
+
+export const DEFAULT_TWENTY_BASE_URL = 'https://crm.tenxafrica.co.za';
+const DEFAULT_TIMEOUT_MS = 8_000;
+
+export class TwentyError extends Error {
+  readonly status: number;
+  constructor(status: number, message: string) {
+    // `message` is assembled in this module only, from already-redacted input.
+    super(message);
+    this.name = 'TwentyError';
+    this.status = status;
+  }
+}
+
+export interface TwentyConfig {
+  baseUrl?: string;
+  apiKey: string;
+  /** Injected by tests. Defaults to the platform fetch. */
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+}
+
+export class TwentyClient {
+  private readonly baseUrl: string;
+  private readonly apiKey: string;
+  private readonly fetchImpl: typeof fetch;
+  private readonly timeoutMs: number;
+
+  constructor(config: TwentyConfig) {
+    this.baseUrl = (config.baseUrl || DEFAULT_TWENTY_BASE_URL).replace(/\/+$/, '');
+    this.apiKey = config.apiKey;
+    this.fetchImpl = config.fetchImpl ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
+    this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  }
+
+  /* ---------------------------- transport --------------------------- */
+
+  private async attempt(
+    method: string,
+    url: string,
+    body: unknown
+  ): Promise<{ status: number; text: string }> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const res = await this.fetchImpl(url, {
+        method,
+        headers: {
+          // The one place the token is used. Never logged, never rethrown.
+          Authorization: 'Bearer ' + this.apiKey,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const text = await res.text();
+      return { status: res.status, text };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  private async request(
+    method: string,
+    path: string,
+    options: { body?: unknown; query?: Record<string, string> } = {}
+  ): Promise<unknown> {
+    const url = new URL(this.baseUrl + path);
+    for (const [key, value] of Object.entries(options.query ?? {})) {
+      url.searchParams.set(key, value);
+    }
+    const href = url.toString();
+
+    let lastStatus = 0;
+    let lastDetail = 'no response';
+
+    for (let i = 0; i < 2; i++) {
+      try {
+        const { status, text } = await this.attempt(method, href, options.body);
+        if (status >= 200 && status < 300) {
+          if (!text) return null;
+          try {
+            return JSON.parse(text) as unknown;
+          } catch {
+            throw new TwentyError(status, method + ' ' + path + ': non-JSON response body');
+          }
+        }
+        lastStatus = status;
+        // `text` is an upstream body: redact before it goes anywhere.
+        lastDetail = redact(text, 400);
+        if (status < 500) break; // A 4xx will not get better on a retry.
+      } catch (err) {
+        if (err instanceof TwentyError) throw err;
+        lastStatus = 0;
+        // Never surface the raw error: it can carry request detail.
+        lastDetail = redact(err, 200);
+      }
+    }
+
+    throw new TwentyError(
+      lastStatus,
+      method + ' ' + path + ' failed (status ' + lastStatus + '): ' + lastDetail
+    );
+  }
+
+  /* ------------------------------ reads ----------------------------- */
+
+  /**
+   * ASSUMPTION worth verifying: Twenty's REST filter grammar is
+   * `?filter=field[comparator]:value`, with nested fields dotted. If the
+   * lookups come back empty on the live CRM, check this first -- a failed
+   * lookup only costs us a duplicate record, never a lead.
+   */
+  private async findFirst(
+    collection: string,
+    filter: string,
+    hints: string[]
+  ): Promise<TwentyRecord | null> {
+    const json = await this.request('GET', '/rest/' + collection, {
+      query: { filter, limit: '1', depth: '0' },
+    });
+    return unwrapMany(json, hints)[0] ?? null;
+  }
+
+  findCompanyByDomain(primaryLinkUrl: string): Promise<TwentyRecord | null> {
+    return this.findFirst(
+      'companies',
+      'domainName.primaryLinkUrl[eq]:"' + escapeFilterValue(primaryLinkUrl) + '"',
+      ['companies']
+    );
+  }
+
+  findCompanyByName(name: string): Promise<TwentyRecord | null> {
+    return this.findFirst(
+      'companies',
+      'name[eq]:"' + escapeFilterValue(name) + '"',
+      ['companies']
+    );
+  }
+
+  findPersonByEmail(email: string): Promise<TwentyRecord | null> {
+    return this.findFirst(
+      'people',
+      'emails.primaryEmail[eq]:"' + escapeFilterValue(email) + '"',
+      ['people']
+    );
+  }
+
+  /* ----------------------------- writes ----------------------------- */
+
+  private async createOne(
+    collection: string,
+    hint: string,
+    input: Record<string, unknown>
+  ): Promise<TwentyRecord | null> {
+    const json = await this.request('POST', '/rest/' + collection, { body: input });
+    return unwrapOne(json, [hint, singular(collection), collection]);
+  }
+
+  createCompany(input: Record<string, unknown>) {
+    return this.createOne('companies', 'createCompany', input);
+  }
+
+  createPerson(input: Record<string, unknown>) {
+    return this.createOne('people', 'createPerson', input);
+  }
+
+  createOpportunity(input: Record<string, unknown>) {
+    return this.createOne('opportunities', 'createOpportunity', input);
+  }
+
+  createNote(input: Record<string, unknown>) {
+    return this.createOne('notes', 'createNote', input);
+  }
+
+  createNoteTarget(input: Record<string, unknown>) {
+    return this.createOne('noteTargets', 'createNoteTarget', input);
+  }
+
+  createTask(input: Record<string, unknown>) {
+    return this.createOne('tasks', 'createTask', input);
+  }
+
+  createTaskTarget(input: Record<string, unknown>) {
+    return this.createOne('taskTargets', 'createTaskTarget', input);
+  }
+
+  async updateOpportunity(
+    id: string,
+    patch: Record<string, unknown>
+  ): Promise<TwentyRecord | null> {
+    const json = await this.request(
+      'PATCH',
+      '/rest/opportunities/' + encodeURIComponent(id),
+      { body: patch }
+    );
+    return unwrapOne(json, ['updateOpportunity', 'opportunity']);
+  }
+}
+
+function singular(collection: string): string {
+  if (collection === 'people') return 'person';
+  return collection.replace(/s$/, '');
+}
+
+/** Keep a user-supplied value from breaking out of a quoted filter term. */
+export function escapeFilterValue(value: string): string {
+  return value.replace(/["\\,()]/g, '').trim();
+}
