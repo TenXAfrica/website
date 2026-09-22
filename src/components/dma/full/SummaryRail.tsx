@@ -4,7 +4,6 @@
  * never hides behind a "calculate" button.
  */
 
-import type { ReactNode } from 'react';
 import { WORKING_WEEKS } from '../../../../shared/dma/scoring';
 import type { ScoreResult } from '../../../../shared/dma/types';
 import { MATURITY_ANCHORS, PAIN_ANCHORS, TOTAL_QUESTIONS } from './report';
@@ -15,7 +14,6 @@ export interface SummaryRailProps {
   scored: number;
   totalHours: number;
   hourlyRateUsd: number;
-  actions?: ReactNode;
 }
 
 const usd = (n: number) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -41,7 +39,6 @@ export function SummaryRail({
   scored,
   totalHours,
   hourlyRateUsd,
-  actions,
 }: SummaryRailProps) {
   const annualHours = Math.round(totalHours * WORKING_WEEKS);
   const annualValue = annualHours * hourlyRateUsd;
@@ -176,8 +173,6 @@ export function SummaryRail({
           ))}
         </dl>
       </details>
-
-      {actions}
     </div>
   );
 }

@@ -505,9 +505,10 @@ export function FullDma() {
           ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 0);
     } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
       setSubmitStatus({
         kind: 'error',
-        message: err instanceof Error ? err.message : String(err),
+        message: `Could not post to ${WORKER_URL}/api/dma/full — ${detail}. Nothing was lost: the draft is still saved.`,
       });
     }
   }, [answers, buildOutput, token, totals.complete]);
@@ -549,8 +550,8 @@ export function FullDma() {
         </button>
         {failed && (
           <p className="col-span-2 text-[11px] leading-snug text-amber-300/90">
-            The post failed. Copy or download now — the draft is still saved in
-            this browser.
+            Submit did not go through. Copy or download now — the draft is
+            still saved in this browser.
           </p>
         )}
       </div>
@@ -571,14 +572,13 @@ export function FullDma() {
     </div>
   );
 
-  const rail = (
+  const railBody = (
     <SummaryRail
       result={liveResult}
       completed={totals.complete}
       scored={totals.scored}
       totalHours={totals.hours}
       hourlyRateUsd={setup.hourlyRateUsd}
-      actions={actions}
     />
   );
 
@@ -743,7 +743,10 @@ export function FullDma() {
                 </span>
               )}
             </summary>
-            <div className="mt-3">{rail}</div>
+            <div className="mt-3 space-y-3">
+              {railBody}
+              {actions}
+            </div>
           </details>
 
           <div className="space-y-8">
@@ -806,8 +809,13 @@ export function FullDma() {
         </main>
 
         <aside className="hidden lg:block">
-          <div className="sticky top-14 max-h-[calc(100vh-4.5rem)] overflow-y-auto pr-1">
-            {rail}
+          {/* Submit and the two fallbacks stay pinned: they must never be a
+              scroll away when the call ends. */}
+          <div className="sticky top-14 flex max-h-[calc(100vh-4.5rem)] flex-col gap-3">
+            <div className="min-h-0 flex-1 overflow-y-auto pr-1">{railBody}</div>
+            <div className="shrink-0 rounded-lg border border-white/10 bg-black/40 p-2.5">
+              {actions}
+            </div>
           </div>
         </aside>
       </div>
