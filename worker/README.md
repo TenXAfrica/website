@@ -1,0 +1,221 @@
+# DMA intake Worker
+
+Cloudflare Worker that receives Digital Maturity Assessment submissions, scores
+them with the shared scorer, and writes the result into the self-hosted Twenty
+CRM at `crm.tenxafrica.co.za`.
+
+It is the only server-side piece of the website. The site itself is static
+(Astro on GitHub Pages), so anything that needs a secret lives here.
+
+## The rule that outranks the others
+
+**Never lose a lead.** A missing KV binding, a slow CRM, a failed note target
+— all of those log a redacted warning and carry on. Only two things are
+allowed to reject a submission: a failed Turnstile check, and a payload that
+does not validate. Everything downstream of scoring is best-effort, because a
+lead half-written into Twenty is worth far more than a lead rejected because a
+`noteTargets` POST returned a 500.
+
+## Endpoints
+
+| Method | Path | Auth | Notes |
+| --- | --- | --- | --- |
+| `POST` | `/api/dma/self-serve` | Turnstile + 5/IP/hour | Public. Body is `SelfServeSubmission`. |
+| `POST` | `/api/dma/full` | `Authorization: Bearer $DMA_ADMIN_TOKEN` | Internal. Body is `FullSubmission`. No Turnstile. |
+| `POST` | `/api/contact` | Turnstile + 5/IP/hour | Public. Contact-form passthrough. |
+| `GET` | `/api/dma/health` | none | `{ok: true, version}`. No secrets, ever. |
+
+### `POST /api/dma/self-serve`
+
+Validates the payload defensively (it is public browser input), scores it with
+`scoreSelfServe`, then writes, in order and tolerating partial failure:
+
+1. **Company** — reused only when the submitter is entitled to it (see *Who a
+   submission is allowed to touch* below), otherwise created with `size`,
+   `sector`, `signals`, `fitScore`, `relationship: PROSPECT`,
+   `address.addressCountry`, and `contactConsent` set to `CONSENTED` when they
+   ticked the box and `ASKED` when they did not.
+2. **Person** — reused only when they are unattached or already belong to the
+   resolved Company, otherwise created and linked as `DECISION_MAKER`.
+3. **Opportunity** — `"<Company> — Digital Maturity Score <overall>"`, stage
+   `NEW`, source `INBOUND`, service line `AI_SYSTEM`, deal type `PROJECT`.
+   `need` is their own words for the biggest time-sink, falling back to the
+   top recommendation.
+4. **Note** — the human-readable score report, then three `noteTargets`
+   linking it to the Company, the Person and the Opportunity.
+5. **Task** — `"@claude Follow up DMA score: <Company>"`, `TODO`, due the next
+   working day, plus task targets on the Company and Opportunity. Every piece
+   of submitter-controlled text in a Note or Task **title or body** is escaped
+   first: that body is the brief an unattended routine reads, so an unescaped
+   name is an injection into Claude's own work queue.
+
+The response is `{ok: true, result: ScoreResult}` and nothing else. **No CRM
+ids are ever returned to the browser**, so the result page renders without a
+second round trip and without learning anything about the CRM.
+
+### Who a submission is allowed to touch
+
+A submission can only reuse an existing Company when the submitter has shown
+some connection to it. A domain match is trusted. A bare **name** match is
+not — anyone can type a known client's company name — so it is only trusted
+when the submitter's own email domain matches the domain already on that
+Company. Otherwise a separate record is created. Person reuse works the same
+way: an existing Person is reused only when they are unattached or already
+belong to the resolved Company.
+
+The cost is worth naming: two legitimate submissions from the same company,
+neither giving a website, now create two Companies. Deduplicating those by
+hand is a chore; silently welding a stranger onto a client's record is a
+breach.
+
+### Opt-out
+
+Per CLAUDE.md, an opt-out means never contact again. If the matched Company
+is `OPTED_OUT`, the score Note is still written — the submission happened and
+the Note is the evidence — but the task becomes
+`@claude OPTED OUT - do not contact: <name>` and its first body line says so,
+so a downstream routine cannot read it as an instruction to draft an invite.
+
+### If the CRM is down
+
+"Never lose a lead" has to mean something. If neither the Note nor the Task
+landed, nothing in the CRM records the submission and the submitter has
+already been told it worked. That case logs
+`selfserve-lead-recovery-required` at error level carrying the whole
+validated submission, **including the email address** — `redact()` takes an
+option to keep it, because a redacted copy of a lost lead is worthless. There
+is a TODO to stash the raw submission in KV once the namespace exists, so
+recovery stops depending on log retention.
+
+### `POST /api/dma/full`
+
+Scores with `scoreFull`, writes a Note titled `"DMA (full): <companyName>"`
+containing both a readable report **and** a fenced ` ```json ` block holding
+`{version, submission, result}`, attaches it to the Opportunity (and the
+Company when `companyId` was given), PATCHes the Opportunity to `QUALIFIED`,
+and raises `"@claude Process DMA: <companyName>"`.
+
+The `@claude Process DMA` routine parses that JSON block, so `src/notes.ts`
+escapes backticks inside the payload as the JSON escape `u0060` (backslash
+included). An interviewer who pastes a code fence into their notes cannot
+close the block early, and the routine's
+`JSON.parse` still sees the original text. There is a test for exactly this.
+
+## Secrets
+
+Three, all pushed as Wrangler secrets and none of them in any file here:
+
+| Name | What it is |
+| --- | --- |
+| `TWENTY_API_KEY` | Bearer token for the Twenty REST API. |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile server-side key. |
+| `DMA_ADMIN_TOKEN` | Shared bearer protecting `/api/dma/full`. |
+
+Push them with the script in `../scripts`, which reads the Twenty token
+straight out of `%USERPROFILE%\.claude.json` and pipes it to Wrangler on
+stdin, so it never reaches the console, a file, or shell history:
+
+```powershell
+pwsh scripts/push-worker-secret.ps1                            # TWENTY_API_KEY
+pwsh scripts/push-worker-secret.ps1 -Name TURNSTILE_SECRET_KEY # prompts, masked
+pwsh scripts/push-worker-secret.ps1 -Name DMA_ADMIN_TOKEN      # prompts, masked
+pwsh scripts/push-worker-secret.ps1 -Env staging               # non-default env
+```
+
+It prints exactly `pushed <NAME>` and nothing else.
+
+`src/twenty.ts` exports `redact()`, and every log line in the Worker goes
+through it. It strips values under sensitive-looking keys, any registered
+secret wherever it appears, `Bearer <...>` runs inside free text, and email
+addresses. The Worker registers all three secrets at request entry, so a token
+echoed back inside an upstream error body still cannot reach a log line.
+`TwentyError` messages are built only from redacted input.
+
+For local development copy `.dev.vars.example` to `.dev.vars` — which is
+gitignored — and put throwaway values in it.
+
+## Where it runs
+
+`https://tenx-dma.ten-x-africa-main.workers.dev`, the account's workers.dev
+hostname. The site calls that origin directly; exposing the hostname gives
+nothing away because the CORS allowlist and the Turnstile hostname check
+still only accept requests that came from tenxafrica.co.za. The KV namespace
+ids for rate limiting are in `wrangler.toml`.
+
+Attaching `/api/*` on the apex zone (the commented `[[routes]]` blocks) is
+optional polish, not a requirement.
+
+## Rate limiting
+
+Five submissions per IP per hour, per bucket (`selfserve` and `contact` are
+counted separately), in KV with a one-hour TTL.
+
+KV has no atomic increment, so a burst of simultaneous requests can slip past
+the cap. That is the right trade: this exists to blunt a script, not to be a
+ledger. Every failure mode — missing binding, KV error, corrupt counter —
+allows the request.
+
+## CORS
+
+Allowed: `https://tenxafrica.co.za`, `https://www.tenxafrica.co.za`, and
+`http://localhost:4321` for `astro dev`. `OPTIONS` preflight is handled;
+anything else gets a 403 with no CORS headers.
+
+There is deliberately **no `*.pages.dev` wildcard**. pages.dev is open
+registration, so a wildcard over it is not an allowlist — anyone can claim a
+subdomain and be trusted. The site deploys to GitHub Pages and does not need
+it. If a Cloudflare Pages preview is ever wanted, name that exact origin in
+the `ALLOWED_PREVIEW_ORIGINS` var (comma-separated, exact origins only).
+
+A request with **no** `Origin` header is allowed through, because that is what
+server-to-server callers look like — `curl`, and Joash's internal DMA tool.
+Those are gated on the admin bearer instead.
+
+## Commands
+
+```bash
+npm install
+npx vitest run     # 195 tests, no network
+npm run typecheck  # tsc --noEmit
+npm run dev        # wrangler dev, needs .dev.vars
+```
+
+## Tests
+
+Pure functions only; nothing touches the network. Every test that needs
+`fetch` injects its own stub, and the Twenty client takes a `fetchImpl` for
+exactly that reason.
+
+- `redact.test.ts` — the token never survives a log line, however it is
+  nested, prefixed or echoed back; plus response-envelope decoding.
+- `validate.test.ts` — the payload validators: unknown question ids, option
+  values borrowed from another question, over-long strings, malformed emails,
+  missing consent, unknown company sizes, out-of-range pain and maturity.
+- `scoring.test.ts` — integration over the shared scorer: a fully manual
+  business scores 0 and rates a strong fit; a manual sales-and-finance profile
+  recommends quote-to-invoice and inbox triage; a fully automated one scores
+  100 and recommends nothing.
+- `notes.test.ts` — markdown rendering, escaping of hostile free text, and the
+  JSON block round-tripping for the processing routine.
+- `router.test.ts` — CORS allowlist (including that no pages.dev subdomain is
+  trusted by wildcard), the admin bearer check, Turnstile verification and its
+  hostname check, rate limiting, body-size and Content-Length gating, filter
+  round-tripping, and the client's timeout and retry.
+- `crmwrites.test.ts` — the write sequence against a fake Twenty: record
+  hijack via a name match, opt-out handling, injection into a task body, and
+  the lead-recovery log when every CRM write fails.
+
+## Layout
+
+```
+src/index.ts     router, CORS, Turnstile, rate limit, admin bearer
+src/twenty.ts    Twenty REST client, redact(), envelope decoding
+src/selfserve.ts self-serve validator + CRM write sequence, contact handler
+src/full.ts      full-DMA validator + handler
+src/notes.ts     markdown and JSON note rendering
+```
+
+Types, the question bank and the scorer are **not** here. They live in
+`../shared/dma/` and are shared with the Astro front end. That directory is a
+contract: add fields, never rename them, and do not change it from this
+Worker.

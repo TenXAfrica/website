@@ -1,0 +1,67 @@
+# Ten X Africa -- Digital Maturity Assessment intake Worker.
+#
+# Secrets are NOT in this file and must never be. Push them with:
+#   pwsh scripts/push-worker-secret.ps1                            # TWENTY_API_KEY
+#   pwsh scripts/push-worker-secret.ps1 -Name TURNSTILE_SECRET_KEY
+#   pwsh scripts/push-worker-secret.ps1 -Name DMA_ADMIN_TOKEN
+
+name = "tenx-dma"
+main = "src/index.ts"
+compatibility_date = "2026-09-22"
+
+# The Worker serves on its workers.dev hostname
+# (https://tenx-dma.ten-x-africa-main.workers.dev). The browser only ever
+# calls it from tenxafrica.co.za, which is enforced by the CORS allowlist and
+# the Turnstile hostname check in src/index.ts, so exposing the hostname
+# itself gives nothing away. The optional /api/* routes on the apex zone below
+# are a later nicety, not a requirement.
+workers_dev = true
+
+# Cloudflare account "Ten X Africa - Main". An account id is not a secret and
+# belongs in this file; it just saves wrangler an interactive account prompt.
+account_id = "b9cdaef0ff634f13dfbc1261e8723051"
+
+[observability]
+enabled = true
+
+[vars]
+# Non-secret configuration only.
+TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
+WORKER_VERSION = "dma-worker-0.1.0"
+
+# --------------------------------------------------------------------------
+# Rate-limit counters. Namespaces "tenx-dma-DMA_RATELIMIT" and its _preview
+# twin, created 2026-09-22 in the Ten X Africa - Main account. If the binding
+# is ever missing, src/index.ts allows the request and logs a warning, because
+# losing a lead is worse than serving a duplicate.
+# --------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "DMA_RATELIMIT"
+id = "16de54db5f494928befd678c584f6b12"
+preview_id = "c84d85f3345d4910927b9e23c5987272"
+
+# --------------------------------------------------------------------------
+# Optional (Joash): attach a route so the Worker also answers on the apex
+# zone. Not needed for the site to work; it already calls the workers.dev
+# hostname. The site is on GitHub Pages behind Cloudflare, so the Worker
+# would take the /api/* path:
+#
+# [[routes]]
+# pattern = "tenxafrica.co.za/api/*"
+# zone_name = "tenxafrica.co.za"
+#
+# [[routes]]
+# pattern = "www.tenxafrica.co.za/api/*"
+# zone_name = "tenxafrica.co.za"
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Optional. Comma-separated EXACT origins to allow for CORS in addition to the
+# built-in list (apex, www, localhost:4321). There is deliberately no
+# *.pages.dev wildcard: pages.dev is open registration, so a wildcard over it
+# trusts anyone who registers a subdomain. Name the one preview origin here if
+# a Cloudflare Pages preview is ever needed.
+#
+# [vars]
+# ALLOWED_PREVIEW_ORIGINS = "https://preview.website.pages.dev"
+# --------------------------------------------------------------------------
