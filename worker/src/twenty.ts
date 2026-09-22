@@ -327,10 +327,17 @@ export class TwentyClient {
   /* ------------------------------ reads ----------------------------- */
 
   /**
-   * ASSUMPTION worth verifying: Twenty's REST filter grammar is
-   * `?filter=field[comparator]:value`, with nested fields dotted. If the
-   * lookups come back empty on the live CRM, check this first -- a failed
-   * lookup only costs us a duplicate record, never a lead.
+   * VERIFIED against crm.tenxafrica.co.za on 2026-09-22. The filter grammar
+   * is `?filter=field[comparator]:value`, nested fields dotted, strings
+   * quoted. Checked live: `emails.primaryEmail[eq]`, `name[eq]` and
+   * `domainName.primaryLinkUrl[eq]` all return 200, and `title[ilike]:"%claude%"`
+   * returned 2 of the 3 existing tasks -- so the filter is genuinely applied
+   * rather than ignored, which is the failure mode that would have quietly
+   * produced duplicate Companies and People.
+   *
+   * Also verified: the collection prefix is `/rest/<collection>`. The instance
+   * OpenAPI description shows `/rest/core/<collection>` in its examples; that
+   * path 400s here. Do not "fix" this to match those docs.
    */
   private async findFirst(
     collection: string,
