@@ -52,3 +52,14 @@ preview_id = "REPLACE_WITH_KV_PREVIEW_NAMESPACE_ID"
 # pattern = "www.tenxafrica.co.za/api/*"
 # zone_name = "tenxafrica.co.za"
 # --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Optional. Comma-separated EXACT origins to allow for CORS in addition to the
+# built-in list (apex, www, localhost:4321). There is deliberately no
+# *.pages.dev wildcard: pages.dev is open registration, so a wildcard over it
+# trusts anyone who registers a subdomain. Name the one preview origin here if
+# a Cloudflare Pages preview is ever needed.
+#
+# [vars]
+# ALLOWED_PREVIEW_ORIGINS = "https://preview.website.pages.dev"
+# --------------------------------------------------------------------------

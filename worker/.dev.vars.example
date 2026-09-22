@@ -6,4 +6,4 @@
 
 TWENTY_API_KEY="replace-me-local-only"
 TURNSTILE_SECRET_KEY="1x0000000000000000000000000000000AA"
-DMA_ADMIN_TOKEN="replace-me-local-only"
+DMA_ADMIN_TOKEN="short"   # deliberately <16 chars: fails the length guard by construction

@@ -34,6 +34,12 @@ export interface Env {
   TWENTY_BASE_URL?: string;
   /** Plain var. Echoed by /health. */
   WORKER_VERSION?: string;
+  /**
+   * Plain var. Comma-separated exact origins to allow in addition to the
+   * built-in list, e.g. a named Cloudflare Pages preview. Exact origins only:
+   * there is deliberately no wildcard.
+   */
+  ALLOWED_PREVIEW_ORIGINS?: string;
   /** Optional until Joash creates the namespace. Absent means "allow". */
   DMA_RATELIMIT?: KVNamespace;
 }
@@ -57,17 +63,43 @@ const EXACT_ORIGINS = new Set([
   'http://localhost:4321',
 ]);
 
-/** Cloudflare Pages preview deployments, e.g. https://abc123.website.pages.dev */
-const PAGES_PREVIEW_RE = /^https:\/\/[a-z0-9][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)*\.pages\.dev$/;
+/**
+ * Hostnames Turnstile is allowed to have been solved on.
+ *
+ * siteverify echoes back the hostname of the page that solved the challenge.
+ * Without checking it, a token farmed from a challenge on someone else's site
+ * using our sitekey would verify here.
+ */
+const TURNSTILE_HOSTS = new Set(['tenxafrica.co.za', 'www.tenxafrica.co.za', 'localhost']);
 
-export function isAllowedOrigin(origin: string | null): boolean {
-  if (!origin) return false;
-  if (EXACT_ORIGINS.has(origin)) return true;
-  return PAGES_PREVIEW_RE.test(origin);
+/**
+ * Extra origins from a plain var, comma-separated.
+ *
+ * There is deliberately no `*.pages.dev` wildcard. Anyone can register a
+ * pages.dev subdomain, so that pattern is not an allowlist -- it is the whole
+ * internet. The site deploys to GitHub Pages and does not need it. If a
+ * Cloudflare Pages preview is ever wanted, name that exact origin in the
+ * ALLOWED_PREVIEW_ORIGINS var instead.
+ */
+export function extraOrigins(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0 && s.length < 256 && /^https?:\/\//.test(s));
 }
 
-export function corsHeaders(origin: string | null): Record<string, string> {
-  if (!isAllowedOrigin(origin) || !origin) return {};
+export function isAllowedOrigin(origin: string | null, extra: string[] = []): boolean {
+  if (!origin) return false;
+  if (EXACT_ORIGINS.has(origin)) return true;
+  return extra.includes(origin);
+}
+
+export function corsHeaders(
+  origin: string | null,
+  extra: string[] = []
+): Record<string, string> {
+  if (!isAllowedOrigin(origin, extra) || !origin) return {};
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
@@ -81,7 +113,8 @@ function json(
   status: number,
   body: unknown,
   origin: string | null,
-  extra: Record<string, string> = {}
+  allowedExtra: string[] = [],
+  extraHeaders: Record<string, string> = {}
 ): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -90,8 +123,8 @@ function json(
       'Cache-Control': 'no-store',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
-      ...corsHeaders(origin),
-      ...extra,
+      ...corsHeaders(origin, allowedExtra),
+      ...extraHeaders,
     },
   });
 }
@@ -109,7 +142,8 @@ export async function verifyTurnstile(
   token: string,
   remoteIp: string | null,
   secret: string,
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  allowedHosts: ReadonlySet<string> = TURNSTILE_HOSTS
 ): Promise<TurnstileOutcome> {
   if (!secret) {
     // Refusing to fail open: an unconfigured Turnstile secret is a
@@ -133,12 +167,25 @@ export async function verifyTurnstile(
     });
     const body = (await res.json()) as {
       success?: boolean;
+      hostname?: string;
       'error-codes'?: string[];
     };
-    return {
-      success: body.success === true,
-      codes: Array.isArray(body['error-codes']) ? body['error-codes'] : [],
-    };
+    const codes = Array.isArray(body['error-codes']) ? body['error-codes'] : [];
+
+    if (body.success !== true) {
+      return { success: false, codes };
+    }
+
+    // A valid token is not enough: it must have been solved on one of our
+    // pages. Otherwise a challenge hosted elsewhere under our sitekey mints
+    // tokens that pass here.
+    const hostname = typeof body.hostname === 'string' ? body.hostname.toLowerCase() : '';
+    if (!allowedHosts.has(hostname)) {
+      logEvent('warn', 'turnstile-hostname-mismatch', { hostname });
+      return { success: false, codes: [...codes, 'hostname-not-allowed'] };
+    }
+
+    return { success: true, codes };
   } catch (err) {
     logEvent('warn', 'turnstile-verify-failed', err);
     return { success: false, codes: ['verify-request-failed'] };
@@ -198,7 +245,15 @@ export async function checkRateLimit(
 /* Admin bearer                                                        */
 /* ------------------------------------------------------------------ */
 
-/** Constant-time string compare, so a wrong token leaks no length signal. */
+/**
+ * Compare two strings without leaking *where* they differ.
+ *
+ * The early return on unequal lengths does leak the length, which the
+ * previous comment here wrongly claimed it did not. That is fine and standard:
+ * the comparison is constant-time with respect to the token's content, which
+ * is the part an attacker would otherwise probe byte by byte. Length alone
+ * does not narrow a high-entropy secret usefully.
+ */
 export function safeEqual(a: string, b: string): boolean {
   const aBytes = new TextEncoder().encode(a);
   const bBytes = new TextEncoder().encode(b);
@@ -225,23 +280,41 @@ export function isAuthorisedAdmin(header: string | null, expected: string): bool
 /* Body reading                                                        */
 /* ------------------------------------------------------------------ */
 
-async function readJsonBody(
+export async function readJsonBody(
   request: Request
 ): Promise<{ ok: true; value: unknown } | { ok: false; status: number; error: string }> {
-  const contentLength = request.headers.get('content-length');
-  if (contentLength && Number.parseInt(contentLength, 10) > MAX_BODY_BYTES) {
+  // Content-Length must be present and parseable. Without this a chunked POST
+  // carries no length at all and walks straight past the cap into
+  // request.text(), which is an unbounded read.
+  const header = request.headers.get('content-length');
+  if (header === null || !/^\d+$/.test(header.trim())) {
+    return { ok: false, status: 411, error: 'length_required' };
+  }
+
+  const declared = Number.parseInt(header.trim(), 10);
+  if (!Number.isFinite(declared) || declared > MAX_BODY_BYTES) {
+    return { ok: false, status: 413, error: 'payload_too_large' };
+  }
+
+  let buffer: ArrayBuffer;
+  try {
+    buffer = await request.arrayBuffer();
+  } catch {
+    return { ok: false, status: 400, error: 'unreadable_body' };
+  }
+
+  // Measured in bytes, not UTF-16 units: `text.length` undercounts every
+  // non-BMP character, so a body of emoji could be twice the declared cap.
+  // This also catches a body that disagrees with its own Content-Length.
+  if (buffer.byteLength > MAX_BODY_BYTES) {
     return { ok: false, status: 413, error: 'payload_too_large' };
   }
 
   let text: string;
   try {
-    text = await request.text();
+    text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(buffer);
   } catch {
-    return { ok: false, status: 400, error: 'unreadable_body' };
-  }
-
-  if (text.length > MAX_BODY_BYTES) {
-    return { ok: false, status: 413, error: 'payload_too_large' };
+    return { ok: false, status: 400, error: 'invalid_encoding' };
   }
 
   try {
@@ -261,6 +334,7 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/+$/, '') || '/';
     const version = env.WORKER_VERSION || FALLBACK_VERSION;
+    const allowedExtra = extraOrigins(env.ALLOWED_PREVIEW_ORIGINS);
 
     // Everything logged from here on is scrubbed of these values.
     registerSecret(env.TWENTY_API_KEY);
@@ -269,24 +343,24 @@ export default {
 
     /* --- preflight --- */
     if (request.method === 'OPTIONS') {
-      if (!isAllowedOrigin(origin)) {
+      if (!isAllowedOrigin(origin, allowedExtra)) {
         return new Response(null, { status: 403 });
       }
-      return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      return new Response(null, { status: 204, headers: corsHeaders(origin, allowedExtra) });
     }
 
     /* --- health, before anything that can fail --- */
     if (path === '/api/dma/health') {
       if (request.method !== 'GET') {
-        return json(405, { ok: false, error: 'method_not_allowed' }, origin);
+        return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
       }
-      return json(200, { ok: true, version }, origin);
+      return json(200, { ok: true, version }, origin, allowedExtra);
     }
 
     // A browser request must come from an origin we know. Server-to-server
     // callers (curl, Joash's internal tool) send no Origin at all, which is
     // fine -- they are gated on the admin bearer instead.
-    if (origin !== null && !isAllowedOrigin(origin)) {
+    if (origin !== null && !isAllowedOrigin(origin, allowedExtra)) {
       logEvent('warn', 'origin-rejected', { origin });
       return new Response(JSON.stringify({ ok: false, error: 'origin_not_allowed' }), {
         status: 403,
@@ -295,7 +369,7 @@ export default {
     }
 
     if (request.method !== 'POST') {
-      return json(405, { ok: false, error: 'method_not_allowed' }, origin);
+      return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
     }
 
     const ip = request.headers.get('CF-Connecting-IP');
@@ -305,37 +379,37 @@ export default {
       if (path === '/api/dma/full') {
         if (!isAuthorisedAdmin(request.headers.get('Authorization'), env.DMA_ADMIN_TOKEN)) {
           logEvent('warn', 'full-dma-unauthorised');
-          return json(401, { ok: false, error: 'unauthorised' }, origin);
+          return json(401, { ok: false, error: 'unauthorised' }, origin, allowedExtra);
         }
 
         const body = await readJsonBody(request);
-        if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin);
+        if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin, allowedExtra);
 
         const result = await handleFull(body.value, {
           twenty: twentyFor(env),
           version,
         });
-        return json(result.status, result.body, origin);
+        return json(result.status, result.body, origin, allowedExtra);
       }
 
       /* ----------------------- public endpoints ----------------------- */
       const isSelfServe = path === '/api/dma/self-serve';
       const isContact = path === '/api/contact';
       if (!isSelfServe && !isContact) {
-        return json(404, { ok: false, error: 'not_found' }, origin);
+        return json(404, { ok: false, error: 'not_found' }, origin, allowedExtra);
       }
 
       const bucket = isSelfServe ? 'selfserve' : 'contact';
       const limit = await checkRateLimit(env.DMA_RATELIMIT, bucket, ip);
       if (!limit.allowed) {
         logEvent('warn', 'ratelimited', { bucket });
-        return json(429, { ok: false, error: 'rate_limited' }, origin, {
+        return json(429, { ok: false, error: 'rate_limited' }, origin, allowedExtra, {
           'Retry-After': String(RATE_LIMIT_WINDOW_SECONDS),
         });
       }
 
       const body = await readJsonBody(request);
-      if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin);
+      if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin, allowedExtra);
 
       const token =
         typeof body.value === 'object' && body.value !== null
@@ -343,13 +417,13 @@ export default {
           : undefined;
 
       if (typeof token !== 'string' || token.length === 0) {
-        return json(400, { ok: false, error: 'turnstile_missing' }, origin);
+        return json(400, { ok: false, error: 'turnstile_missing' }, origin, allowedExtra);
       }
 
       const turnstile = await verifyTurnstile(token, ip, env.TURNSTILE_SECRET_KEY);
       if (!turnstile.success) {
         logEvent('warn', 'turnstile-rejected', { codes: turnstile.codes, bucket });
-        return json(400, { ok: false, error: 'turnstile_failed' }, origin);
+        return json(400, { ok: false, error: 'turnstile_failed' }, origin, allowedExtra);
       }
 
       const deps = { twenty: twentyFor(env), version };
@@ -357,12 +431,12 @@ export default {
         ? await handleSelfServe(body.value, deps)
         : await handleContact(body.value, deps);
 
-      return json(result.status, result.body, origin);
+      return json(result.status, result.body, origin, allowedExtra);
     } catch (err) {
       // Anything that reaches here is a bug. Log it redacted, tell the
       // browser nothing.
       logEvent('error', 'unhandled', err);
-      return json(500, { ok: false, error: 'internal_error' }, origin);
+      return json(500, { ok: false, error: 'internal_error' }, origin, allowedExtra);
     }
   },
 } satisfies ExportedHandler<Env>;
