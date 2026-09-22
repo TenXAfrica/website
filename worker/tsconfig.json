@@ -7,9 +7,7 @@
     "types": ["@cloudflare/workers-types"],
 
     "strict": true,
-    // Deliberately NOT noUncheckedIndexedAccess: this project typechecks
-    // ../shared/dma/*, which is a fixed contract this Worker may not edit,
-    // and it is not written against that flag.
+    "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": false,

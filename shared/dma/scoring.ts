@@ -5,6 +5,7 @@ import {
   MATURITY_BANDS,
   SELF_SERVE_QUESTIONS,
 } from './questions';
+import { BUILD_TYPES } from './types';
 import type {
   AnswerOption,
   BuildRecommendation,
@@ -29,10 +30,12 @@ export const DEFAULT_HOURLY_RATE_USD = 25;
 const BUILD_BY_ID = new Map(BUILD_META.map((b) => [b.id, b]));
 const DIMENSION_BY_ID = new Map(DIMENSION_META.map((d) => [d.id, d]));
 
+/** The last band is the fallback, and MATURITY_BANDS is never empty. */
+const HIGHEST_BAND: MaturityBand = MATURITY_BANDS[MATURITY_BANDS.length - 1]!;
+
 export function bandFor(score: number): MaturityBand {
   return (
-    MATURITY_BANDS.find((b) => score >= b.min && score <= b.max) ??
-    MATURITY_BANDS[MATURITY_BANDS.length - 1]
+    MATURITY_BANDS.find((b) => score >= b.min && score <= b.max) ?? HIGHEST_BAND
   );
 }
 
@@ -106,9 +109,16 @@ function rollUp(
     }
   }
 
+  // Ties are common — a fully manual business often signals two builds at
+  // exactly the same weight. Break them on catalogue order rather than on
+  // whichever answer happened to be seen first, so the same answers always
+  // produce the same two recommendations.
   const ranked = [...weights.entries()]
     .filter(([, w]) => w > 0)
-    .sort((a, b) => b[1] - a[1])
+    .sort(
+      (a, b) =>
+        b[1] - a[1] || BUILD_TYPES.indexOf(a[0]) - BUILD_TYPES.indexOf(b[0])
+    )
     .slice(0, opts.topN);
 
   const maxWeight = ranked[0]?.[1] ?? 1;
