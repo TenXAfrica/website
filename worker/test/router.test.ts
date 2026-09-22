@@ -3,12 +3,19 @@ import {
   RATE_LIMIT_MAX,
   checkRateLimit,
   corsHeaders,
+  extraOrigins,
   isAllowedOrigin,
   isAuthorisedAdmin,
+  readJsonBody,
   safeEqual,
   verifyTurnstile,
 } from '../src/index';
-import { TwentyClient, TwentyError, escapeFilterValue } from '../src/twenty';
+import {
+  TwentyClient,
+  TwentyError,
+  escapeFilterValue,
+  isFilterSafe,
+} from '../src/twenty';
 
 /**
  * Nothing here touches the network: every test that needs fetch passes its
@@ -34,8 +41,6 @@ describe('CORS origin allowlist', () => {
     'https://tenxafrica.co.za',
     'https://www.tenxafrica.co.za',
     'http://localhost:4321',
-    'https://website.pages.dev',
-    'https://abc123.website.pages.dev',
   ])('allows %s', (origin) => {
     expect(isAllowedOrigin(origin)).toBe(true);
   });
@@ -51,6 +56,37 @@ describe('CORS origin allowlist', () => {
     '',
   ])('rejects %s', (origin) => {
     expect(isAllowedOrigin(origin)).toBe(false);
+  });
+
+  /**
+   * pages.dev is open registration, so a wildcard over it is not an
+   * allowlist -- anyone can claim a subdomain and be trusted.
+   */
+  it.each([
+    'https://website.pages.dev',
+    'https://abc123.website.pages.dev',
+    'https://tenxafrica-attacker.pages.dev',
+  ])('no longer trusts %s by wildcard', (origin) => {
+    expect(isAllowedOrigin(origin)).toBe(false);
+  });
+
+  it('allows a preview origin only when it is named exactly in the var', () => {
+    const extra = extraOrigins('https://preview.website.pages.dev');
+    expect(isAllowedOrigin('https://preview.website.pages.dev', extra)).toBe(true);
+    // A sibling on the same open-registration suffix stays out.
+    expect(isAllowedOrigin('https://other.website.pages.dev', extra)).toBe(false);
+  });
+
+  it('parses the preview origin var defensively', () => {
+    expect(extraOrigins(undefined)).toEqual([]);
+    expect(extraOrigins('')).toEqual([]);
+    expect(extraOrigins('  ')).toEqual([]);
+    expect(extraOrigins('https://a.test, https://b.test')).toEqual([
+      'https://a.test',
+      'https://b.test',
+    ]);
+    // Anything that is not an http(s) origin is dropped rather than trusted.
+    expect(extraOrigins('javascript:alert(1),*,https://ok.test')).toEqual(['https://ok.test']);
   });
 
   it('rejects a missing origin', () => {
@@ -119,7 +155,7 @@ describe('verifyTurnstile', () => {
       expect(form.get('secret')).toBe('secret-key');
       expect(form.get('response')).toBe('client-token');
       expect(form.get('remoteip')).toBe('203.0.113.7');
-      return jsonResponse(200, { success: true });
+      return jsonResponse(200, { success: true, hostname: 'tenxafrica.co.za' });
     });
 
     const out = await verifyTurnstile(
@@ -139,7 +175,7 @@ describe('verifyTurnstile', () => {
   it('omits remoteip when Cloudflare gave us no IP', async () => {
     const fetchStub = vi.fn(async (_url: unknown, init?: RequestInit) => {
       expect((init?.body as FormData).get('remoteip')).toBeNull();
-      return jsonResponse(200, { success: true });
+      return jsonResponse(200, { success: true, hostname: 'tenxafrica.co.za' });
     });
     await verifyTurnstile('t', null, 's', fetchStub as unknown as typeof fetch);
     expect(fetchStub).toHaveBeenCalledTimes(1);
@@ -162,6 +198,36 @@ describe('verifyTurnstile', () => {
     expect(out.success).toBe(false);
     expect(out.codes).toEqual(['verify-request-failed']);
   });
+
+  /**
+   * siteverify says the token is valid AND where it was solved. Without the
+   * hostname check, a challenge hosted on an attacker's page under our
+   * sitekey mints tokens that pass here.
+   */
+  it('rejects a valid token solved on somebody else site', async () => {
+    const fetchStub = vi.fn(async () =>
+      jsonResponse(200, { success: true, hostname: 'phishing-tenxafrica.example' })
+    );
+    const out = await verifyTurnstile('t', null, 's', fetchStub as unknown as typeof fetch);
+    expect(out.success).toBe(false);
+    expect(out.codes).toContain('hostname-not-allowed');
+  });
+
+  it('rejects a success response with no hostname at all', async () => {
+    const fetchStub = vi.fn(async () => jsonResponse(200, { success: true }));
+    const out = await verifyTurnstile('t', null, 's', fetchStub as unknown as typeof fetch);
+    expect(out.success).toBe(false);
+    expect(out.codes).toContain('hostname-not-allowed');
+  });
+
+  it.each(['tenxafrica.co.za', 'www.tenxafrica.co.za', 'localhost'])(
+    'accepts a token solved on %s',
+    async (hostname) => {
+      const fetchStub = vi.fn(async () => jsonResponse(200, { success: true, hostname }));
+      const out = await verifyTurnstile('t', null, 's', fetchStub as unknown as typeof fetch);
+      expect(out.success).toBe(true);
+    }
+  );
 
   it('fails closed when the secret is not configured', async () => {
     const fetchStub = vi.fn();
@@ -237,6 +303,100 @@ describe('checkRateLimit', () => {
     const kv = fakeKv({ 'rl:selfserve:1.2.3.4': 'not-a-number' });
     const out = await checkRateLimit(kv as unknown as KVNamespace, 'selfserve', '1.2.3.4');
     expect(out.allowed).toBe(true);
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Body reading                                                        */
+/* ------------------------------------------------------------------ */
+
+function postWith(body: BodyInit, headers: Record<string, string> = {}): Request {
+  return new Request('https://worker.test/api/dma/self-serve', {
+    method: 'POST',
+    body,
+    headers,
+  });
+}
+
+describe('readJsonBody', () => {
+  it('reads a well-formed body', async () => {
+    const payload = JSON.stringify({ hello: 'world' });
+    const out = await readJsonBody(
+      postWith(payload, { 'content-length': String(payload.length) })
+    );
+    expect(out.ok).toBe(true);
+    if (out.ok) expect(out.value).toEqual({ hello: 'world' });
+  });
+
+  /**
+   * The gap this closes: a chunked POST carries no Content-Length, so the
+   * old check was skipped entirely and request.text() became an unbounded
+   * read.
+   */
+  it('refuses a request with no Content-Length', async () => {
+    const request = postWith('{"a":1}');
+    request.headers.delete('content-length');
+    const out = await readJsonBody(request);
+    expect(out.ok).toBe(false);
+    if (!out.ok) {
+      expect(out.status).toBe(411);
+      expect(out.error).toBe('length_required');
+    }
+  });
+
+  it.each(['abc', '12abc', '-1', '1e6', ' '])(
+    'refuses an unparseable Content-Length (%s)',
+    async (value) => {
+      const out = await readJsonBody(postWith('{"a":1}', { 'content-length': value }));
+      expect(out.ok).toBe(false);
+      if (!out.ok) expect(out.status).toBe(411);
+    }
+  );
+
+  it('refuses a declared length over the cap without reading the body', async () => {
+    const out = await readJsonBody(
+      postWith('{"a":1}', { 'content-length': String(64 * 1024 + 1) })
+    );
+    expect(out.ok).toBe(false);
+    if (!out.ok) expect(out.status).toBe(413);
+  });
+
+  /**
+   * text.length counts UTF-16 units, so a body of astral-plane characters
+   * measured that way undercounts its real byte size by up to 4x.
+   */
+  it('measures bytes rather than UTF-16 units', async () => {
+    // 20k x U+1F600 is 40k UTF-16 units but 80k bytes.
+    const emoji = '\u{1F600}'.repeat(20_000);
+    const payload = JSON.stringify({ m: emoji });
+    const bytes = new TextEncoder().encode(payload).byteLength;
+
+    expect(payload.length).toBeLessThan(64 * 1024);
+    expect(bytes).toBeGreaterThan(64 * 1024);
+
+    const out = await readJsonBody(postWith(payload, { 'content-length': String(bytes) }));
+    expect(out.ok).toBe(false);
+    if (!out.ok) expect(out.status).toBe(413);
+  });
+
+  it('rejects a body that lies about its own length', async () => {
+    const big = JSON.stringify({ m: 'x'.repeat(70_000) });
+    const out = await readJsonBody(postWith(big, { 'content-length': '10' }));
+    expect(out.ok).toBe(false);
+    if (!out.ok) expect(out.status).toBe(413);
+  });
+
+  it('rejects malformed json and malformed utf-8', async () => {
+    const bad = await readJsonBody(postWith('{nope', { 'content-length': '5' }));
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) expect(bad.error).toBe('invalid_json');
+
+    const invalidUtf8 = new Uint8Array([0x7b, 0xff, 0xfe, 0x7d]);
+    const out = await readJsonBody(
+      postWith(invalidUtf8, { 'content-length': String(invalidUtf8.byteLength) })
+    );
+    expect(out.ok).toBe(false);
+    if (!out.ok) expect(out.error).toBe('invalid_encoding');
   });
 });
 
@@ -383,8 +543,76 @@ describe('TwentyClient transport', () => {
     expect(await client.findPersonByEmail('nobody@example.com')).toBeNull();
   });
 
-  it('strips characters that would break out of a quoted filter term', () => {
-    expect(escapeFilterValue('Acme "Widgets", (Pty) Ltd')).toBe('Acme Widgets Pty Ltd');
+  it('strips only the characters that could terminate a quoted filter term', () => {
+    // Verified against the live CRM: commas, parens and ampersands match
+    // correctly as-is, and escaping them breaks matching. Only " and \ are
+    // touched.
+    expect(escapeFilterValue('Acme "Widgets"')).toBe('Acme Widgets');
+    expect(escapeFilterValue('Acme, Inc')).toBe('Acme, Inc');
+    expect(escapeFilterValue('Acme (Pty) Ltd')).toBe('Acme (Pty) Ltd');
+    expect(escapeFilterValue('Smith & Sons, (Pty) Ltd')).toBe('Smith & Sons, (Pty) Ltd');
     expect(escapeFilterValue('  spaced  ')).toBe('spaced');
+  });
+
+  it('knows when a lookup would be lossy', () => {
+    expect(isFilterSafe('Acme, Inc')).toBe(true);
+    expect(isFilterSafe('Acme (Pty) Ltd')).toBe(true);
+    expect(isFilterSafe('Acme "Widgets"')).toBe(false);
+    expect(isFilterSafe('Acme\\Widgets')).toBe(false);
+    expect(isFilterSafe('   ')).toBe(false);
+  });
+
+  it('skips a lookup it cannot ask faithfully rather than matching the wrong record', async () => {
+    const fetchStub = vi.fn();
+    const client = new TwentyClient({
+      apiKey: FAKE_TOKEN,
+      fetchImpl: fetchStub as unknown as typeof fetch,
+    });
+
+    // Stripping the quotes would ask about a company literally named
+    // `Acme Widgets`, which could be someone else entirely.
+    expect(await client.findCompanyByName('Acme "Widgets"')).toBeNull();
+    expect(fetchStub).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The bug this pins: the write path stores the raw name, so a lookup that
+   * altered punctuation could never match what was just written, and
+   * "Acme, Inc" created a duplicate Company on every resubmission.
+   */
+  it('round-trips a punctuated company name between create and lookup', async () => {
+    const stored: Array<{ id: string; name: string }> = [];
+
+    const fetchStub = vi.fn(async (url: unknown, init?: RequestInit) => {
+      const target = new URL(String(url));
+
+      if (init?.method === 'POST') {
+        const body = JSON.parse(String(init.body)) as { name: string };
+        const record = { id: 'c' + (stored.length + 1), name: body.name };
+        stored.push(record);
+        return jsonResponse(201, { data: { createCompany: record } });
+      }
+
+      // Answer the filter the way Twenty does: exact match on the raw value.
+      const filter = target.searchParams.get('filter') ?? '';
+      const wanted = /^name\[eq\]:"(.*)"$/.exec(filter)?.[1];
+      const hit = stored.filter((c) => c.name === wanted);
+      return jsonResponse(200, { data: { companies: hit } });
+    });
+
+    const client = new TwentyClient({
+      apiKey: FAKE_TOKEN,
+      fetchImpl: fetchStub as unknown as typeof fetch,
+    });
+
+    for (const name of ['Acme, Inc', 'Acme (Pty) Ltd', 'Smith & Sons']) {
+      const created = await client.createCompany({ name });
+      const found = await client.findCompanyByName(name);
+      expect(found, name + ' must be findable after being created').not.toBeNull();
+      expect(found?.id).toBe(created?.id);
+    }
+
+    // Three creates, not six: no duplicates were made.
+    expect(stored).toHaveLength(3);
   });
 });
