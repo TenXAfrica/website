@@ -610,9 +610,17 @@ export async function writeSelfServeToCrm(
   // An opted-out company must never produce a task that reads like an
   // instruction to make contact. The title itself carries the warning, so a
   // routine scanning titles cannot miss it.
+  //
+  // The same goes for a submitter who did not tick the consent box: the
+  // rubric says they get their result on screen and nothing else, so the
+  // task must not read like an instruction to email them. Both the title
+  // and the body say so; the body renderer never emits the "draft the
+  // invite" line in these two cases.
   const taskTitle = optedOut
     ? '@claude OPTED OUT - do not contact: ' + safeName
-    : '@claude Follow up DMA score: ' + safeName;
+    : contact.consent
+      ? '@claude Follow up DMA score: ' + safeName
+      : '@claude DMA score, no consent - do not email: ' + safeName;
 
   const taskBody = optedOut
     ? [
@@ -620,9 +628,9 @@ export async function writeSelfServeToCrm(
         'They submitted the self-serve assessment anyway. Record the score,',
         'take no outbound action, and do not draft an email.',
         '',
-        renderSelfServeTaskBody(input),
+        renderSelfServeTaskBody(input, 'no-contact'),
       ].join('\n')
-    : renderSelfServeTaskBody(input);
+    : renderSelfServeTaskBody(input, contact.consent ? 'invite' : 'no-contact');
 
   const task = track(
     'task',
@@ -639,12 +647,18 @@ export async function writeSelfServeToCrm(
   const taskId = task?.id ?? null;
 
   if (taskId) {
-    if (companyId) await attempt('task-target-company', () =>
-      twenty.createTaskTarget({ taskId, companyId })
-    );
-    if (opportunityId) await attempt('task-target-opportunity', () =>
-      twenty.createTaskTarget({ taskId, opportunityId })
-    );
+    if (companyId) {
+      const created = await attempt('task-target-company', () =>
+        twenty.createTaskTarget({ taskId, companyId })
+      );
+      if (!created) failures.push('task-target-company');
+    }
+    if (opportunityId) {
+      const created = await attempt('task-target-opportunity', () =>
+        twenty.createTaskTarget({ taskId, opportunityId })
+      );
+      if (!created) failures.push('task-target-opportunity');
+    }
   }
 
   return { companyId, personId, opportunityId, noteId, taskId, failures };

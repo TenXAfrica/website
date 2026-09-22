@@ -66,8 +66,9 @@ import {
   slug,
 } from './full/report';
 
-const WORKER_URL: string =
-  (import.meta.env.PUBLIC_DMA_WORKER_URL as string | undefined) ?? '';
+import { DMA_WORKER_URL } from './util';
+
+const WORKER_URL: string = DMA_WORKER_URL;
 
 const SAVE_DEBOUNCE_MS = 600;
 const SCORE_DEBOUNCE_MS = 350;

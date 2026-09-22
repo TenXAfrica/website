@@ -3,6 +3,31 @@ import { SELF_SERVE_QUESTIONS, DIMENSION_META } from '../../../shared/dma/questi
 import type { DimensionId } from '../../../shared/dma/types';
 
 /* ------------------------------------------------------------------ */
+/* Where submissions go                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * PUBLIC_DMA_WORKER_URL overrides. A production build falls back to the
+ * deployed Worker so the site never ships pointing at nothing. Locally,
+ * unset means "score in the browser and do not save", which is what the
+ * README promises.
+ */
+export const DMA_WORKER_URL: string = (
+  (import.meta.env.PUBLIC_DMA_WORKER_URL as string | undefined) ||
+  (import.meta.env.PROD ? 'https://tenx-dma.ten-x-africa-main.workers.dev' : '')
+).replace(/\/+$/, '');
+
+/**
+ * Turnstile site keys are public by design. The production fallback is the
+ * "contact-form" widget in the Ten X Africa - Main account, which already
+ * lists tenxafrica.co.za and localhost. The test key always passes and is
+ * only ever used in a dev build.
+ */
+export const TURNSTILE_SITE_KEY: string =
+  (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined) ||
+  (import.meta.env.PROD ? '0x4AAAAAACGv8rcbxtitH2aI' : '1x00000000000000000000AA');
+
+/* ------------------------------------------------------------------ */
 /* Deep-linking                                                        */
 /* ------------------------------------------------------------------ */
 

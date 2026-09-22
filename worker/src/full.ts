@@ -299,19 +299,21 @@ export async function handleFull(body: unknown, deps: FullDeps): Promise<FullHan
   if (!task) failures.push('task');
 
   if (task?.id) {
-    await attempt('full-task-target-opportunity', () =>
+    const oppTarget = await attempt('full-task-target-opportunity', () =>
       deps.twenty.createTaskTarget({
         taskId: task.id,
         opportunityId: submission.opportunityId,
       })
     );
+    if (!oppTarget) failures.push('task-target-opportunity');
     if (submission.companyId) {
-      await attempt('full-task-target-company', () =>
+      const companyTarget = await attempt('full-task-target-company', () =>
         deps.twenty.createTaskTarget({
           taskId: task.id,
           companyId: submission.companyId,
         })
       );
+      if (!companyTarget) failures.push('task-target-company');
     }
   }
 

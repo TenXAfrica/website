@@ -21,16 +21,27 @@ interface Captured {
  * A fake Twenty. `seed` is what already exists; everything created is
  * captured for assertions.
  */
-function fakeTwenty(seed: { companies?: Record<string, unknown>[]; people?: Record<string, unknown>[] } = {}) {
+function fakeTwenty(
+  seed: {
+    companies?: Record<string, unknown>[];
+    people?: Record<string, unknown>[];
+    /** Collections whose POST fails with a 503, to exercise partial writes. */
+    failing?: Set<string>;
+  } = {}
+) {
   const created: Captured[] = [];
   const companies = seed.companies ?? [];
   const people = seed.people ?? [];
+  const failing = seed.failing ?? new Set<string>();
 
   const fetchImpl = vi.fn(async (url: unknown, init?: RequestInit) => {
     const target = new URL(String(url));
     const collection = target.pathname.replace('/rest/', '').split('/')[0] ?? '';
 
     if (init?.method === 'POST') {
+      if (failing.has(collection)) {
+        return new Response('upstream down', { status: 503 });
+      }
       const body = JSON.parse(String(init.body)) as Record<string, unknown>;
       created.push({ collection, body });
       return new Response(JSON.stringify({ data: { id: collection + '-' + created.length } }), {
@@ -225,6 +236,44 @@ describe('an opted-out company never produces a follow-up instruction', () => {
     expect(body.split('\n')[0]).toContain('DO NOT CONTACT');
     expect(body).toContain('OPTED_OUT');
     expect(body).toContain('do not draft an email');
+  });
+
+  it('does not instruct outbound contact when consent was not ticked', async () => {
+    const crm = fakeTwenty({});
+    const sub = submission({ website: 'acme-widgets.co.uk' }) as {
+      contact: Record<string, unknown>;
+    };
+    sub.contact['consent'] = false;
+    const out = await handleSelfServe(sub, { twenty: crm.twenty, version: DEPS_VERSION });
+    expect(out.status).toBe(200);
+
+    const company = crm.of('companies')[0]!.body;
+    expect(company['contactConsent']).toBe('ASKED');
+
+    const task = crm.of('tasks')[0]!.body;
+    expect(String(task['title'])).toContain('no consent - do not email');
+    expect(String(task['title'])).not.toContain('Follow up');
+    const body = String((task['bodyV2'] as { markdown: string }).markdown);
+    expect(body).toContain('Do NOT email');
+    expect(body).not.toContain('draft the DMA invite');
+  });
+
+  it('records a failed task target as a partial write', async () => {
+    const crm = fakeTwenty({ failing: new Set(['taskTargets']) });
+    const lines: string[] = [];
+    const spy = vi.spyOn(console, 'warn').mockImplementation((...args: unknown[]) => {
+      lines.push(args.map(String).join(' '));
+    });
+    try {
+      const out = await handleSelfServe(submission({}), { twenty: crm.twenty, version: DEPS_VERSION });
+      expect(out.status).toBe(200);
+      const flat = lines.join('\n');
+      expect(flat).toContain('selfserve-partial-crm-write');
+      expect(flat).toContain('task-target-company');
+      expect(flat).toContain('task-target-opportunity');
+    } finally {
+      spy.mockRestore();
+    }
   });
 
   it('leaves a consented company on the normal follow-up path', async () => {

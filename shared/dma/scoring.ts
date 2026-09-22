@@ -154,6 +154,20 @@ function rollUp(
     return rec;
   });
 
+  // When hours are known, present the recommendations in order of hours
+  // recovered: a panel headed "start with these two" should lead with the
+  // bigger win. The top-N cut above still goes by signal strength, so a
+  // weakly signalled build never gets in just because its automation
+  // factor is high; this only reorders what already made the cut.
+  if (recommendations.length > 1 && recommendations.every((r) => r.roi)) {
+    recommendations.sort(
+      (a, b) =>
+        b.roi!.hoursPerWeekRecovered - a.roi!.hoursPerWeekRecovered ||
+        b.strength - a.strength ||
+        BUILD_TYPES.indexOf(a.buildType) - BUILD_TYPES.indexOf(b.buildType)
+    );
+  }
+
   /* --- CRM signals --- */
   const signals = [...new Set(items.flatMap((i) => i.signals))];
 

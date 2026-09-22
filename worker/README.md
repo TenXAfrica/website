@@ -134,22 +134,16 @@ echoed back inside an upstream error body still cannot reach a log line.
 For local development copy `.dev.vars.example` to `.dev.vars` — which is
 gitignored — and put throwaway values in it.
 
-## Before the first deploy
+## Where it runs
 
-Two placeholders in `wrangler.toml` need real values:
+`https://tenx-dma.ten-x-africa-main.workers.dev`, the account's workers.dev
+hostname. The site calls that origin directly; exposing the hostname gives
+nothing away because the CORS allowlist and the Turnstile hostname check
+still only accept requests that came from tenxafrica.co.za. The KV namespace
+ids for rate limiting are in `wrangler.toml`.
 
-```bash
-cd worker
-npx wrangler kv namespace create DMA_RATELIMIT
-npx wrangler kv namespace create DMA_RATELIMIT --preview
-```
-
-Paste the two ids over `REPLACE_WITH_KV_NAMESPACE_ID` and
-`REPLACE_WITH_KV_PREVIEW_NAMESPACE_ID`. Until then the Worker still runs: a
-missing binding logs `ratelimit-binding-missing` and allows the request.
-
-Then uncomment the `[[routes]]` blocks at the bottom of `wrangler.toml` to
-attach `/api/*` on the apex and `www` hostnames.
+Attaching `/api/*` on the apex zone (the commented `[[routes]]` blocks) is
+optional polish, not a requirement.
 
 ## Rate limiting
 

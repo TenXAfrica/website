@@ -222,10 +222,12 @@ export function ScaleSelector<T extends number>({
   const uid = useId();
   return (
     <fieldset className="min-w-0">
-      <div className="mb-1 flex items-baseline justify-between gap-2">
-        <legend className={LABEL_BASE}>{legend}</legend>
+      {/* legend is the first direct child of the fieldset so the radio group
+          keeps its accessible name; the trailing hint rides inside it. */}
+      <legend className="mb-1 flex w-full items-baseline justify-between gap-2">
+        <span className={LABEL_BASE}>{legend}</span>
         {trailing}
-      </div>
+      </legend>
       <div className="grid grid-cols-5 gap-1">
         {options.map((opt) => {
           const id = `${uid}-${opt.value}`;

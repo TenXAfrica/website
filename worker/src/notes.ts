@@ -276,7 +276,16 @@ export function renderSelfServeNote(input: SelfServeNoteInput): string {
 }
 
 /** Short body for the "@claude Follow up DMA score" task. */
-export function renderSelfServeTaskBody(input: SelfServeNoteInput): string {
+/**
+ * The body of the @claude task. `mode` decides the instruction at the end:
+ * 'invite' asks the routine to draft the DMA invite; 'no-contact' tells it
+ * to record the score and do nothing outbound. The caller picks 'no-contact'
+ * for an OPTED_OUT company and for anyone who did not tick consent.
+ */
+export function renderSelfServeTaskBody(
+  input: SelfServeNoteInput,
+  mode: 'invite' | 'no-contact' = 'invite'
+): string {
   const { contact, result } = input;
   const top = result.recommendations[0];
   const lines = [
@@ -291,7 +300,7 @@ export function renderSelfServeTaskBody(input: SelfServeNoteInput): string {
     '',
     'Contact: ' + mdInline(contact.fullName) + ', ' + mdInline(contact.email),
     'Country: ' + mdInline(contact.country) + ' | Size: ' + mdInline(contact.size),
-    'Consent: ' + (contact.consent ? 'CONSENTED' : 'ASKED -- not ticked, treat as cold'),
+    'Consent: ' + (contact.consent ? 'CONSENTED' : 'ASKED -- not ticked, no outbound contact'),
   ];
 
   if (contact.biggestTimeSink) {
@@ -312,11 +321,19 @@ export function renderSelfServeTaskBody(input: SelfServeNoteInput): string {
     );
   }
 
-  lines.push(
-    '',
-    'Do: read the score Note on the Company, then draft the DMA invite.',
-    'Booking link: ' + BOOKING_URL
-  );
+  if (mode === 'invite') {
+    lines.push(
+      '',
+      'Do: read the score Note on the Company, then draft the DMA invite.',
+      'Booking link: ' + BOOKING_URL
+    );
+  } else {
+    lines.push(
+      '',
+      'Do NOT email, draft or otherwise contact them: there is no consent on record.',
+      'Record the score against the Company and stop. The booking link was on their screen if they want the call.'
+    );
+  }
 
   return lines.join('\n');
 }

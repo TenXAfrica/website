@@ -3,7 +3,7 @@
  * params (?company=&opportunityId=&companyId=) so a link, or a future routine,
  * can drop Joash straight into a prepared session.
  *
- * The Worker token lives in a password field and in localStorage. It is never
+ * The Worker token lives in a password field and in sessionStorage (this tab only). It is never
  * written into the draft, never into the report, and never into the build.
  */
 

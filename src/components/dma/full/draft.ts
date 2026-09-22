@@ -219,9 +219,18 @@ export function countDraftAnswers(d: DraftState): number {
 /* Worker token — kept out of the draft and out of the build           */
 /* ------------------------------------------------------------------ */
 
+/*
+ * The token is a bearer credential for the Worker's internal endpoint, so it
+ * must not sit in localStorage: that store is shared by every page on the
+ * origin, including marketing pages that load third-party scripts, and it
+ * survives browser restarts. sessionStorage is scoped to this tab and dies
+ * with it, which is the right lifetime for something Joash pastes in at the
+ * start of a call. Drafts stay in localStorage because they contain no
+ * credential and losing them is the thing this module exists to prevent.
+ */
 export function readToken(): string {
   try {
-    return window.localStorage.getItem(TOKEN_KEY) ?? '';
+    return window.sessionStorage.getItem(TOKEN_KEY) ?? '';
   } catch {
     return '';
   }
@@ -229,8 +238,8 @@ export function readToken(): string {
 
 export function writeToken(token: string): void {
   try {
-    if (token === '') window.localStorage.removeItem(TOKEN_KEY);
-    else window.localStorage.setItem(TOKEN_KEY, token);
+    if (token === '') window.sessionStorage.removeItem(TOKEN_KEY);
+    else window.sessionStorage.setItem(TOKEN_KEY, token);
   } catch {
     /* private mode; the token just will not be remembered */
   }

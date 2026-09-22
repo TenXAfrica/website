@@ -8,7 +8,14 @@
 name = "tenx-dma"
 main = "src/index.ts"
 compatibility_date = "2026-09-22"
-workers_dev = false
+
+# The Worker serves on its workers.dev hostname
+# (https://tenx-dma.ten-x-africa-main.workers.dev). The browser only ever
+# calls it from tenxafrica.co.za, which is enforced by the CORS allowlist and
+# the Turnstile hostname check in src/index.ts, so exposing the hostname
+# itself gives nothing away. The optional /api/* routes on the apex zone below
+# are a later nicety, not a requirement.
+workers_dev = true
 
 # Cloudflare account "Ten X Africa - Main". An account id is not a secret and
 # belongs in this file; it just saves wrangler an interactive account prompt.
@@ -23,26 +30,21 @@ TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
 WORKER_VERSION = "dma-worker-0.1.0"
 
 # --------------------------------------------------------------------------
-# TODO(Joash): the KV namespace below does not exist yet. Before the first
-# deploy, run:
-#
-#   cd worker
-#   npx wrangler kv namespace create DMA_RATELIMIT
-#   npx wrangler kv namespace create DMA_RATELIMIT --preview
-#
-# and paste the two ids wrangler prints over the placeholders. Until then the
-# Worker still runs: src/index.ts treats a missing binding as "allow" and logs
-# a warning, because losing a lead is worse than serving a duplicate.
+# Rate-limit counters. Namespaces "tenx-dma-DMA_RATELIMIT" and its _preview
+# twin, created 2026-09-22 in the Ten X Africa - Main account. If the binding
+# is ever missing, src/index.ts allows the request and logs a warning, because
+# losing a lead is worse than serving a duplicate.
 # --------------------------------------------------------------------------
 [[kv_namespaces]]
 binding = "DMA_RATELIMIT"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_KV_PREVIEW_NAMESPACE_ID"
+id = "16de54db5f494928befd678c584f6b12"
+preview_id = "c84d85f3345d4910927b9e23c5987272"
 
 # --------------------------------------------------------------------------
-# TODO(Joash): attach a route once the Worker is deployed and you are happy
-# with it. The site is on GitHub Pages behind Cloudflare, so the Worker takes
-# the /api/* path on the apex zone:
+# Optional (Joash): attach a route so the Worker also answers on the apex
+# zone. Not needed for the site to work; it already calls the workers.dev
+# hostname. The site is on GitHub Pages behind Cloudflare, so the Worker
+# would take the /api/* path:
 #
 # [[routes]]
 # pattern = "tenxafrica.co.za/api/*"

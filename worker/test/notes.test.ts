@@ -177,12 +177,16 @@ describe('renderSelfServeTaskBody', () => {
   });
 
   it('warns when consent was not given', () => {
-    const out = renderSelfServeTaskBody({
-      ...NOTE_INPUT,
-      contact: { ...CONTACT, consent: false },
-    });
+    const out = renderSelfServeTaskBody(
+      { ...NOTE_INPUT, contact: { ...CONTACT, consent: false } },
+      'no-contact'
+    );
     expect(out).toContain('ASKED');
-    expect(out).toContain('treat as cold');
+    expect(out).toContain('no outbound contact');
+    expect(out).toContain('Do NOT email');
+    // The routine must never be told to draft anything for these people.
+    expect(out).not.toContain('draft the DMA invite');
+    expect(out).not.toContain('bookings.cloud.microsoft');
   });
 });
 

@@ -24,6 +24,8 @@ import {
   normaliseWebsite,
   usePrefersReducedMotion,
   websiteLooksWrong,
+  DMA_WORKER_URL,
+  TURNSTILE_SITE_KEY,
 } from './util';
 
 const BOOKING_URL =
@@ -321,9 +323,6 @@ export const SelfServeAssessment: React.FC = () => {
     if (!contact.biggestTimeSink.trim()) {
       next.biggestTimeSink = 'One line is enough — this is the useful bit.';
     }
-    if (!contact.consent) {
-      next.consent = 'We need your permission before we email you.';
-    }
     if (!turnstileToken && !turnstileBroken) {
       next.turnstile = 'Give the security check a moment to finish.';
     }
@@ -372,7 +371,7 @@ export const SelfServeAssessment: React.FC = () => {
         submittedAt: new Date().toISOString(),
       };
 
-      const base = import.meta.env.PUBLIC_DMA_WORKER_URL as string | undefined;
+      const base = DMA_WORKER_URL || undefined;
       if (!base) {
         setSaveState('failed');
         setPhase('result');
@@ -727,7 +726,8 @@ export const SelfServeAssessment: React.FC = () => {
                   onChange={(e) => setField('consent', e.target.checked)}
                 />
                 <span className="font-sans text-[0.9375rem] leading-snug text-white/85">
-                  Ten X Africa may email me about my results.
+                  Ten X Africa may email me about my results.{' '}
+                  <span className="text-white/55">Optional. You get your score either way.</span>
                 </span>
               </label>
               {errors.consent && (
@@ -754,10 +754,7 @@ export const SelfServeAssessment: React.FC = () => {
 
             <div className="mt-7 flex flex-col items-start gap-2">
               <Turnstile
-                sitekey={
-                  (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string) ||
-                  '1x00000000000000000000AA'
-                }
+                sitekey={TURNSTILE_SITE_KEY}
                 theme="dark"
                 onVerify={(token) => {
                   setTurnstileToken(token);

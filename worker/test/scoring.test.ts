@@ -70,14 +70,21 @@ describe('scoreSelfServe -- a fully manual business', () => {
     }
   });
 
-  it('leads with the build the answers actually argue hardest for', () => {
-    // Every dimension is maximally manual, so the strongest accumulated
-    // signal wins. Pinned so a question-bank edit that shifts the lead
-    // recommendation is a visible test failure, not a silent change.
+  it('leads with the build that gives the most hours back', () => {
+    // Every dimension is maximally manual. The two strongest signals make
+    // the cut, and because hours are known they are then presented in order
+    // of hours recovered: the intake portal automates more of its share
+    // than the dashboard does. Pinned so a question-bank or catalogue edit
+    // that shifts the lead recommendation is a visible test failure, not a
+    // silent change.
     expect(result.recommendations.map((r) => r.buildType)).toEqual([
-      'ops_dashboard',
       'intake_portal',
+      'ops_dashboard',
     ]);
+    const [first, second] = result.recommendations;
+    expect(first!.roi!.hoursPerWeekRecovered).toBeGreaterThanOrEqual(
+      second!.roi!.hoursPerWeekRecovered
+    );
   });
 });
 

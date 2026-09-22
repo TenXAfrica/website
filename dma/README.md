@@ -127,7 +127,7 @@ Secrets the Worker needs:
 |---|---|
 | `TWENTY_API_KEY` | Writing to the CRM |
 | `TURNSTILE_SECRET_KEY` | Verifying the public form |
-| `DMA_ADMIN_TOKEN` | Guarding `/api/dma/full`, entered by Joash in the tool |
+| `DMA_ADMIN_TOKEN` | Guarding `/api/dma/full`, entered by Joash in the tool. Held in sessionStorage for that tab only, never localStorage |
 
 ---
 
@@ -135,12 +135,15 @@ Secrets the Worker needs:
 
 Production deploys are Joash's call, both for the site and the Worker.
 
-- **Site** — merging to `main` triggers the GitHub Pages workflow. Set
-  `PUBLIC_DMA_WORKER_URL` and `PUBLIC_TURNSTILE_SITE_KEY` as repository
-  secrets first, or the built site will point at nothing.
-- **Worker** — `npx wrangler deploy` from `worker/`, after the three secrets
-  are in place and the KV namespace for rate limiting exists. The
-  `wrangler.toml` has a placeholder KV id with a TODO next to it.
+- **Site** — merging to `main` triggers the GitHub Pages workflow. A
+  production build falls back to the deployed Worker
+  (`https://tenx-dma.ten-x-africa-main.workers.dev`) and the account's
+  Turnstile site key when `PUBLIC_DMA_WORKER_URL` and
+  `PUBLIC_TURNSTILE_SITE_KEY` are unset, so repository secrets are an
+  override, not a prerequisite. See `src/components/dma/util.ts`.
+- **Worker** — `npx wrangler deploy` from `worker/`. The KV namespace ids
+  are in `wrangler.toml` and the Worker serves on its workers.dev hostname.
+  First deployed 2026-09-22.
 
 Nothing in this directory deploys itself, and no routine may deploy either
 without Joash approving it first.
