@@ -17,6 +17,8 @@ const insights = defineCollection({
         }),
         tags: z.array(z.string()),
         readTime: z.number(),
+        // Set true to keep a post out of the built site while it is drafted.
+        draft: z.boolean().default(false),
     }),
 });
 

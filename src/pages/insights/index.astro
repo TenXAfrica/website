@@ -13,7 +13,7 @@ if (!pageData) {
 const { seo, hero } = pageData.data;
 
 // Files starting with an underscore are templates and never published.
-const allPosts = await getCollection("insights", ({ id }) => !id.startsWith("_"));
+const allPosts = await getCollection("insights", ({ id, data }) => !id.startsWith("_") && !data.draft);
 
 const posts = allPosts
     .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
