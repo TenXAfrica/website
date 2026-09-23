@@ -37,8 +37,8 @@ const description =
 
     <PageHeader
         eyebrow="Case studies"
-        title="What we built, and what changed"
-        lede="Each study shows the work before, the system we built, and the hours it gave back, told with the client's permission."
+        title={studies.length ? "What we built, and what changed" : "Case studies are on the way"}
+        lede={studies.length ? "Each study shows the work before, the system we built, and the hours it gave back, told with the client's permission." : undefined}
     />
 
     <section class="section">
