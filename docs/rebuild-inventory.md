@@ -8,7 +8,8 @@ across 22 files, including the home page, the navigation, the footer, the legal 
 several React components. Doing this in pieces leaves the site linking to pages that no
 longer exist, so it is treated here as one change, done in the order below.
 
-Nothing in this list has been deleted yet. This file is the map, not the work.
+This file is the map, not the work. Sections 1 and 2 have since been done; see section 7
+(Status) for what is finished and what is still open before using the list as a work queue.
 
 ## 1. Routes to delete
 
