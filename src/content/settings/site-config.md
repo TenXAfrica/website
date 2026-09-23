@@ -46,10 +46,6 @@ footer:
           href: /partner-network
         - label: Contact
           href: /forms/contact
-    - title: CONNECT
-      links:
-        - label: hello@tenxafrica.co.za
-          href: mailto:hello@tenxafrica.co.za
   newsletter:
     title: Subscribe for Impact & Tech Trends
     placeholder: Enter your email
