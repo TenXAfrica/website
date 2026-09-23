@@ -30,7 +30,7 @@ import {
 
 const BOOKING_URL =
   'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
-const CONTACT_EMAIL = 'joash@tenxafrica.co.za';
+const CONTACT_EMAIL = 'hello@tenxafrica.co.za';
 const TOTAL = SELF_SERVE_QUESTIONS.length;
 const REQUEST_TIMEOUT_MS = 10_000;
 
@@ -739,9 +739,8 @@ export const SelfServeAssessment: React.FC = () => {
                 id="dma-consent-note"
                 className="mt-3 font-sans text-[0.8125rem] leading-relaxed text-text-muted"
               >
-                Ten X Africa (Pty) Ltd, 9 Roosevelt Street, Robindale Ext 1,
-                Randburg, Johannesburg, 2194, South Africa. You can ask us to
-                stop at any time and we will. See our{' '}
+                Ten X Africa (Pty) Ltd, Johannesburg, South Africa. You can ask us
+                to stop at any time and we will. See our{' '}
                 <a
                   href="/privacy"
                   className="dma-inline-link text-tenx-gold underline underline-offset-2"
@@ -1061,8 +1060,7 @@ const Result: React.FC<{
     </section>
 
     <p className="dma-print-only mt-10 border-t pt-4 font-sans text-[0.75rem] leading-relaxed">
-      Ten X Africa (Pty) Ltd, 9 Roosevelt Street, Robindale Ext 1, Randburg,
-      Johannesburg, 2194, South Africa · {CONTACT_EMAIL} · tenxafrica.co.za
+      Ten X Africa (Pty) Ltd · {CONTACT_EMAIL} · tenxafrica.co.za
     </p>
 
     <div className="dma-no-print mt-10 border-t border-rule pt-6">
@@ -1094,7 +1092,7 @@ const SaveNote: React.FC<{ state: SaveState; mailtoHref: string }> = ({
   if (state === 'saved') {
     return (
       <p className="font-sans text-[0.875rem] leading-relaxed text-text-muted">
-        Saved. Joash will pick this up and be in touch.
+        Saved. The team will pick this up and be in touch.
       </p>
     );
   }

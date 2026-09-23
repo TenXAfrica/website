@@ -6,6 +6,47 @@ This is the specification the rebuild is built against. Every statement here is 
 not a suggestion. If a decision turns out to be wrong, change this file first, then the code.
 A reviewer rejects work that contradicts this document.
 
+## Amendments — 23 September 2026 (override everything below)
+
+Joash reviewed the rebuild on 23 September 2026 and changed five decisions. Where this block
+disagrees with a later section, this block wins.
+
+1. **The site moves.** Section 2's "Motion" and the banned-visual rows for canvas, particles and
+   Africa silhouettes are replaced by this: the home hero carries **one signature animation**,
+   gold nodes drifting together into the outline of Africa (`src/components/hero/AfricaConstellation.tsx`),
+   because the previous site had it and it is what made the site feel like an experience. Every
+   section fades and rises 12px once as it enters the viewport, with a 3rem gold tick drawing in
+   along its top rule. Primary buttons lift 1px on hover; nav links grow a gold hairline. All of it
+   collapses to still, visible content under `prefers-reduced-motion`, pauses off-screen, and the
+   hidden state exists only when `html.js` is present. Still banned: parallax, scroll-jacking,
+   counters, typewriter text, glassmorphism, gradients, stock photography, 3D renders.
+2. **No founder name, no address, no personal email anywhere on the site.** The site says "the
+   team" or "the Ten X Africa team member who runs your assessment". The registered address is
+   where Joash lives and appears only on invoices and proposals, never on a web page, not even the
+   privacy or terms pages (those say "Registered in South Africa; we work from Johannesburg").
+   The public email is **hello@tenxafrica.co.za**. Section 6's instruction to put the postal
+   address in the footer and gate 15's address requirement are withdrawn; the registration and
+   VAT numbers stay.
+3. **The three service lines are back.** Operations excellence, digital transformation and tech
+   implementation, from the previous site, are restored as three parallel sections at the top of
+   `/what-we-build` (anchors `#operations-excellence`, `#digital-transformation`,
+   `#tech-implementation`, which the old `/consulting/*` URLs redirect to) and as a "3 services"
+   list on Home. Each has the same anatomy: label · h2 · lede · body · what it includes · what you
+   get · good fit when. The five builds follow, under a `#builds` anchor.
+4. **The hero is left-aligned**, on the same hard left edge as everything else, with the
+   constellation in columns 8–12 at `lg` and behind the text (35% opacity) below that. Section 2's
+   "only the home hero is centred" no longer applies; nothing is centred except the 404.
+5. **The wordmark shows at every width.** The header shows the logo and "Ten X Africa" on phones
+   too; the icon-only header was a bug.
+
+Search: the brand is searched for as "10X Africa" and "TenX Africa" as often as "Ten X Africa",
+and the site was ranking second to an unrelated investment firm. The Organization and WebSite
+structured data now carry those alternate names, the footer says so in one caption line, the home
+title includes "(10X Africa)", and `public/og-default.jpg` plus `public/logo.png` exist
+(`scripts/make-og-image.mjs`).
+
+---
+
 ---
 
 ## 1. Positioning and the hero sentence

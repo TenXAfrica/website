@@ -18,9 +18,9 @@ Ten X Africa (Pty) Ltd is the responsible party (the "controller" under GDPR) fo
 
 - Registration number 2020/714539/07
 - VAT number 4250317601
-- 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa
+- Registered in South Africa; we work from Johannesburg
 
-Our information officer, and the person to contact about anything in this notice, is Joash Paul: [joash@tenxafrica.co.za](mailto:joash@tenxafrica.co.za).
+Our information officer, and the address to write to about anything in this notice, is [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za).
 
 ## What we collect
 
@@ -79,7 +79,7 @@ Depending on where you are, you can ask us to:
 - give it to you in a portable format;
 - withdraw consent you gave, without affecting what we did before.
 
-Email [joash@tenxafrica.co.za](mailto:joash@tenxafrica.co.za). We reply within one month, and we may ask you to confirm who you are first. There is no charge.
+Email [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za). We reply within one month, and we may ask you to confirm who you are first. There is no charge.
 
 ## How to complain
 
@@ -91,7 +91,7 @@ Please tell us first, and we will try to put it right. You can also complain to 
 
 ## Security
 
-Access to our records is limited to Joash and the systems that run our routines. We use encrypted connections, strong sign-in protection on our accounts, and keep our own server updated. No system is perfectly secure; if something goes wrong that puts your information at risk, we will tell you and the relevant regulator as the law requires.
+Access to our records is limited to the Ten X Africa team and the systems that run our routines. We use encrypted connections, strong sign-in protection on our accounts, and keep our own server updated. No system is perfectly secure; if something goes wrong that puts your information at risk, we will tell you and the relevant regulator as the law requires.
 
 ## Changes to this notice
 

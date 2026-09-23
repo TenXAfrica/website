@@ -8,6 +8,56 @@ import DashboardDiagram from '../components/diagrams/DashboardDiagram.astro';
 import DocumentsDiagram from '../components/diagrams/DocumentsDiagram.astro';
 import InboxDiagram from '../components/diagrams/InboxDiagram.astro';
 
+
+// The three service lines, in the order the work happens.
+const services = [
+  {
+    n: '01',
+    id: 'operations-excellence',
+    name: 'Operations excellence',
+    lede: 'Fix the process before touching the software. You cannot automate a mess.',
+    body: 'We sit with the people who do the work and map how a job actually moves through the business: where it starts, who touches it, where it waits, and where it gets typed in twice. Then we write down the standard way of doing each job and cut the steps that add nothing for the customer.',
+    includes: [
+      'End-to-end process maps of how work really flows, not how the org chart says it does.',
+      'Standard operating procedures your team can follow and a new starter can learn from.',
+      'Bottleneck and waste review: the doubled-up steps, the waiting, the chasing.',
+      'ISO 9001 readiness where a client or tender is asking for it.',
+    ],
+    output: 'A process map and a set of written procedures you own, plus a short list of what is worth automating first, in priority order.',
+    fit: 'Nobody follows the same process. Onboarding a new person takes weeks. You are losing money somewhere and cannot see where.',
+  },
+  {
+    n: '02',
+    id: 'digital-transformation',
+    name: 'Digital transformation',
+    lede: 'Then automate the fixed process, so the business runs without someone doing the typing.',
+    body: 'Once the process is stable we replace the manual steps with software built around it: custom systems and AI agents that do the intake, the quoting, the chasing, the sorting and the reporting, connected to the tools you already pay for. This is where the five builds below come from.',
+    includes: [
+      'Custom business systems built to your process, not a generic subscription.',
+      'AI agents that read, sort, draft and route work, with a person approving where it matters.',
+      'Integration between your CRM, accounting, email and job tools so data is typed in once.',
+      'Hosting, monitoring and monthly upkeep on a retainer, so it keeps working as you change.',
+    ],
+    output: 'A working system, deployed and run for you, with a fixed build price and a monthly retainer agreed before any work starts.',
+    fit: 'Your systems do not talk to each other. Someone re-keys the same details every day. You want to use AI for something real, not a chatbot.',
+  },
+  {
+    n: '03',
+    id: 'tech-implementation',
+    name: 'Tech implementation',
+    lede: 'Set up and connect the systems you have chosen, without the IT overhead.',
+    body: 'Not everything needs custom code. When a good platform already exists, we set it up properly: configured for how you work, connected to the rest of your tools, your data moved across cleanly, and your team trained on it. No over-engineering, no vendor lock-in.',
+    includes: [
+      'CRM, accounting, HR and job-management platforms configured to your workflow.',
+      'Integrations and data pipelines between the tools, including the ones with no official connector.',
+      'Migration off spreadsheets and legacy systems, with the history preserved.',
+      'Training and hand-over documentation so you can run it yourself.',
+    ],
+    output: 'The platforms you chose, live and connected, with your data in them and your team using them.',
+    fit: 'You have bought software nobody uses. You are moving off a spreadsheet or an old system. Two tools need to share data and there is no button for it.',
+  },
+];
+
 // Five parallel sections, same five parts in the same order (design contract section 7):
 // label · h2 name · one lede sentence · Kind A schematic · "What it replaces" + "Typical band".
 const builds = [
@@ -60,9 +110,71 @@ const builds = [
 >
   <PageHeader
     eyebrow="What we build"
-    title="Five things we build, and what each one replaces."
-    lede="Most of the hand work in a small business falls into one of these five. Each is built around how your business already runs, and your assessment call tells us which to start with."
+    title="What we do, and what we build."
+    lede="Three services, done in order: fix the process, automate it, then set up the systems around it. Most of that work lands as one of five builds, each described below with what it replaces."
   />
+
+  <!-- The three service lines. Restored 23 Sep 2026: the previous site's
+       operations excellence, digital transformation and tech implementation
+       pages, rewritten in plain English and given anchors the old URLs
+       redirect to. Same anatomy for each: label · h2 · lede · what it
+       includes · what you get. -->
+  {services.map((s, i) => (
+    <section
+      id={s.id}
+      class:list={['section scroll-mt-24', i > 0 && 'border-t border-rule']}
+      aria-labelledby={`${s.id}-heading`}
+    >
+      <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          Service {s.n}
+        </p>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id={`${s.id}-heading`} class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            {s.name}
+          </h2>
+          <p class="t-lede text-text-muted measure mt-4 lg:mt-6">{s.lede}</p>
+          <p class="t-body text-text-muted measure mt-4 lg:mt-6">{s.body}</p>
+          <dl class="measure mt-8 lg:mt-12 border-b border-rule">
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">What it includes</dt>
+              <dd class="mt-1 sm:mt-0">
+                <ul class="t-small text-text-muted space-y-1" role="list">
+                  {s.includes.map((line) => <li>{line}</li>)}
+                </ul>
+              </dd>
+            </div>
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">What you get</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{s.output}</dd>
+            </div>
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">Good fit when</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{s.fit}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section id="builds" class="section scroll-mt-24 border-t border-rule" aria-labelledby="builds-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        What we build
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="builds-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Five things we build, and what each one replaces.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          The digital transformation work nearly always lands as one of these five. Each is built
+          around how your business already runs, and your assessment call tells us which to start
+          with.
+        </p>
+      </div>
+    </div>
+  </section>
 
   {builds.map(({ Diagram, ...b }, i) => (
     <section

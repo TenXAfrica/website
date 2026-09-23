@@ -3,9 +3,9 @@ title: "Why South African businesses need to move from chatting to doing"
 excerpt: "The AI hype is settling. Now South African businesses are asking: can AI actually run operations and cut costs? The answer lies in moving from Generative AI to Agentic AI."
 publishedAt: 2025-02-05T00:00:00.000Z
 author:
-  id: "ashley-paul"
-  name: "Ashley Paul"
-  role: "CEO"
+  id: "tenx-team"
+  name: "The Ten X Africa team"
+  role: "Editorial"
 image:
   src: "https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg"
   alt: "AI Evolution in Business"

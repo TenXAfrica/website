@@ -3,8 +3,36 @@ import MainLayout from '../layouts/MainLayout.astro';
 import Button from '../components/ui/Button.astro';
 import AssessmentCta from '../components/ui/AssessmentCta.astro';
 import HomePipeline from '../components/diagrams/HomePipeline.astro';
+import AfricaConstellation from '../components/hero/AfricaConstellation';
 
 const BOOKINGS_URL = 'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
+
+// The three service lines, in the order the work happens. Restored 23 Sep 2026
+// from the previous site (operations excellence, digital transformation, tech
+// implementation), rewritten in plain English.
+const services = [
+  {
+    n: '01',
+    name: 'Operations excellence',
+    href: '/what-we-build#operations-excellence',
+    lede: 'Fix the process before touching the software.',
+    body: 'We map how work actually moves through your business, write down the standard way of doing each job, and cut the steps that add nothing. Process maps, standard operating procedures, ISO 9001 readiness.',
+  },
+  {
+    n: '02',
+    name: 'Digital transformation',
+    href: '/what-we-build#digital-transformation',
+    lede: 'Then automate the fixed process.',
+    body: 'Custom software and AI agents that do the typing, the chasing, the sorting and the reporting, connected to the tools you already pay for. This is where the five builds below come from.',
+  },
+  {
+    n: '03',
+    name: 'Tech implementation',
+    href: '/what-we-build#tech-implementation',
+    lede: 'Set up and connect the systems you have chosen.',
+    body: 'A CRM, accounting, HR or job-management platform configured for how you work, joined to each other, your data moved across, and your team trained on it.',
+  },
+];
 
 const builds = [
   { n: '01', name: 'Intake and onboarding portal', replaces: 'Replaces enquiry emails, PDF forms and details typed in three times.' },
@@ -16,22 +44,29 @@ const builds = [
 ---
 
 <MainLayout
-  title="Ten X Africa: we build the software your business is doing by hand"
-  description="We build and run the software an owner-led business of 5 to 50 people is currently doing with spreadsheets, inboxes and memory. Fixed price after a free 45-minute assessment."
+  title="Ten X Africa (10X Africa): we build the software your business is doing by hand"
+  description="Ten X Africa, also written 10X Africa, builds and runs the software an owner-led business of 5 to 50 people is currently doing with spreadsheets, inboxes and memory. Operations excellence, digital transformation and tech implementation, priced fixed after a free 45-minute assessment."
 >
-  <!-- Hero: the only centred block on the site besides the 404 -->
-  <section class="pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-28">
-    <div class="container-content text-center">
-      <h1 class="t-display text-vapor-white mx-auto max-w-[18ch]">
-        We build the software your business is currently doing by hand.
-      </h1>
-      <p class="t-lede text-text-muted mx-auto mt-6 max-w-[38rem]">
-        Intake, quotes, invoices, reporting, document packs, inbox triage — built for how your
-        business actually runs, then kept running for you. Start with a free 45-minute assessment.
-      </p>
-      <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
-        <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
-        <Button href={BOOKINGS_URL} variant="secondary" external>Book the 45-minute assessment</Button>
+  <!-- Hero: text on the left edge, the constellation on the right at lg and
+       behind the text below that. -->
+  <section class="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24">
+    <div class="container-content relative lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-8">
+      <div class="hero-constellation lg:col-start-8 lg:col-span-5 lg:row-start-1" aria-hidden="true">
+        <AfricaConstellation client:idle />
+      </div>
+      <div class="relative z-10 lg:col-start-1 lg:col-span-7 lg:row-start-1">
+        <p class="t-label text-text-faint">Ten X Africa · Johannesburg, working worldwide</p>
+        <h1 class="t-display text-vapor-white mt-5 max-w-[18ch]">
+          We build the software your business is currently doing by hand.
+        </h1>
+        <p class="t-lede text-text-muted mt-6 max-w-[38rem]">
+          Intake, quotes, invoices, reporting, document packs, inbox triage — built for how your
+          business actually runs, then kept running for you. Start with a free 45-minute assessment.
+        </p>
+        <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
+          <Button href={BOOKINGS_URL} variant="secondary" external>Book the 45-minute assessment</Button>
+        </div>
       </div>
     </div>
   </section>
@@ -62,7 +97,48 @@ const builds = [
     </div>
   </section>
 
-  <!-- 2. The condensed pipeline -->
+  <!-- 2. The three services -->
+  <section class="section border-t border-rule" aria-labelledby="services-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        What we do
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="services-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          3 services, done in this order.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          You cannot automate a mess. So we fix the process first, automate it second, and set up
+          the systems around it third. Most clients need all three; the assessment tells us where
+          to start.
+        </p>
+        <ol class="mt-8 lg:mt-12 border-b border-rule">
+          {services.map((s) => (
+            <li class="border-t border-rule">
+              <a
+                href={s.href}
+                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 hover:bg-surface-1 sm:grid-cols-[4rem_1fr] -mx-3 px-3 rounded-[2px]"
+              >
+                <span class="t-h3 text-text-faint" aria-hidden="true">{s.n}</span>
+                <span>
+                  <span class="t-h3 block text-vapor-white underline-offset-4 group-hover:underline">
+                    <span class="sr-only">Service {s.n}: </span>{s.name}
+                  </span>
+                  <span class="t-small block text-vapor-white mt-2">{s.lede}</span>
+                  <span class="t-small block text-text-muted mt-1">{s.body}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <div class="mt-8">
+          <Button href="/what-we-build" variant="quiet">See what each service includes</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. The condensed pipeline -->
   <section class="section border-t border-rule" aria-labelledby="pipeline-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
@@ -87,7 +163,7 @@ const builds = [
     </div>
   </section>
 
-  <!-- 3. The five build types -->
+  <!-- 4. The five build types -->
   <section class="section border-t border-rule" aria-labelledby="builds-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
@@ -106,7 +182,7 @@ const builds = [
             <li class="border-t border-rule">
               <a
                 href={`/what-we-build#build-${b.n}`}
-                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 sm:grid-cols-[4rem_1fr]"
+                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 hover:bg-surface-1 sm:grid-cols-[4rem_1fr] -mx-3 px-3 rounded-[2px]"
               >
                 <span class="t-h3 text-text-faint" aria-hidden="true">{b.n}</span>
                 <span>
@@ -120,13 +196,13 @@ const builds = [
           ))}
         </ol>
         <div class="mt-8">
-          <Button href="/what-we-build" variant="quiet">See how each one works</Button>
+          <Button href="/what-we-build#builds" variant="quiet">See how each one works</Button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 4. Pricing teaser -->
+  <!-- 5. Pricing teaser -->
   <section class="section border-t border-rule" aria-labelledby="pricing-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
@@ -150,21 +226,21 @@ const builds = [
     </div>
   </section>
 
-  <!-- 5. Who you work with -->
-  <section class="section border-t border-rule" aria-labelledby="founder-heading">
+  <!-- 6. Who you work with -->
+  <section class="section border-t border-rule" aria-labelledby="team-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
         Who you work with
       </p>
       <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
-        <h2 id="founder-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          You deal with the founder, Joash Paul.
+        <h2 id="team-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          You deal with the people who build it.
         </h2>
         <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
           <p class="t-body text-text-muted">
-            Joash runs the assessment call and the walkthrough of your first draft himself. Those
-            are the two meetings in the whole process, and you will not be handed to an account
-            manager for either of them.
+            The Ten X Africa team member who runs your assessment call also builds your first
+            draft and walks you through it. Those are the two meetings in the whole process, and
+            you will not be handed to an account manager for either of them.
           </p>
           <p class="t-body text-text-muted">
             We are based in Johannesburg and work with businesses in the US, the UK, Ireland,

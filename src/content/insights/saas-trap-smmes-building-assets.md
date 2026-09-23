@@ -3,9 +3,9 @@ title: "The SaaS trap: why small businesses must own the software they run on"
 excerpt: "The AI boom is creating a dangerous divide. If SMMEs only rent intelligence through subscriptions, they fall into a costly SaaS trap while larger firms build sovereign AI assets."
 publishedAt: 2026-02-12T00:00:00.000Z
 author:
-  id: "ashley-paul"
-  name: "Ashley Paul"
-  role: "CEO"
+  id: "tenx-team"
+  name: "The Ten X Africa team"
+  role: "Editorial"
 image:
   src: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg"
   alt: "Team planning digital strategy"

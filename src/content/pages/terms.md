@@ -10,7 +10,7 @@ hero:
 
 ## Who we are
 
-This website and the services described on it are provided by Ten X Africa (Pty) Ltd, a private company registered in South Africa (registration number 2020/714539/07, VAT number 4250317601). Our address is 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa. You can reach us at [joash@tenxafrica.co.za](mailto:joash@tenxafrica.co.za).
+This website and the services described on it are provided by Ten X Africa (Pty) Ltd, a private company registered in South Africa (registration number 2020/714539/07, VAT number 4250317601). You can reach us at [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za).
 
 In these terms, "we", "us" and "our" mean Ten X Africa (Pty) Ltd. "You" means the person or business using this website or buying our services.
 
@@ -98,4 +98,4 @@ These terms are governed by the laws of the Republic of South Africa. Any disput
 
 ## Contact
 
-Questions about these terms: [joash@tenxafrica.co.za](mailto:joash@tenxafrica.co.za), or write to Ten X Africa (Pty) Ltd, 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa.
+Questions about these terms: [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za).

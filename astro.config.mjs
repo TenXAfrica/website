@@ -47,9 +47,9 @@ export default defineConfig({
   // emit meta-refresh pages with canonicals (design contract section 10).
   redirects: {
     '/consulting': '/what-we-build',
-    '/consulting/operations-excellence': '/what-we-build',
-    '/consulting/digital-transformation': '/what-we-build',
-    '/consulting/tech-implementation': '/what-we-build',
+    '/consulting/operations-excellence': '/what-we-build#operations-excellence',
+    '/consulting/digital-transformation': '/what-we-build#digital-transformation',
+    '/consulting/tech-implementation': '/what-we-build#tech-implementation',
     '/venture-studio': '/',
     '/venture-studio/incubation-and-funding': '/',
     '/venture-studio/compliance-and-registration': '/',

@@ -21,7 +21,7 @@ const { data } = privacyPage;
 const { Content } = await privacyPage.render();
 
 const OPT_OUT_MAILTO =
-	"mailto:joash@tenxafrica.co.za?subject=Unsubscribe&body=Please%20stop%20contacting%20me%20at%20this%20address.";
+	"mailto:hello@tenxafrica.co.za?subject=Unsubscribe&body=Please%20stop%20contacting%20me%20at%20this%20address.";
 ---
 
 <MainLayout title={data.seo.title} description={data.seo.description}>
@@ -39,13 +39,13 @@ const OPT_OUT_MAILTO =
 				<h2 id="opt-out" class="opt-out-anchor">Opting out of email</h2>
 				<p>
 					We only email business addresses, and never from a bought list. Every email we send
-					carries a link to this section and our postal address.
+					carries a link to this section.
 				</p>
 				<p>To stop all email from us, do any one of these:</p>
 				<ul>
 					<li>reply to any of our emails with the word <strong>unsubscribe</strong>;</li>
 					<li>
-						email <a href="mailto:joash@tenxafrica.co.za">joash@tenxafrica.co.za</a> with the subject
+						email <a href="mailto:hello@tenxafrica.co.za">hello@tenxafrica.co.za</a> with the subject
 						<strong>Unsubscribe</strong>;
 					</li>
 					<li>or use the button below, which opens that email ready to send.</li>
@@ -68,14 +68,13 @@ const OPT_OUT_MAILTO =
 			<div class="measure mt-8">
 				<Button href={OPT_OUT_MAILTO} variant="secondary">Email us to unsubscribe</Button>
 				<p class="t-caption mt-3">
-					Opens your email app with the subject "Unsubscribe" to joash@tenxafrica.co.za.
+					Opens your email app with the subject "Unsubscribe" to hello@tenxafrica.co.za.
 				</p>
 			</div>
 
 			<p class="t-caption measure mt-12 border-t border-rule pt-6">
-				Ten X Africa (Pty) Ltd · Reg 2020/714539/07 · VAT 4250317601 · 9 Roosevelt Street,
-				Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa · Information officer: Joash
-				Paul, joash@tenxafrica.co.za
+				Ten X Africa (Pty) Ltd · Reg 2020/714539/07 · VAT 4250317601 · Information officer:
+				hello@tenxafrica.co.za
 			</p>
 		</div>
 	</div>

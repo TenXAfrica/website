@@ -44,11 +44,11 @@ footer:
       href: /terms
   company:
     name: Ten X Africa (Pty) Ltd
-    address: 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa
     registration: Reg 2020/714539/07 · VAT 4250317601
-    email: joash@tenxafrica.co.za
+    email: hello@tenxafrica.co.za
   copyright: © {year} Ten X Africa (Pty) Ltd.
 ---
 
 Global site configuration: header navigation, the one header button, and the footer.
 No social links: the business does not run social media.
+No postal address anywhere on the site: the registered address is private and appears only on invoices and proposals.

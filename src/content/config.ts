@@ -88,7 +88,6 @@ const settings = defineCollection({
             legalLinks: z.array(link),
             company: z.object({
                 name: z.string(),
-                address: z.string(),
                 registration: z.string(),
                 email: z.string().email(),
             }),

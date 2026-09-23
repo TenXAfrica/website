@@ -554,3 +554,125 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ---- Motion: scroll reveal and the hero constellation ----------------
+   Decided 23 Sep 2026: the site keeps its restraint but is no longer static.
+   Sections rise 12px and fade in once as they enter the viewport; the home
+   hero carries the one signature animation (gold nodes forming Africa).
+   Everything here collapses to "visible, still" under reduced motion, and
+   the hidden state only ever applies when html.js is present, so a page
+   without JavaScript is never blank. */
+
+@layer components {
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  html.js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A short gold tick draws in along the top rule of each section as it
+     enters. One gold element per section, and it is 3rem long. */
+  html.js main > section.reveal {
+    position: relative;
+  }
+
+  html.js main > section.reveal::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 1px;
+    width: 3rem;
+    background: var(--color-tenx-gold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1) 150ms;
+  }
+
+  html.js main > section.reveal.is-in::before {
+    transform: scaleX(1);
+  }
+
+  /* The hero has no rule above it, so no tick. */
+  html.js main > section.reveal:first-child::before {
+    display: none;
+  }
+
+  /* Primary buttons lift one pixel on hover; secondary borders brighten. */
+  .btn {
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Nav links: a gold hairline grows under the link on hover. */
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    height: 1px;
+    background: var(--color-tenx-gold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 200ms ease;
+  }
+
+  .nav-link:hover::after,
+  .nav-link[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+
+  /* Home hero layout: text on the left edge, the constellation on the right
+     at lg, and behind the text (dimmed) below that. */
+  .hero-constellation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-constellation {
+      position: relative;
+      inset: auto;
+      opacity: 1;
+      pointer-events: auto;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      max-height: 34rem;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal,
+  html.js main > section.reveal::before {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .btn:hover {
+    transform: none;
+  }
+}

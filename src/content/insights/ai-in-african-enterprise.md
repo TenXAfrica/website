@@ -3,9 +3,9 @@ title: "Beyond the hype: what automation really means for African businesses"
 excerpt: "Everyone is talking about AI, but what does it actually mean for African businesses? We separate the signal from the noise."
 publishedAt: 2025-12-01T00:00:00.000Z
 author:
-  id: "joash-paul"
-  name: "Joash Paul"
-  role: "CTO"
+  id: "tenx-team"
+  name: "The Ten X Africa team"
+  role: "Editorial"
 image:
   src: "https://images.pexels.com/photos/35088937/pexels-photo-35088937.jpeg"
   alt: "AI in African Enterprise"

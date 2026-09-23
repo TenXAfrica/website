@@ -1,7 +1,7 @@
 ---
 /**
  * /contact — the promoted ContactForm plus a side rail with the direct
- * email, the registered address and the booking route.
+ * email, the company line and the booking route. No postal address: it is private.
  * The form posts to the DMA Worker's /api/contact (or
  * PUBLIC_CONTACT_WEBHOOK_URL when set); see ContactForm.tsx.
  */
@@ -16,12 +16,12 @@ const BOOKINGS_URL =
 
 <MainLayout
 	title="Contact | Ten X Africa"
-	description="Write to Ten X Africa about the software your business is doing by hand. Joash Paul reads every message and usually replies within one working day."
+	description="Write to Ten X Africa about the software your business is doing by hand. The team reads every message and usually replies within one working day."
 >
 	<PageHeader
 		eyebrow="Contact"
 		title="Tell us what is taking the time"
-		lede="A few lines is enough. Joash reads every message himself and usually replies within one working day."
+		lede="A few lines is enough. The team reads every message and usually replies within one working day."
 	/>
 
 	<section class="container-content" aria-labelledby="form-title">
@@ -36,21 +36,15 @@ const BOOKINGS_URL =
 				<p class="t-label">Email</p>
 				<p class="t-body mt-2">
 					<a
-						href="mailto:joash@tenxafrica.co.za"
+						href="mailto:hello@tenxafrica.co.za"
 						class="text-vapor-white underline decoration-border-interactive underline-offset-4 transition-colors duration-150 hover:text-tenx-gold"
 					>
-						joash@tenxafrica.co.za
+						hello@tenxafrica.co.za
 					</a>
 				</p>
 
-				<p class="t-label mt-8">Postal address</p>
-				<address class="t-small mt-2 not-italic">
-					Ten X Africa (Pty) Ltd<br />
-					9 Roosevelt Street<br />
-					Robindale Ext 1, Randburg<br />
-					Johannesburg, 2194<br />
-					South Africa
-				</address>
+				<p class="t-label mt-8">Company</p>
+				<p class="t-small mt-2">Ten X Africa (Pty) Ltd, registered in South Africa. We work from Johannesburg with clients in the US, the UK, Ireland, Australia, New Zealand, the UAE and South Africa.</p>
 				<p class="t-caption mt-2">Reg 2020/714539/07 · VAT 4250317601</p>
 
 				<div class="mt-8 border-t border-rule pt-8">

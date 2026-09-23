@@ -233,7 +233,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
         } catch (err) {
             console.error('Contact form submission failed:', err);
             setStatus('error');
-            announce('Your message did not send. You can try again or email joash@tenxafrica.co.za.');
+            announce('Your message did not send. You can try again or email hello@tenxafrica.co.za.');
             setTurnstileToken('');
             setTurnstileKey((k) => k + 1);
         }
@@ -265,7 +265,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                         Thanks. Your message is with us.
                     </h2>
                     <p className="t-body mt-4 max-w-[34rem] text-text-muted">
-                        Joash reads every enquiry and usually replies within one working day, from joash@tenxafrica.co.za.
+                        The team reads every enquiry and usually replies within one working day, from hello@tenxafrica.co.za.
                         If you would rather talk now, book the free 45-minute assessment.
                     </p>
                     <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
@@ -477,7 +477,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                         )}
                         {turnstileBroken && !errors.turnstile && (
                             <p className={HINT}>
-                                The security check did not load. Refresh the page, or email joash@tenxafrica.co.za instead.
+                                The security check did not load. Refresh the page, or email hello@tenxafrica.co.za instead.
                             </p>
                         )}
                     </div>
@@ -486,8 +486,8 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                 {status === 'error' && (
                     <p className="mt-8 border-l-2 border-signal-bad pl-4 text-[0.9375rem] text-signal-bad">
                         Your message did not send. Please try again, or email{' '}
-                        <a href="mailto:joash@tenxafrica.co.za" className="underline underline-offset-2">
-                            joash@tenxafrica.co.za
+                        <a href="mailto:hello@tenxafrica.co.za" className="underline underline-offset-2">
+                            hello@tenxafrica.co.za
                         </a>
                         .
                     </p>

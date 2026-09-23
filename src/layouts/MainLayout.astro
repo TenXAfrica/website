@@ -14,7 +14,7 @@ interface Props {
 }
 
 const DEFAULT_DESCRIPTION =
-	"Ten X Africa builds and runs the software owner-led businesses of 5 to 50 people are doing by hand: intake, quotes, invoices, reporting, documents and inbox triage. Start with a free 45-minute assessment.";
+	"Ten X Africa (also written 10X Africa) builds and runs the software owner-led businesses of 5 to 50 people are doing by hand: intake, quotes, invoices, reporting, documents and inbox triage. Start with a free 45-minute assessment.";
 
 const {
 	title,
@@ -41,28 +41,62 @@ if (!siteConfig) {
 const { navigation, navCta, footer } = siteConfig.data;
 const year = new Date().getFullYear().toString();
 
+const SITE_URL = "https://tenxafrica.co.za";
+
+// The brand is searched for as "10X Africa" and "TenX Africa" as often as
+// "Ten X Africa". The alternate names tell search engines these are one
+// organisation. No postal address: the registered address is private and
+// appears only on invoices and proposals.
 const organizationLd = {
 	"@context": "https://schema.org",
 	"@type": "Organization",
+	"@id": `${SITE_URL}/#organization`,
 	name: "Ten X Africa",
+	alternateName: ["10X Africa", "10x Africa", "TenX Africa", "Ten X Africa (Pty) Ltd"],
 	legalName: footer.company.name,
-	url: "https://tenxafrica.co.za",
-	logo: "https://tenxafrica.co.za/logo.png",
+	url: SITE_URL,
+	logo: {
+		"@type": "ImageObject",
+		url: `${SITE_URL}/logo.png`,
+		width: 512,
+		height: 512,
+	},
+	image: `${SITE_URL}/og-default.jpg`,
 	description:
-		"Ten X Africa builds and runs custom business software for owner-led companies of 5 to 50 people, starting with a free 45-minute assessment.",
+		"Ten X Africa builds and runs custom business software for owner-led companies of 5 to 50 people, starting with a free 45-minute Digital Maturity Assessment.",
 	email: footer.company.email,
 	contactPoint: {
 		"@type": "ContactPoint",
 		email: footer.company.email,
 		contactType: "sales",
+		availableLanguage: "English",
 	},
 	address: {
 		"@type": "PostalAddress",
-		streetAddress: "9 Roosevelt Street, Robindale Ext 1",
-		addressLocality: "Randburg, Johannesburg",
-		postalCode: "2194",
+		addressLocality: "Johannesburg",
+		addressRegion: "Gauteng",
 		addressCountry: "ZA",
 	},
+	areaServed: ["US", "GB", "IE", "AU", "NZ", "AE", "ZA"],
+	knowsAbout: [
+		"business process automation",
+		"operations excellence",
+		"digital transformation",
+		"custom business software",
+		"AI agents for small business",
+	],
+	sameAs: ["https://github.com/TenXAfrica"],
+};
+
+const websiteLd = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"@id": `${SITE_URL}/#website`,
+	url: SITE_URL,
+	name: "Ten X Africa",
+	alternateName: ["10X Africa", "TenX Africa"],
+	publisher: { "@id": `${SITE_URL}/#organization` },
+	inLanguage: "en",
 };
 
 const FONTS_URL =
@@ -75,11 +109,16 @@ const FONTS_URL =
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="apple-touch-icon" href="/logo.png" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#0a0f14" />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<title>{title}</title>
+
+		<!-- Marks the document as JavaScript-capable before first paint, so the
+		     scroll-reveal styles only ever hide content that a script will show. -->
+		<script is:inline>document.documentElement.classList.add("js");</script>
 
 		<!-- Preconnect for performance -->
 		<link rel="preconnect" href="https://www.googletagmanager.com" />
@@ -130,8 +169,9 @@ const FONTS_URL =
 			});
 		</script>
 
-		<!-- Organization structured data -->
+		<!-- Organisation and website structured data -->
 		<script type="application/ld+json" set:html={JSON.stringify(organizationLd)} />
+		<script type="application/ld+json" set:html={JSON.stringify(websiteLd)} />
 
 		<slot name="head" />
 	</head>
@@ -140,7 +180,7 @@ const FONTS_URL =
 
 		<CookiesBanner />
 
-		<header class="sticky top-0 z-50 border-b border-rule bg-obsidian-void print:hidden">
+		<header class="site-header sticky top-0 z-50 border-b border-rule bg-obsidian-void print:hidden">
 			<div class="container-wide flex h-20 items-center justify-between gap-2">
 			<nav
 				aria-label="Main"
@@ -159,7 +199,7 @@ const FONTS_URL =
 						width="40"
 						height="40"
 					/>
-					<span class="sr-only xl:not-sr-only">Ten X Africa</span>
+					<span class="whitespace-nowrap">Ten X Africa</span>
 				</a>
 
 				<ul class="hidden items-center gap-x-5 lg:flex xl:gap-x-8">
@@ -172,7 +212,7 @@ const FONTS_URL =
 										href={item.href}
 										aria-current={active ? "page" : undefined}
 										class:list={[
-											"inline-flex min-h-11 items-center text-[0.9375rem] font-medium transition-colors duration-150 hover:text-tenx-gold",
+											"nav-link inline-flex min-h-11 items-center text-[0.9375rem] font-medium transition-colors duration-150 hover:text-tenx-gold",
 											active ? "text-tenx-gold" : "text-vapor-white",
 										]}
 									>
@@ -225,6 +265,10 @@ const FONTS_URL =
 							We build and run the software owner-led businesses are
 							currently doing by hand.
 						</p>
+						<p class="t-caption measure mt-3">
+							Ten X Africa is also written 10X Africa or TenX Africa. Same company, same
+							people.
+						</p>
 					</div>
 
 					<div class="lg:col-span-3">
@@ -247,10 +291,11 @@ const FONTS_URL =
 
 					<div class="lg:col-span-4">
 						<p class="t-label">Company</p>
-						<address class="t-small mt-4 not-italic">
+						<p class="t-small mt-4">
 							{footer.company.name}<br />
-							{footer.company.address}
-						</address>
+							Johannesburg, South Africa. Working with owners in the US, the UK, Ireland,
+							Australia, New Zealand, the UAE and South Africa.
+						</p>
 						<p class="t-caption mt-3">{footer.company.registration}</p>
 						<p class="mt-3">
 							<a
@@ -282,5 +327,35 @@ const FONTS_URL =
 				</div>
 			</div>
 		</footer>
+
+		<!-- Scroll reveal: sections fade and rise 12px once as they enter the
+		     viewport. Honours prefers-reduced-motion (everything is shown at once)
+		     and degrades to fully visible content when this script does not run. -->
+		<script is:inline>
+			(function () {
+				var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+				var targets = document.querySelectorAll("main > section, main [data-reveal]");
+				if (!targets.length) return;
+				var show = function (el) { el.classList.add("is-in"); };
+				if (reduce || !("IntersectionObserver" in window)) {
+					targets.forEach(show);
+					return;
+				}
+				var io = new IntersectionObserver(function (entries) {
+					entries.forEach(function (entry) {
+						if (entry.isIntersecting) {
+							show(entry.target);
+							io.unobserve(entry.target);
+						}
+					});
+				}, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+				targets.forEach(function (el) {
+					el.classList.add("reveal");
+					// Anything already on screen at load shows immediately: no blank first paint.
+					var r = el.getBoundingClientRect();
+					if (r.top < window.innerHeight && r.bottom > 0) show(el); else io.observe(el);
+				});
+			})();
+		</script>
 	</body>
 </html>
