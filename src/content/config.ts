@@ -51,6 +51,46 @@ const insights = defineCollection({
     }),
 });
 
+// Case studies. One markdown file per study, committed straight to the repo:
+// the site rebuilds on push, so no CMS step is involved. The frontmatter is
+// documented in README.md under "Publishing a case study".
+const case_studies = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        // Use the client's real name only with written permission; otherwise
+        // describe them, e.g. "A 30-person plumbing contractor".
+        client: z.string(),
+        sector: z.string(),
+        country: z.string(),
+        excerpt: z.string(),
+        publishedAt: z.date(),
+        // The five standard build types.
+        buildType: z.enum([
+            'intake-and-onboarding-portal',
+            'quote-to-invoice',
+            'operations-dashboard',
+            'document-generation',
+            'inbox-triage-and-routing',
+        ]),
+        image: z.object({
+            src: z.string(),
+            alt: z.string(),
+        }),
+        // Headline outcomes, shown as a row of figures at the top of the study.
+        results: z.array(
+            z.object({
+                value: z.string(),
+                label: z.string(),
+            })
+        ).default([]),
+        tags: z.array(z.string()).default([]),
+        readTime: z.number().optional(),
+        // Set true to keep a study out of the built site while it is drafted.
+        draft: z.boolean().default(false),
+    }),
+});
+
 // Global site settings (navigation, footer, social links)
 const settings = defineCollection({
     type: 'content',
@@ -651,6 +691,7 @@ const terminal_forms = defineCollection({
 
 export const collections = {
     insights,
+    case_studies,
     settings,
     pages,
     team,

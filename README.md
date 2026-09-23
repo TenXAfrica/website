@@ -59,6 +59,76 @@ If you want to run this project locally to test changes or view the code structu
 └── tailwind.config.mjs # Tailwind configuration
 ```
 
+## ✍️ Publishing content
+
+Insights posts and case studies are plain markdown files in the repository. There is no CMS
+and no admin login: commit a file to `main` and the GitHub Actions build publishes it. This is
+what lets the content routine add a post on its own.
+
+A file is live once the build that follows the push finishes, usually a couple of minutes.
+Set `draft: true` to keep a file in the repository but out of the built site.
+
+### Publishing an insights post
+
+Add one file at `src/content/insights/<url-slug>.md`. The slug becomes the URL:
+`src/content/insights/how-we-price.md` publishes at `/insights/how-we-price`.
+
+```yaml
+---
+title: "How we price an automation build"          # required
+excerpt: "A short summary, used on cards and in search results."   # required
+publishedAt: 2026-09-23                            # required, YYYY-MM-DD
+author:                                            # required
+  id: joash-paul
+  name: Joash Paul
+  role: Founder
+image:                                             # required
+  src: /assets/insights/how-we-price.png
+  alt: "Describe the image for someone who cannot see it."
+tags: ["pricing", "automation"]                    # required, may be empty: []
+readTime: 6                                        # required, whole minutes
+---
+
+The body of the post goes here as ordinary markdown.
+```
+
+### Publishing a case study
+
+Add one file at `src/content/case_studies/<url-slug>.md`.
+
+```yaml
+---
+title: "Cutting quote turnaround from three days to twenty minutes"   # required
+client: "A 30-person plumbing contractor"          # required, see note below
+sector: "Trades and field services"                # required
+country: "Ireland"                                 # required
+excerpt: "A short summary, used on cards and in search results."      # required
+publishedAt: 2026-09-23                            # required, YYYY-MM-DD
+buildType: quote-to-invoice                        # required, one of the five below
+image:                                             # required
+  src: /assets/case-studies/quote-turnaround.png
+  alt: "Describe the image for someone who cannot see it."
+results:                                           # optional, defaults to []
+  - value: "20 min"
+    label: "Average quote turnaround"
+  - value: "11 hrs/week"
+    label: "Admin time given back"
+tags: ["quoting", "invoicing"]                     # optional, defaults to []
+readTime: 4                                        # optional
+draft: false                                       # optional, defaults to false
+---
+
+The body of the case study goes here as ordinary markdown.
+```
+
+`buildType` must be exactly one of:
+`intake-and-onboarding-portal`, `quote-to-invoice`, `operations-dashboard`,
+`document-generation`, `inbox-triage-and-routing`.
+
+**Naming a client.** Only use a client's real name when they have agreed in writing.
+Otherwise describe them, as in the example above. The build fails loudly on a missing or
+misspelled field, so a bad file never reaches the live site silently.
+
 ## 🐞 Bugs & Issues
 
 If you notice a bug on the website, a broken link, or a display issue, please let us know directly.
