@@ -6,7 +6,8 @@ one scoring model, and every build we sell starts from its output.
 - **Self-serve score** — public, `/assessment`, 12 questions, under three
   minutes on a phone. A lead magnet that gives a real answer.
 - **Guided full DMA** — internal, `/internal/dma`, ~30 questions, ~45 minutes.
-  Joash fills it in while the owner talks. Its output becomes the build spec.
+  Any Ten X Africa team member signs in with Microsoft 365 (Cloudflare Access), looks the
+  client up in the CRM, and fills it in while the owner talks. Its output becomes the build spec.
 
 The rules — dimensions, weights, maturity anchors, bands, recommendation
 logic, ROI maths, fit scoring, consent handling — are written up in
@@ -25,9 +26,11 @@ logic, ROI maths, fit scoring, consent handling — are written up in
                                   scoreSelfServe()              Note + note targets
              ◀──ScoreResult───                                  Task @claude Follow up
 
- /internal/dma ─POST(Bearer)──▶ /api/dma/full ────────────────▶ Note on Opportunity
-   (noindex, Joash only)          scoreFull()                   Opportunity → QUALIFIED
-                                                                Task @claude Process DMA
+ /internal/dma ─GET/POST──────▶ /api/internal/dma/lookup ──────▶ (read) Company, People,
+   (noindex, team only,            /api/internal/dma/session ─────▶ Opportunities, Notes
+    Cloudflare Access +            /api/internal/dma/full ────────▶ Note on Opportunity
+    Microsoft 365 sign-in)           verify Access token            Opportunity → QUALIFIED
+                                     scoreFull()                    Task @claude Process DMA
 ```
 
 The site is static (Astro → GitHub Pages), so there is no server at runtime.
@@ -127,7 +130,7 @@ Secrets the Worker needs:
 |---|---|
 | `TWENTY_API_KEY` | Writing to the CRM |
 | `TURNSTILE_SECRET_KEY` | Verifying the public form |
-| `DMA_ADMIN_TOKEN` | Guarding `/api/dma/full`, entered by Joash in the tool. Held in sessionStorage for that tab only, never localStorage |
+| `DMA_ADMIN_TOKEN` | Fallback guard for the internal routes where Cloudflare Access is not in front (local dev, workers.dev). On the live site the tool uses the Microsoft sign-in instead and nobody types this |
 
 ---
 

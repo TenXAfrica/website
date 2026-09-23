@@ -21,7 +21,11 @@ lead half-written into Twenty is worth far more than a lead rejected because a
 | Method | Path | Auth | Notes |
 | --- | --- | --- | --- |
 | `POST` | `/api/dma/self-serve` | Turnstile + 5/IP/hour | Public. Body is `SelfServeSubmission`. |
-| `POST` | `/api/dma/full` | `Authorization: Bearer $DMA_ADMIN_TOKEN` | Internal. Body is `FullSubmission`. No Turnstile. |
+| `POST` | `/api/dma/full` | `Authorization: Bearer $DMA_ADMIN_TOKEN` | Legacy internal route. Body is `FullSubmission`. No Turnstile. |
+| `GET` | `/api/internal/whoami` | Cloudflare Access token (or the bearer) | Who is signed in: `{email, name, via}`. |
+| `GET` | `/api/internal/dma/lookup?q=` | Cloudflare Access token (or the bearer) | Search the CRM by company, person, email or website; returns people, opportunities and existing assessments. |
+| `POST` | `/api/internal/dma/session` | Cloudflare Access token (or the bearer) | Make sure the Company (+Person) and Opportunity exist for an assessment; creates only what is missing. |
+| `POST` | `/api/internal/dma/full` | Cloudflare Access token (or the bearer) | Same as `/api/dma/full`, and the note records the verified sign-in. |
 | `POST` | `/api/contact` | Turnstile + 5/IP/hour | Public. Contact-form passthrough. |
 | `GET` | `/api/dma/health` | none | `{ok: true, version}`. No secrets, ever. |
 
@@ -219,3 +223,31 @@ Types, the question bank and the scorer are **not** here. They live in
 `../shared/dma/` and are shared with the Astro front end. That directory is a
 contract: add fields, never rename them, and do not change it from this
 Worker.
+
+## The internal API and Cloudflare Access (added 23 Sep 2026)
+
+The guided assessment tool at `tenxafrica.co.za/internal/dma` sits behind the
+Cloudflare Access application "Internal - guided assessment" (Microsoft 365
+sign-in, any `@tenxafrica.co.za` account). That application also covers
+`tenxafrica.co.za/api/internal`, so the browser's Access cookie travels with
+every API call and Access adds a signed `Cf-Access-Jwt-Assertion` header.
+`src/access.ts` verifies that token (signature against the team's public keys,
+audience, issuer, expiry) and the Worker then knows who is using the tool.
+Nobody pastes a password.
+
+The `/api/internal/*` routes are served by a second deployment of this same
+code, `tenx-dma-internal`, defined as `[env.internal]` in `wrangler.toml` with
+routes on the apex zone. Deploy it with:
+
+```
+node node_modules/wrangler/bin/wrangler.js deploy --env internal
+pwsh ../scripts/push-worker-secret.ps1 -Env internal      # TWENTY_API_KEY
+```
+
+The public `tenx-dma` Worker on workers.dev is unchanged in behaviour; it also
+carries the internal routes, but without Access in front they only accept the
+admin bearer, which is what local development uses.
+
+Local development: `worker/.dev.vars` may set `DEV_IDENTITY_EMAIL` to pretend
+that address is signed in when the Worker runs on localhost. It is ignored
+everywhere else and must never appear in `wrangler.toml`.

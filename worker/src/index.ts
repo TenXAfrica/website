@@ -3,7 +3,11 @@
  *
  * Routes:
  *   POST /api/dma/self-serve  public, Turnstile + per-IP rate limit
- *   POST /api/dma/full        internal, Bearer DMA_ADMIN_TOKEN
+ *   POST /api/dma/full        internal, Bearer DMA_ADMIN_TOKEN (legacy)
+ *   GET  /api/internal/whoami        internal, Cloudflare Access identity (or the bearer)
+ *   GET  /api/internal/dma/lookup    internal, ?q= company, person, email or website
+ *   POST /api/internal/dma/session   internal, ensure Company (+Person) + Opportunity exist
+ *   POST /api/internal/dma/full      internal, same as /api/dma/full, interviewer verified
  *   POST /api/contact         public, Turnstile + per-IP rate limit
  *   GET  /api/dma/health      public, no secrets in the response
  *
@@ -15,6 +19,8 @@
 
 import { handleContact, handleSelfServe } from './selfserve';
 import { handleFull } from './full';
+import { handleLookup, handleSession } from './lookup';
+import { ACCESS_HEADER, verifyAccessJwt, type AccessIdentity } from './access';
 import {
   DEFAULT_TWENTY_BASE_URL,
   TwentyClient,
@@ -40,6 +46,12 @@ export interface Env {
    * there is deliberately no wildcard.
    */
   ALLOWED_PREVIEW_ORIGINS?: string;
+  /** Plain var. Cloudflare Access team domain, e.g. tenxafrica.cloudflareaccess.com. */
+  ACCESS_TEAM_DOMAIN?: string;
+  /** Plain var. AUD tag of the Access application that guards /internal and /api/internal. */
+  ACCESS_AUD?: string;
+  /** Dev only (.dev.vars). Pretend this email is signed in when running on localhost. */
+  DEV_IDENTITY_EMAIL?: string;
   /** Optional until Joash creates the namespace. Absent means "allow". */
   DMA_RATELIMIT?: KVNamespace;
 }
@@ -198,8 +210,7 @@ export async function verifyTurnstile(
 /* Rate limiting                                                       */
 /* ------------------------------------------------------------------ */
 
-export const RATE_LIMIT_MAX = 5;
-export const RATE_LIMIT_WINDOW_SECONDS = 60 * 60;
+import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_SECONDS } from './limits';
 
 /**
  * Per-IP counter in KV, best effort.
@@ -368,13 +379,60 @@ export default {
       });
     }
 
-    if (request.method !== 'POST') {
+    const isInternal = path.startsWith('/api/internal/');
+    if (request.method !== 'POST' && !(request.method === 'GET' && isInternal)) {
       return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
     }
 
     const ip = request.headers.get('CF-Connecting-IP');
 
     try {
+      /* ------------------- internal: the guided tool's API ------------------ */
+      if (isInternal) {
+        const who = await authoriseInternal(request, env);
+        if (!who) {
+          logEvent('warn', 'internal-unauthorised', { path });
+          return json(401, { ok: false, error: 'unauthorised' }, origin, allowedExtra);
+        }
+
+        if (path === '/api/internal/whoami') {
+          if (request.method !== 'GET') return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
+          return json(200, { ok: true, email: who.email, name: who.name ?? null, via: who.via }, origin, allowedExtra);
+        }
+
+        if (path === '/api/internal/dma/lookup') {
+          if (request.method !== 'GET') return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
+          const q = url.searchParams.get('q') ?? '';
+          const result = await handleLookup(q, { twenty: twentyFor(env) });
+          return json(result.status, result.body, origin, allowedExtra);
+        }
+
+        if (path === '/api/internal/dma/session') {
+          if (request.method !== 'POST') return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
+          const body = await readJsonBody(request);
+          if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin, allowedExtra);
+          const result = await handleSession(body.value, {
+            twenty: twentyFor(env),
+            interviewer: who.name ?? who.email ?? undefined,
+          });
+          return json(result.status, result.body, origin, allowedExtra);
+        }
+
+        if (path === '/api/internal/dma/full') {
+          if (request.method !== 'POST') return json(405, { ok: false, error: 'method_not_allowed' }, origin, allowedExtra);
+          const body = await readJsonBody(request);
+          if (!body.ok) return json(body.status, { ok: false, error: body.error }, origin, allowedExtra);
+          const result = await handleFull(body.value, {
+            twenty: twentyFor(env),
+            version,
+            interviewerEmail: who.email ?? undefined,
+          });
+          return json(result.status, result.body, origin, allowedExtra);
+        }
+
+        return json(404, { ok: false, error: 'not_found' }, origin, allowedExtra);
+      }
+
       /* ---------------------- internal: full DMA ---------------------- */
       if (path === '/api/dma/full') {
         if (!isAuthorisedAdmin(request.headers.get('Authorization'), env.DMA_ADMIN_TOKEN)) {
@@ -441,6 +499,41 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
+/**
+ * Who is calling an internal endpoint.
+ *
+ * On the apex zone the request has already passed Cloudflare Access, which
+ * adds a signed token naming the Microsoft 365 user; that is the normal path
+ * and the only one that identifies a person. The admin bearer remains as a
+ * fallback for local development and for the workers.dev hostname, which
+ * Access does not front.
+ */
+type InternalCaller = { email: string | null; name?: string; via: 'access' | 'token' };
+
+async function authoriseInternal(request: Request, env: Env): Promise<InternalCaller | null> {
+  const assertion = request.headers.get(ACCESS_HEADER);
+  if (assertion && env.ACCESS_TEAM_DOMAIN && env.ACCESS_AUD) {
+    const identity: AccessIdentity | null = await verifyAccessJwt(assertion, {
+      teamDomain: env.ACCESS_TEAM_DOMAIN,
+      aud: env.ACCESS_AUD,
+    });
+    if (identity) {
+      const out: InternalCaller = { email: identity.email, via: 'access' };
+      if (identity.name) out.name = identity.name;
+      return out;
+    }
+    logEvent('warn', 'access-token-rejected');
+  }
+  if (isAuthorisedAdmin(request.headers.get('Authorization'), env.DMA_ADMIN_TOKEN)) {
+    return { email: null, via: 'token' };
+  }
+  // Local development only: set in worker/.dev.vars, never in wrangler.toml.
+  if (env.DEV_IDENTITY_EMAIL && new URL(request.url).hostname === 'localhost') {
+    return { email: env.DEV_IDENTITY_EMAIL, name: 'Local developer', via: 'access' };
+  }
+  return null;
+}
+
 function twentyFor(env: Env): TwentyClient {
   if (!env.TWENTY_API_KEY) {
     logEvent('error', 'twenty-api-key-missing');
@@ -451,6 +544,3 @@ function twentyFor(env: Env): TwentyClient {
   });
 }
 
-// Re-exported so the tests can exercise the redactor through the same entry
-// point the Worker uses.
-export { redact };

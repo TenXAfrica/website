@@ -50,7 +50,7 @@ export const DEFAULT_SETUP: SetupState = {
   companyName: '',
   opportunityId: '',
   companyId: '',
-  interviewer: 'Joash Paul',
+  interviewer: '',
   hourlyRateUsd: 25,
 };
 
@@ -86,6 +86,22 @@ export function answerHasContent(a: AnswerDraft | undefined): boolean {
 /** What the "x/30" counter means: a narrative and a maturity call. */
 export function answerIsComplete(a: AnswerDraft | undefined): boolean {
   return !!a && a.maturity !== null && a.current.trim() !== '';
+}
+
+/** Every draft saved in this browser, newest first, so a dropped call can be picked up from the setup screen. */
+export function listDrafts(): { key: string; draft: DraftState }[] {
+  const out: { key: string; draft: DraftState }[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(DRAFT_PREFIX + ':') || key.endsWith('.superseded')) continue;
+      const draft = readDraft(key);
+      if (draft && draftIsWorthRestoring(draft)) out.push({ key, draft });
+    }
+  } catch {
+    /* localStorage unavailable: nothing to list */
+  }
+  return out.sort((a, b) => (a.draft.savedAt < b.draft.savedAt ? 1 : -1));
 }
 
 export function draftKey(opportunityId: string): string {
