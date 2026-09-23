@@ -21,6 +21,22 @@ const familiar = [
 ];
 
 const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'New Zealand', 'UAE', 'South Africa'];
+
+// The three promises that make this ours and not a product. Said plainly, once, on the home page.
+const yours = [
+  {
+    title: 'Built around how you already work',
+    body: 'We start from the way your team actually does things today, not from a template. The system fits your jobs, your customers and your words for them.',
+  },
+  {
+    title: 'You decide what is worth doing',
+    body: 'After the call we show you what we would build and what each part is worth to you. You pick what goes in. Nothing is bundled in that you did not ask for.',
+  },
+  {
+    title: 'A price you are comfortable with',
+    body: 'We agree the price with you before anything starts. If a number does not work for your business, we trim the scope until it does, rather than push you.',
+  },
+];
 ---
 
 <MainLayout
@@ -40,8 +56,8 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
           We build the software your business is currently doing by hand.
         </h1>
         <p class="t-lede text-text-muted mt-6 max-w-[34rem]">
-          If your team runs the business out of inboxes, spreadsheets and someone’s memory, we
-          build the system that should be doing that work, and then we look after it for you.
+          Not a product you sign up for. A system built around the way your business already
+          works, at a price you are comfortable with, and then looked after for you.
         </p>
         <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
@@ -83,7 +99,33 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
     </div>
   </section>
 
-  <!-- 2. The three services -->
+  <!-- 2. Built for you, not off a shelf -->
+  <section class="section border-t border-rule" aria-labelledby="yours-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Built for your business
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="yours-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Nothing we build is off a shelf. It is made for your business, and priced with you.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          We do not have a product to sell you. We have a way of working: we learn how your
+          business runs, we agree with you what is worth fixing, and we build exactly that.
+        </p>
+        <ul class="mt-8 grid gap-6 sm:grid-cols-3 lg:mt-12" role="list">
+          {yours.map((y) => (
+            <li class="border-t border-rule pt-4">
+              <p class="t-h3 text-vapor-white">{y.title}</p>
+              <p class="t-small text-text-muted mt-2">{y.body}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. The three services -->
   <section class="section border-t border-rule" aria-labelledby="services-heading">
     <div class="container-content">
       <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
@@ -167,9 +209,10 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
             What it costs, roughly
           </h2>
           <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-            These are ballpark figures, so you know what to expect before we talk. Every build is
-            scoped to your business on the call, and you get one clear price, agreed with you,
-            before anything starts. If we don’t think it’s worth building, we’ll tell you that too.
+            These are ballpark figures, so you know what to expect before we talk. There is no
+            rate card: your build is scoped to your business on the call, and the price is agreed
+            with you, at a level you are comfortable with, before anything starts. If we don’t
+            think it’s worth building, we’ll tell you that too.
           </p>
         </div>
       </div>
