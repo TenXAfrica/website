@@ -115,6 +115,12 @@ results:                                           # optional, defaults to []
     label: "Admin time given back"
 tags: ["quoting", "invoicing"]                     # optional, defaults to []
 readTime: 4                                        # optional
+before: "Quotes typed up in Word, sent up to three days later"   # optional, one line
+after: "Quote built from the site visit form, sent the same morning"   # optional, one line
+timeBack: "11 hours a week of the owner's admin"   # optional, one line
+quote:                                             # optional, only with the client's written agreement
+  text: "We stopped losing jobs to whoever quoted first."
+  attribution: "Owner, plumbing contractor"        # optional
 draft: false                                       # optional, defaults to false
 ---
 
@@ -124,6 +130,10 @@ The body of the case study goes here as ordinary markdown.
 `buildType` must be exactly one of:
 `intake-and-onboarding-portal`, `quote-to-invoice`, `operations-dashboard`,
 `document-generation`, `inbox-triage-and-routing`.
+
+`before`, `after` and `timeBack` fill the "Before / After / Time back" table at the top of
+the study; any that are left out are simply not shown. `quote` is set as a pull quote after
+the body. A study publishes at `/case-studies/<url-slug>` and is listed on `/case-studies`.
 
 There is a ready-made template at `src/content/case_studies/_example.md`. Copy it rather
 than writing the frontmatter by hand. Its name starts with an underscore, which is how

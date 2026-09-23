@@ -1,166 +1,102 @@
 ---
+/**
+ * /privacy — plain-English privacy notice, rendered from
+ * src/content/pages/privacy.md, plus the #opt-out section every cold email
+ * links to. The opt-out section lives here (not in the markdown) so its
+ * anchor id is fixed and cannot drift with a heading rewrite.
+ * Zero JavaScript.
+ */
 import MainLayout from "../layouts/MainLayout.astro";
-import { PageHero } from "../components/PageHero";
-import { GoldButton } from "../components/GoldButton";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Button from "../components/ui/Button.astro";
 import { getEntry } from "astro:content";
 
-const privacyPage = await getEntry('pages', 'privacy');
+const privacyPage = await getEntry("pages", "privacy");
 
 if (!privacyPage) {
-    throw new Error('Privacy page content not found');
+	throw new Error("Privacy page content not found");
 }
 
 const { data } = privacyPage;
 const { Content } = await privacyPage.render();
+
+const OPT_OUT_MAILTO =
+	"mailto:joash@tenxafrica.co.za?subject=Unsubscribe&body=Please%20stop%20contacting%20me%20at%20this%20address.";
 ---
 
 <MainLayout title={data.seo.title} description={data.seo.description}>
-    <div class="relative min-h-screen">
-        <PageHero
-            client:load
-            headline={data.hero.headline}
-            subheadline={data.hero.subheadline}
-        />
+	<PageHeader
+		eyebrow={data.hero.tag ?? "Privacy"}
+		title={data.hero.headline}
+		lede={data.hero.subheadline}
+	/>
 
-        <section class="py-12 lg:py-20 px-6 lg:px-12 border-t border-white/5">
-            <div class="max-w-4xl mx-auto">
-                <!-- Navigation -->
-                <div class="flex justify-start mb-12">
-                    <a href="/">
-                        <GoldButton variant="outline" client:visible>← Back Home</GoldButton>
-                    </a>
-                </div>
+	<div class="container-content">
+		<div class="section">
+			<article class="measure prose-tenx">
+				<Content />
 
-                <!-- Content -->
-                <article class="prose prose-invert max-w-none">
-                    <style>
-                        :global(.prose) {
-                            --tw-prose-body: rgb(229 231 235);
-                            --tw-prose-headings: rgb(255 255 255);
-                            --tw-prose-lead: rgb(209 213 219);
-                            --tw-prose-links: rgb(255 215 0);
-                            --tw-prose-bold: rgb(255 255 255);
-                            --tw-prose-counters: rgb(156 163 175);
-                            --tw-prose-bullets: rgb(107 114 128);
-                            --tw-prose-hr: rgb(55 65 81);
-                            --tw-prose-quotes: rgb(209 213 219);
-                            --tw-prose-quote-borders: rgb(75 85 99);
-                            --tw-prose-captions: rgb(156 163 175);
-                            --tw-prose-kbd: rgb(255 255 255);
-                            --tw-prose-kbd-shadows: rgb(31 41 55);
-                            --tw-prose-code: rgb(255 215 0);
-                            --tw-prose-pre-bg: rgb(17 24 39);
-                            --tw-prose-pre-code: rgb(229 231 235);
-                            --tw-prose-th-borders: rgb(75 85 99);
-                            --tw-prose-td-borders: rgb(55 65 81);
-                        }
-                    </style>
-                    <div class="space-y-6 text-white/80 leading-relaxed">
-                        <!-- Enhanced markdown styling -->
-                        <style is:global>
-                            .prose h2 {
-                                font-size: 1.875rem;
-                                font-weight: 700;
-                                color: rgb(255 255 255);
-                                margin-top: 3rem;
-                                margin-bottom: 1rem;
-                                border-left: 4px solid #d68614;
-                                padding-left: 1rem;
-                            }
-                            @media (min-width: 768px) {
-                                .prose h2 {
-                                    font-size: 1.875rem;
-                                }
-                            }
-                            .prose h3 {
-                                font-size: 1.25rem;
-                                font-weight: 700;
-                                color: rgb(255 255 255);
-                                margin-top: 2rem;
-                                margin-bottom: 0.75rem;
-                            }
-                            @media (min-width: 768px) {
-                                .prose h3 {
-                                    font-size: 1.5rem;
-                                }
-                            }
-                            .prose p {
-                                font-size: 1rem;
-                                color: rgb(229 231 235 / 0.8);
-                                line-height: 1.75;
-                                margin-bottom: 1rem;
-                            }
-                            @media (min-width: 768px) {
-                                .prose p {
-                                    font-size: 1.125rem;
-                                }
-                            }
-                            .prose ul, .prose ol {
-                                margin-top: 1.5rem;
-                                margin-bottom: 1.5rem;
-                                display: flex;
-                                flex-direction: column;
-                                gap: 0.75rem;
-                            }
-                            .prose li {
-                                font-size: 1rem;
-                                color: rgb(229 231 235 / 0.8);
-                                line-height: 1.75;
-                            }
-                            @media (min-width: 768px) {
-                                .prose li {
-                                    font-size: 1.125rem;
-                                }
-                            }
-                            .prose strong {
-                                color: rgb(255 255 255);
-                                font-weight: 600;
-                            }
-                            .prose em {
-                                color: #d68614;
-                            }
-                            .prose code {
-                                background-color: rgb(255 255 255 / 0.05);
-                                color: #d68614;
-                                padding: 0.25rem 0.5rem;
-                                border-radius: 0.375rem;
-                                font-family: monospace;
-                                font-size: 0.875rem;
-                                border: 1px solid rgb(255 255 255 / 0.1);
-                            }
-                            .prose hr {
-                                margin-top: 3rem;
-                                margin-bottom: 3rem;
-                                border-color: rgb(255 255 255 / 0.1);
-                            }
-                            .prose blockquote {
-                                border-left: 4px solid #d68614;
-                                padding-left: 1.5rem;
-                                padding-top: 1rem;
-                                padding-bottom: 1rem;
-                                background-color: #d68614 / 0.05;
-                                border-radius: 0 0.5rem 0.5rem 0;
-                                font-style: italic;
-                                color: rgb(229 231 235 / 0.7);
-                            }
-                        </style>
-                        <Content />
-                    </div>
-                </article>
+				<h2 id="opt-out" class="opt-out-anchor">Opting out of email</h2>
+				<p>
+					We only email business addresses, and never from a bought list. Every email we send
+					carries a link to this section and our postal address.
+				</p>
+				<p>To stop all email from us, do any one of these:</p>
+				<ul>
+					<li>reply to any of our emails with the word <strong>unsubscribe</strong>;</li>
+					<li>
+						email <a href="mailto:joash@tenxafrica.co.za">joash@tenxafrica.co.za</a> with the subject
+						<strong>Unsubscribe</strong>;
+					</li>
+					<li>or use the button below, which opens that email ready to send.</li>
+				</ul>
+				<p>
+					We record the opt-out against your email address and your company, and we never contact
+					you again.
+				</p>
+				<p>
+					<strong>South African recipients:</strong> we approach you once only, to ask whether you
+					would like to hear from us. We contact you again only if you say yes, as POPIA section 69
+					requires.
+				</p>
+				<p>
+					<strong>United States recipients:</strong> our emails follow the CAN-SPAM Act. The law
+					allows 10 business days to honour an opt-out; we do it within 2.
+				</p>
+			</article>
 
-                <!-- Footer CTA -->
-                <div class="mt-20 pt-12 border-t border-white/10">
-                    <div class="bg-gradient-to-r from-tenx-gold/10 to-white/5 rounded-2xl border border-white/10 p-8 md:p-12">
-                        <h3 class="text-xl md:text-2xl font-heading font-bold text-white mb-3">Questions about your data?</h3>
-                        <p class="text-white/70 mb-6">
-                            If you have any concerns about how we handle your information or want to exercise your rights under POPIA, reach out to our Information Officer.
-                        </p>
-                        <a href="/contact?interest=general" class="inline-block">
-                            <GoldButton client:visible>Contact Us</GoldButton>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+			<div class="measure mt-8">
+				<Button href={OPT_OUT_MAILTO} variant="secondary">Email us to unsubscribe</Button>
+				<p class="t-caption mt-3">
+					Opens your email app with the subject "Unsubscribe" to joash@tenxafrica.co.za.
+				</p>
+			</div>
+
+			<p class="t-caption measure mt-12 border-t border-rule pt-6">
+				Ten X Africa (Pty) Ltd · Reg 2020/714539/07 · VAT 4250317601 · 9 Roosevelt Street,
+				Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa · Information officer: Joash
+				Paul, joash@tenxafrica.co.za
+			</p>
+		</div>
+	</div>
+
+	<!-- Ends on the assessment -->
+	<section class="container-content" aria-labelledby="score-title">
+		<div class="rule section">
+			<h2 id="score-title" class="t-h3">Where to next</h2>
+			<p class="t-body measure mt-4">
+				If you came here to check us out before a call, the 3-minute score is the best place to
+				start.
+			</p>
+			<div class="mt-6">
+				<Button href="/assessment" variant="quiet">Take the 3-minute score</Button>
+			</div>
+		</div>
+	</section>
 </MainLayout>
+
+<style>
+	.opt-out-anchor {
+		scroll-margin-top: 6rem;
+	}
+</style>

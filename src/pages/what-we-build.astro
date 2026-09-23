@@ -1,0 +1,106 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import AssessmentCta from '../components/ui/AssessmentCta.astro';
+import IntakeDiagram from '../components/diagrams/IntakeDiagram.astro';
+import QuoteDiagram from '../components/diagrams/QuoteDiagram.astro';
+import DashboardDiagram from '../components/diagrams/DashboardDiagram.astro';
+import DocumentsDiagram from '../components/diagrams/DocumentsDiagram.astro';
+import InboxDiagram from '../components/diagrams/InboxDiagram.astro';
+
+// Five parallel sections, same five parts in the same order (design contract section 7):
+// label · h2 name · one lede sentence · Kind A schematic · "What it replaces" + "Typical band".
+const builds = [
+  {
+    n: '01',
+    name: 'Intake and onboarding portal',
+    lede: 'One form your new clients fill in once, feeding a single record your whole team works from.',
+    Diagram: IntakeDiagram,
+    replaces: 'Enquiry emails, PDF forms, notes from phone calls and the spreadsheet someone updates by hand.',
+    band: 'Usually Launch, or Growth when it connects to several other tools.',
+  },
+  {
+    n: '02',
+    name: 'Quote to invoice',
+    lede: 'Quotes built from your own price list, sent for approval, and turned into an invoice the moment the client says yes.',
+    Diagram: QuoteDiagram,
+    replaces: 'Copy-pasted quote templates, invoices typed out from the quote, and chasing payment from memory.',
+    band: 'Usually Growth.',
+  },
+  {
+    n: '03',
+    name: 'Operations dashboard',
+    lede: 'One screen that answers what is open, what is late, what has been billed and what is waiting on you.',
+    Diagram: DashboardDiagram,
+    replaces: 'The Monday spreadsheet, the status meeting, and ringing round to find out where a job is.',
+    band: 'Usually Growth, or Scale when it pulls from many systems at once.',
+  },
+  {
+    n: '04',
+    name: 'Document generation',
+    lede: 'Proposals, contracts and reports filled in from the record you already keep, then filed back against the client once signed.',
+    Diagram: DocumentsDiagram,
+    replaces: 'Word templates with the last client’s name still in them, and signed copies saved to someone’s desktop.',
+    band: 'Usually Launch or Growth.',
+  },
+  {
+    n: '05',
+    name: 'Inbox triage and routing',
+    lede: 'Incoming email sorted into answer now, needs a quote, route to a person or no action, before anyone opens it.',
+    Diagram: InboxDiagram,
+    replaces: 'One person reading every message in the shared inbox and forwarding it on by hand.',
+    band: 'Usually Launch, or Growth when it hands quotes into a quote to invoice build.',
+  },
+];
+---
+
+<MainLayout
+  title="What we build: five systems for owner-led businesses | Ten X Africa"
+  description="The five systems we build and run for businesses of 5 to 50 people: an intake portal, quote to invoice, an operations dashboard, document generation and inbox triage."
+>
+  <PageHeader
+    eyebrow="What we build"
+    title="Five things we build, and what each one replaces."
+    lede="Most of the hand work in a small business falls into one of these five. Each is built around how your business already runs, and your assessment call tells us which to start with."
+  />
+
+  {builds.map(({ Diagram, ...b }, i) => (
+    <section
+      id={`build-${b.n}`}
+      class:list={['section scroll-mt-24', i > 0 && 'border-t border-rule']}
+      aria-labelledby={`build-${b.n}-heading`}
+    >
+      <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          Build type {b.n}
+        </p>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id={`build-${b.n}-heading`} class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            {b.name}
+          </h2>
+          <p class="t-lede text-text-muted measure mt-4 lg:mt-6">{b.lede}</p>
+          <div class="mt-8 lg:mt-12">
+            <Diagram />
+          </div>
+          <dl class="measure mt-8 lg:mt-12 border-b border-rule">
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">What it replaces</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{b.replaces}</dd>
+            </div>
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">Typical band</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">
+                {b.band}{' '}
+                <a href="/pricing" class="inline-block py-2 text-vapor-white underline underline-offset-4 hover:text-tenx-gold transition-colors duration-150">
+                  See the plans<span class="sr-only"> for {b.name}</span>
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <AssessmentCta />
+</MainLayout>

@@ -1,5 +1,5 @@
 ---
-title: "AI in the African Enterprise: Reality vs. Hype"
+title: "Beyond the hype: what automation really means for African businesses"
 excerpt: "Everyone is talking about AI, but what does it actually mean for African businesses? We separate the signal from the noise."
 publishedAt: 2025-12-01T00:00:00.000Z
 author:
@@ -16,7 +16,7 @@ tags:
 readTime: 7
 ---
 
-# Beyond the Hype
+## Beyond the Hype
 
 The AI hype cycle is in full swing. Every company claims to be "AI-powered," every pitch deck mentions machine learning, and every conference has panels on artificial intelligence.
 

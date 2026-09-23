@@ -1,0 +1,175 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import Button from '../components/ui/Button.astro';
+import AssessmentCta from '../components/ui/AssessmentCta.astro';
+import PipelineSpine from '../components/diagrams/PipelineSpine.astro';
+import PipelineSteps from '../components/PipelineSteps.astro';
+
+const BOOKINGS_URL = 'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
+---
+
+<MainLayout
+  title="How it works: seven steps, two calls | Ten X Africa"
+  description="Seven steps from first contact to a system we run for you. You are on two calls: the free 45-minute assessment and the walkthrough of your first draft."
+>
+  <PageHeader
+    eyebrow="How it works"
+    title="Seven steps. You are on two calls."
+    lede="One is the free 45-minute assessment. The other is the walkthrough of your first draft. We do everything in between, and we keep the finished system running."
+  />
+
+  <!-- The seven steps: horizontal spine at lg, vertical list below lg. No JavaScript. -->
+  <section class="section" aria-labelledby="steps-heading">
+    <div class="container-wide">
+      <h2 id="steps-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">The seven steps</h2>
+      <div class="mt-8 lg:mt-12">
+        <PipelineSpine />
+        <PipelineSteps />
+      </div>
+    </div>
+  </section>
+
+  <!-- The assessment call -->
+  <section class="section border-t border-rule" aria-labelledby="call-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Step 3 · You and us
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="call-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          What the assessment call covers
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            It is a free 45-minute call on Microsoft Teams. You pick the time from our booking page,
+            and the times are shown in your own time zone. We go through how work moves through your
+            business today, where it gets typed twice, and where it waits on one person.
+          </p>
+          <p class="t-body text-text-muted">When you book, we ask four things so the call starts in the right place:</p>
+        </div>
+        <ul class="measure mt-4 lg:mt-6 border-b border-rule">
+          <li class="t-small text-text-muted border-t border-rule py-3">Your company name</li>
+          <li class="t-small text-text-muted border-t border-rule py-3">Your website</li>
+          <li class="t-small text-text-muted border-t border-rule py-3">How many people you are, and which country you are in</li>
+          <li class="t-small text-text-muted border-t border-rule py-3">The task that eats the most hours in your week</li>
+        </ul>
+        <div class="mt-8">
+          <Button href={BOOKINGS_URL} variant="quiet" external>Pick a time for the assessment call</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- After the call -->
+  <section class="section border-t border-rule" aria-labelledby="spec-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Step 4 · Us
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="spec-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          What you get after it
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            A written spec of what we will build, what it replaces and how many hours a week it
+            should give back. With it comes one fixed price, set inside the matching plan band on our
+            pricing page. The price does not move once you accept it.
+          </p>
+        </div>
+        <div class="mt-8">
+          <Button href="/pricing" variant="quiet">See the plan bands</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The first draft -->
+  <section class="section border-t border-rule" aria-labelledby="draft-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Step 5 · Us
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="draft-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          The first draft, built without a meeting
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            We build a first working version from the spec. It runs on real screens with your kind of
+            data in it, not slides. You do not need to attend anything or answer a questionnaire
+            while we build it. It takes days, not months.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The walkthrough -->
+  <section class="section border-t border-rule" aria-labelledby="walkthrough-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Step 6 · You and us
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="walkthrough-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          The walkthrough
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            The second and last call. You use the draft while we watch, and we write down everything
+            that is wrong, missing or in the way. Then we make those changes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deploy and retainer -->
+  <section class="section border-t border-rule" aria-labelledby="run-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Step 7 · Us
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="run-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Deploy, then we run it every month
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            Once the changes are in, we put the system live and move your team onto it. From then on
+            a monthly retainer covers keeping it running and looking after it as your business
+            changes.
+          </p>
+          <p class="t-body text-text-muted">
+            Retainers run for a 12-month minimum. The cost of the tools the system runs on is passed
+            through to you. You own the system and its data.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder note -->
+  <section class="section border-t border-rule" aria-labelledby="founder-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Who is on the calls
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="founder-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Joash Paul, founder
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          I am the person on both calls. I run the assessment, I set the price, and I walk you
+          through the draft. Between those two calls you do not need to chase anyone
+          for an update; you will hear from me when the draft is ready. We are based in Johannesburg and work with owners in the US, the UK, Ireland,
+          Australia, New Zealand, the UAE and South Africa.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <AssessmentCta />
+</MainLayout>

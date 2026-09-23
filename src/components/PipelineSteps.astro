@@ -1,0 +1,51 @@
+---
+// The seven-step pipeline as a vertical list, shown below lg (design contract section 7).
+// Replaces OnboardingSteps.tsx. Zero JavaScript. Steps 3 and 6 carry the gold circle.
+const steps = [
+  { name: 'We find you, or you find us', owner: 'Us', caption: 'Research, referral or the score on this site.' },
+  { name: 'You take the 3-minute score', owner: 'You', caption: 'Twelve questions, no login.' },
+  { name: 'The 45-minute assessment call', owner: 'Both', caption: 'Joash and you, on Teams.', human: true },
+  { name: 'The assessment becomes the spec', owner: 'Us', caption: 'Fixed price, fixed scope, in writing.' },
+  { name: 'We build the first working draft', owner: 'Us', caption: 'Days, not months. You do nothing.' },
+  { name: 'The walkthrough call', owner: 'Both', caption: 'You use it, we write down what is wrong.', human: true },
+  { name: 'Changes, deploy, then we run it', owner: 'Us', caption: 'Monthly retainer. You own the system.' },
+];
+---
+<ol class="lg:hidden" aria-label="The seven steps">
+  {steps.map((s, i) => (
+    <li class="relative grid grid-cols-[2rem_1fr] gap-x-4 pb-8 last:pb-0">
+      {i < steps.length - 1 && (
+        <span aria-hidden="true" class="connector absolute top-8 bottom-0 bg-text-faint"></span>
+      )}
+      <span
+        aria-hidden="true"
+        class:list={[
+          'relative z-[1] flex h-8 w-8 items-center justify-center rounded-full bg-surface-1 font-heading font-semibold text-[0.9375rem]',
+          s.human ? 'border-tenx-gold text-tenx-gold' : 'border-text-faint text-vapor-white',
+        ]}
+        style="border-width: 1.5px; border-style: solid;"
+      >
+        {i + 1}
+      </span>
+      <div class="pt-0.5">
+        <h3 class="t-h3 text-vapor-white">
+          <span class="sr-only">Step {i + 1}: </span>{s.name}
+        </h3>
+        <p class="t-label text-text-faint mt-2">
+          Who: {s.owner === 'Both' ? 'both of us' : s.owner === 'You' ? 'you' : 'us'}
+        </p>
+        <p class="t-small text-text-muted mt-2">
+          {s.caption}
+          {i === 3 && <span class="block mt-2 text-text-faint">Then the first draft, with no meeting needed.</span>}
+        </p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .connector {
+    left: calc(1rem - 0.75px);
+    width: 1.5px;
+  }
+</style>

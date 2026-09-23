@@ -1,0 +1,308 @@
+---
+/**
+ * /pricing — three plans, the terms, what the retainer covers, and the FAQ.
+ * Zero JavaScript: the FAQ is native <details>/<summary>.
+ * Design contract section 7, "Pricing on mobile".
+ */
+import MainLayout from "../layouts/MainLayout.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Button from "../components/ui/Button.astro";
+import AssessmentCta from "../components/ui/AssessmentCta.astro";
+
+const BOOKINGS_URL =
+	"https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/";
+
+interface Plan {
+	id: string;
+	name: string;
+	from: string;
+	band: string;
+	monthly: string;
+	featured?: boolean;
+	fit: string[];
+}
+
+const plans: Plan[] = [
+	{
+		id: "launch",
+		name: "Launch",
+		from: "$2,500",
+		band: "$2,500–4,500",
+		monthly: "$249",
+		fit: [
+			"One process that eats time every week.",
+			"One team uses it.",
+			"For example, a single intake form or a quote flow.",
+		],
+	},
+	{
+		id: "growth",
+		name: "Growth",
+		from: "$6,500",
+		band: "$6,500–12,000",
+		monthly: "$649",
+		featured: true,
+		fit: [
+			"Two or three processes that hand work to each other.",
+			"A dashboard that shows where things stand.",
+			"For example, intake feeding quotes feeding invoices.",
+		],
+	},
+	{
+		id: "scale",
+		name: "Scale",
+		from: "$15,000",
+		band: "$15,000–28,000",
+		monthly: "$1,450",
+		fit: [
+			"Several teams depend on the system.",
+			"It connects to the systems you already run.",
+			"Heavier reporting for you and your managers.",
+		],
+	},
+];
+
+const retainerCovers = [
+	"Hosting and monitoring of the system we built for you.",
+	"Fixes when something breaks.",
+	"Small changes as the way you work shifts, such as a new field, a new report or a changed email.",
+	"A monthly check-in to go over what is working and what should change next.",
+];
+
+const faqs = [
+	{
+		q: "Why is the price a range and not a number?",
+		a: [
+			"Two businesses that both want an intake portal can need very different amounts of work. One has a single form; another has five sources, three approvals and a legacy spreadsheet to import.",
+			"The range tells you roughly what to expect before we talk. The assessment call gives us enough to set one fixed price inside that range, in writing, before any work starts.",
+		],
+	},
+	{
+		q: "What happens on the assessment call?",
+		a: [
+			"It is a free 45-minute Teams call with Joash. We go through how work moves through your business today, where the hours go, and which part is worth building first.",
+			"Afterwards you get a written scope and one fixed price. If it is not worth building, we say so.",
+		],
+	},
+	{
+		q: "We already use Xero, QuickBooks, HubSpot or Microsoft 365. Does that matter?",
+		a: [
+			"That is the normal case, and it helps. We build around the tools you already pay for and connect to them where they allow it, rather than asking you to replace them.",
+			"If a tool has no way in, we will tell you on the call and show you the workaround and its cost.",
+		],
+	},
+	{
+		q: "Who owns the system?",
+		a: [
+			"You do. The code, the data and the accounts it runs on are yours once the build is paid for. Tool and hosting subscriptions are held in your name wherever the provider allows it.",
+		],
+	},
+	{
+		q: "Can we stop the retainer?",
+		a: [
+			"Retainers have a 12-month minimum, because the first year is when a new system needs the most attention. After the first 12 months you can stop with notice.",
+			"If you stop, we hand over the code, the access and a short written guide so you or another developer can keep it running.",
+		],
+	},
+	{
+		q: "Why are prices in US dollars?",
+		a: [
+			"We work with businesses in the US, the UK and Ireland, Australia and New Zealand, the UAE and South Africa, and most of the tools we build on bill in dollars. One currency keeps quotes simple and comparable wherever you are.",
+		],
+	},
+];
+---
+
+<MainLayout
+	title="Pricing"
+	description="Three plans in US dollars: Launch from $2,500, Growth from $6,500, Scale from $15,000, each with a monthly retainer. One fixed price after a free 45-minute assessment."
+>
+	<PageHeader
+		eyebrow="Pricing · USD"
+		title="Three plans, one fixed price after the call"
+		lede="Every build is scoped and priced after a free 45-minute assessment. The plans below show where your build is likely to land and what the monthly retainer costs to keep it running."
+	/>
+
+	<!-- Plans -->
+	<section class="container-wide" aria-labelledby="plans-title">
+		<div class="section">
+			<h2 id="plans-title" class="sr-only">The three plans</h2>
+			<ul class="grid grid-cols-1 border-t border-rule lg:grid-cols-3" role="list">
+				{
+					plans.map((plan) => (
+						<li
+							class:list={[
+								"flex flex-col border-b border-rule px-5 py-8 sm:px-8 lg:py-10",
+								plan.featured
+									? "border-l-2 border-l-tenx-gold bg-surface-1"
+									: "lg:border-l lg:border-l-rule",
+							]}
+							aria-labelledby={`plan-${plan.id}`}
+						>
+							<p class:list={["t-label", plan.featured && "text-tenx-gold"]}>
+								{plan.featured ? "Most clients start here" : "Plan"}
+							</p>
+							<h3 id={`plan-${plan.id}`} class="t-h3 mt-4">
+								{plan.name}
+							</h3>
+							<p class="t-h2 mt-4">
+								<span class="t-small align-baseline text-text-muted">from </span>
+								{plan.from}
+							</p>
+							<p class="t-small mt-2">+ {plan.monthly} per month</p>
+							<p class="t-caption mt-2">
+								Build range {plan.band} USD
+							</p>
+
+							<h4 class="t-label mt-8">Good fit when</h4>
+							<ul class="mt-4 space-y-2" role="list">
+								{plan.fit.map((line) => (
+									<li class="t-small border-t border-rule pt-2">{line}</li>
+								))}
+							</ul>
+
+							<div class="mt-8 lg:mt-auto lg:pt-8">
+								<Button href={BOOKINGS_URL} variant="secondary" external>
+									Book the assessment
+									<span class="sr-only"> for the {plan.name} plan (opens in a new tab)</span>
+								</Button>
+							</div>
+						</li>
+					))
+				}
+			</ul>
+
+			<!-- Terms -->
+			<div class="mt-12 border-t border-rule pt-6 lg:mt-16">
+				<h3 class="t-label">The terms</h3>
+				<ul class="t-caption measure mt-4 space-y-2" role="list">
+					<li>All prices are in US dollars (USD).</li>
+					<li>Every build is scoped and priced after the free assessment.</li>
+					<li>The assessment call produces one fixed price inside the matching band.</li>
+					<li>Retainers have a 12-month minimum.</li>
+					<li>Tool and hosting costs are passed through at cost, with no mark-up.</li>
+					<li>50% deposit to start, 50% on acceptance of the finished build.</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- What the retainer covers -->
+	<section class="container-content" aria-labelledby="retainer-title">
+		<div class="rule section lg:grid lg:grid-cols-12 lg:gap-8">
+			<p class="t-label lg:col-span-4 lg:col-start-9 lg:row-start-1">The monthly retainer</p>
+			<div class="mt-4 lg:col-span-8 lg:col-start-1 lg:row-start-1 lg:mt-0">
+				<h2 id="retainer-title" class="t-h2 max-w-[28rem] lg:max-w-[44rem]">
+					What the retainer covers
+				</h2>
+				<p class="t-body measure mt-4 lg:mt-6">
+					The build is the start. The retainer keeps the system running and changing with your
+					business, at a fixed monthly fee.
+				</p>
+				<ul class="measure mt-8 border-t border-rule lg:mt-12" role="list">
+					{
+						retainerCovers.map((item) => (
+							<li class="t-body border-b border-rule py-4">{item}</li>
+						))
+					}
+				</ul>
+				<p class="t-caption measure mt-6">
+					Bigger changes, such as a new process or a new team, are scoped and priced separately,
+					the same way as the first build.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- FAQ -->
+	<section class="container-content" aria-labelledby="faq-title">
+		<div class="rule section">
+			<h2 id="faq-title" class="t-h2 max-w-[28rem] lg:max-w-[44rem]">Questions about pricing</h2>
+			<div class="faq mt-8 border-t border-rule lg:mt-12 lg:max-w-[44rem]">
+				{
+					faqs.map((item) => (
+						<details class="faq-item border-b border-rule">
+							<summary class="faq-summary">
+								<span class="t-h3 faq-q">{item.q}</span>
+								<span class="faq-glyph" aria-hidden="true" />
+							</summary>
+							<div class="measure pb-6">
+								{item.a.map((para, i) => (
+									<p class:list={["t-body", i > 0 && "mt-4"]}>{para}</p>
+								))}
+							</div>
+						</details>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<AssessmentCta />
+</MainLayout>
+
+<style>
+	.faq-summary {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1.5rem;
+		min-height: 48px;
+		padding: 1.25rem 0;
+		cursor: pointer;
+		list-style: none;
+		transition: color 150ms ease;
+	}
+
+	.faq-summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.faq-summary::marker {
+		content: "";
+	}
+
+	.faq-summary:hover .faq-q {
+		color: var(--color-tenx-gold);
+	}
+
+	.faq-q {
+		transition: color 150ms ease;
+	}
+
+	/* +/− glyph drawn with two hairlines; the vertical one hides when open. */
+	.faq-glyph {
+		position: relative;
+		flex-shrink: 0;
+		width: 1rem;
+		height: 1rem;
+		margin-top: 0.4rem;
+		color: var(--color-text-muted);
+	}
+
+	.faq-glyph::before,
+	.faq-glyph::after {
+		content: "";
+		position: absolute;
+		background-color: currentColor;
+		transition: opacity 150ms ease;
+	}
+
+	.faq-glyph::before {
+		left: 0;
+		right: 0;
+		top: calc(50% - 0.75px);
+		height: 1.5px;
+	}
+
+	.faq-glyph::after {
+		top: 0;
+		bottom: 0;
+		left: calc(50% - 0.75px);
+		width: 1.5px;
+	}
+
+	.faq-item[open] .faq-glyph::after {
+		opacity: 0;
+	}
+</style>

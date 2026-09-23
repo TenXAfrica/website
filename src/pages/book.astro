@@ -1,0 +1,114 @@
+---
+/**
+ * /book — how the free 45-minute assessment call works, and the way in.
+ * The external Bookings link is always the primary route. The calendar is
+ * also embedded at lg+ only; phones get the button alone, because iframes
+ * are poor on small screens and Microsoft Bookings may refuse to be framed.
+ * Zero JavaScript.
+ */
+import MainLayout from "../layouts/MainLayout.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Button from "../components/ui/Button.astro";
+
+const BOOKINGS_URL =
+	"https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/";
+
+const expect = [
+	{ k: "Cost", v: "Free. There is nothing to sign and no obligation." },
+	{ k: "Length", v: "45 minutes." },
+	{ k: "Where", v: "Microsoft Teams. The invite is sent to your email when you book." },
+	{
+		k: "When",
+		v: "Monday to Friday, 09:00 to 19:00 Johannesburg time. The calendar shows each slot in your own time zone.",
+	},
+	{ k: "Who", v: "You, and Joash Paul, who founded Ten X Africa and will scope your build." },
+];
+
+const intake = [
+	"Your company name.",
+	"Your website, if you have one.",
+	"How many people work in the business, and which country you are in.",
+	"The one job that takes the most time each week.",
+];
+---
+
+<MainLayout
+	title="Book the assessment"
+	description="Book the free 45-minute Digital Maturity Assessment with Ten X Africa on Microsoft Teams. You get a written scope and one fixed price afterwards."
+>
+	<PageHeader
+		eyebrow="Book · 45 minutes · free"
+		title="Book the 45-minute assessment"
+		lede="One call to find where your week goes on work software could do. Afterwards you get a written scope and one fixed price, or an honest answer that it is not worth building."
+	/>
+
+	<section class="container-content" aria-labelledby="expect-title">
+		<div class="section lg:grid lg:grid-cols-12 lg:gap-8">
+			<div class="lg:col-span-8">
+				<h2 id="expect-title" class="t-h2 max-w-[28rem] lg:max-w-[44rem]">What to expect</h2>
+				<dl class="measure mt-8 border-t border-rule lg:mt-12">
+					{
+						expect.map((row) => (
+							<div class="grid grid-cols-1 gap-1 border-b border-rule py-4 sm:grid-cols-[7rem_1fr] sm:gap-6">
+								<dt class="t-label pt-1">{row.k}</dt>
+								<dd class="t-body">{row.v}</dd>
+							</div>
+						))
+					}
+				</dl>
+
+				<h3 class="t-h3 mt-12 lg:mt-16">The booking form asks for</h3>
+				<ul class="measure mt-4 border-t border-rule" role="list">
+					{intake.map((item) => <li class="t-small border-b border-rule py-3">{item}</li>)}
+				</ul>
+				<p class="t-small measure mt-4">
+					That is enough for Joash to come to the call prepared. How we handle these details is set
+					out in our <a href="/privacy" class="text-tenx-gold underline underline-offset-2">privacy notice</a>.
+				</p>
+
+				<div class="mt-8 lg:mt-12">
+					<Button href={BOOKINGS_URL} variant="primary" external>
+						Choose a time
+						<span class="sr-only"> (opens Microsoft Bookings in a new tab)</span>
+					</Button>
+					<p class="t-caption mt-3">Opens Microsoft Bookings in a new tab.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Embedded calendar: large screens only. The button above stays the primary route. -->
+	<section class="container-content hidden lg:block" aria-labelledby="calendar-title">
+		<div class="rule section">
+			<h2 id="calendar-title" class="t-h2">Or pick a time here</h2>
+			<p class="t-caption mt-4">
+				If the calendar does not load,
+				<a href={BOOKINGS_URL} target="_blank" rel="noopener" class="text-tenx-gold underline underline-offset-2">
+					open it in a new tab<span class="sr-only"> (Microsoft Bookings)</span>
+				</a>.
+			</p>
+			<iframe
+				src={BOOKINGS_URL}
+				title="Microsoft Bookings calendar for the Ten X Africa Digital Maturity Assessment"
+				loading="lazy"
+				referrerpolicy="strict-origin-when-cross-origin"
+				class="mt-8 block w-full rounded-[2px] border border-rule bg-surface-1"
+				style="min-height: 900px;"
+			></iframe>
+		</div>
+	</section>
+
+	<!-- Ends on the assessment -->
+	<section class="container-content" aria-labelledby="score-title">
+		<div class="rule section">
+			<h2 id="score-title" class="t-h3">Not ready to talk yet?</h2>
+			<p class="t-body measure mt-4">
+				Take the 3-minute score first. Twelve questions, no login, and the result is yours whether
+				you book or not.
+			</p>
+			<div class="mt-6">
+				<Button href="/assessment" variant="quiet">Take the 3-minute score</Button>
+			</div>
+		</div>
+	</section>
+</MainLayout>

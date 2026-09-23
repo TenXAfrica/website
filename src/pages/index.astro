@@ -1,281 +1,180 @@
 ---
-import MainLayout from "../layouts/MainLayout.astro";
-import { CanvasHero } from "../components/CanvasHero";
-import { BentoGrid } from "../components/BentoGrid";
-import { GoldButton } from "../components/GoldButton";
-import { NetworkCube } from "../components/NetworkCube";
-import { BranchingTree } from "../components/BranchingTree";
-import { TenXCoreProcessor } from "../components/TenXCoreProcessor";
-import { AfricaMap } from "../components/AfricaMap";
-import { SystemStatusPill } from "../components/SystemStatusPill";
-import { getEntry, getCollection } from "astro:content";
+import MainLayout from '../layouts/MainLayout.astro';
+import Button from '../components/ui/Button.astro';
+import AssessmentCta from '../components/ui/AssessmentCta.astro';
+import HomePipeline from '../components/diagrams/HomePipeline.astro';
 
-const homePage = await getEntry("pages", "index");
-const teamMembers = await getCollection("team");
+const BOOKINGS_URL = 'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
 
-if (!homePage) {
-	throw new Error("Home page content not found");
-}
-
-const { data } = homePage;
+const builds = [
+  { n: '01', name: 'Intake and onboarding portal', replaces: 'Replaces enquiry emails, PDF forms and details typed in three times.' },
+  { n: '02', name: 'Quote to invoice', replaces: 'Replaces copy-pasted quotes, invoices typed from them and chasing payment from memory.' },
+  { n: '03', name: 'Operations dashboard', replaces: 'Replaces the Monday spreadsheet and ringing round to find out where a job is.' },
+  { n: '04', name: 'Document generation', replaces: 'Replaces Word templates with the last client’s name still in them.' },
+  { n: '05', name: 'Inbox triage and routing', replaces: 'Replaces one person reading every email and forwarding it on by hand.' },
+];
 ---
 
-<MainLayout title={data.seo.title} description={data.seo.description}>
-	<div class="relative w-full min-h-screen flex flex-col">
-		<!-- Canvas Background - Loads during idle time for better performance -->
-		<CanvasHero
-			client:idle
-			variant="shape"
-			className="fixed inset-0 z-0"
-		/>
+<MainLayout
+  title="Ten X Africa: we build the software your business is doing by hand"
+  description="We build and run the software an owner-led business of 5 to 50 people is currently doing with spreadsheets, inboxes and memory. Fixed price after a free 45-minute assessment."
+>
+  <!-- Hero: the only centred block on the site besides the 404 -->
+  <section class="pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-28">
+    <div class="container-content text-center">
+      <h1 class="t-display text-vapor-white mx-auto max-w-[18ch]">
+        We build the software your business is currently doing by hand.
+      </h1>
+      <p class="t-lede text-text-muted mx-auto mt-6 max-w-[38rem]">
+        Intake, quotes, invoices, reporting, document packs, inbox triage — built for how your
+        business actually runs, then kept running for you. Start with a free 45-minute assessment.
+      </p>
+      <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+        <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
+        <Button href={BOOKINGS_URL} variant="secondary" external>Book the 45-minute assessment</Button>
+      </div>
+    </div>
+  </section>
 
-		<!-- Hero Section -->
-		<section
-			class="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-4 py-20"
-		>
-			<div class="max-w-4xl mx-auto space-y-6">
-				<!-- Animated Pill -->
-				<SystemStatusPill client:idle />
+  <!-- 1. The problem -->
+  <section class="section border-t border-rule" aria-labelledby="problem-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        The problem
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="problem-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Most businesses of 5 to 50 people run on spreadsheets, inboxes and memory.
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            A new client’s details get typed into an email, a form, a spreadsheet and an invoice.
+            Quotes are rebuilt from the last one. The only person who knows where every job stands
+            is the owner, and the owner is the one who should be doing something else.
+          </p>
+          <p class="t-body text-text-muted">
+            None of that needs another subscription. It needs a small system built around how your
+            business already works, one that does the typing, the chasing and the sorting for you.
+            That is what we build, and then we keep it running.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-				<h1
-					class="text-5xl md:text-7xl lg:text-8xl font-heading font-bold tracking-tighter leading-tight text-white mb-6"
-				>
-					{data.hero.headline}
-					<br />
-					<span class="text-tenx-gold"
-						>{data.hero.highlightedText}</span
-					>
-				</h1>
+  <!-- 2. The condensed pipeline -->
+  <section class="section border-t border-rule" aria-labelledby="pipeline-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        How it works
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="pipeline-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          One call with you, then we build it and run it.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          You spend 45 minutes with us on the assessment call. We come back with a fixed price,
+          build the first working draft without another meeting, walk you through it, and then run
+          it for you each month.
+        </p>
+        <div class="mt-8 lg:mt-12">
+          <HomePipeline />
+        </div>
+        <div class="mt-8">
+          <Button href="/how-it-works" variant="quiet">See all seven steps</Button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-				<p
-					class="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
-				>
-					{data.hero.subheadline}
-				</p>
+  <!-- 3. The five build types -->
+  <section class="section border-t border-rule" aria-labelledby="builds-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        What we build
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="builds-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          5 things we build, again and again.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          Most of the hand work in a small business falls into one of these. Your assessment tells
+          us which one to start with.
+        </p>
+        <ol class="mt-8 lg:mt-12 border-b border-rule">
+          {builds.map((b) => (
+            <li class="border-t border-rule">
+              <a
+                href={`/what-we-build#build-${b.n}`}
+                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 sm:grid-cols-[4rem_1fr]"
+              >
+                <span class="t-h3 text-text-faint" aria-hidden="true">{b.n}</span>
+                <span>
+                  <span class="t-h3 block text-vapor-white underline-offset-4 group-hover:underline">
+                    <span class="sr-only">Build type {b.n}: </span>{b.name}
+                  </span>
+                  <span class="t-small block text-text-muted mt-2">{b.replaces}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <div class="mt-8">
+          <Button href="/what-we-build" variant="quiet">See how each one works</Button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-				<div
-					class="flex flex-col md:flex-row gap-4 justify-center pt-8"
-				>
-					<a href={data.hero.primaryCta!.href}>
-						<GoldButton client:idle
-							>{data.hero.primaryCta!.label}</GoldButton
-						>
-					</a>
-					<a href={data.hero.secondaryCta!.href}>
-						<GoldButton variant="outline" client:idle
-							>{data.hero.secondaryCta!.label}</GoldButton
-						>
-					</a>
-				</div>
-			</div>
+  <!-- 4. Pricing teaser -->
+  <section class="section border-t border-rule" aria-labelledby="pricing-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Pricing
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="pricing-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Fixed price after a free assessment.
+        </h2>
+        <p class="t-lede text-vapor-white measure mt-4 lg:mt-6">
+          Plans from $2,500 plus $249 a month.
+        </p>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          There are 3 plans. The assessment call tells us which one fits, and you get one fixed
+          price for your build, in writing, in US dollars, before any work starts.
+        </p>
+        <div class="mt-8">
+          <Button href="/pricing" variant="quiet">See the three plans</Button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-			<!-- Scroll Indicator (Moved relative with padding) -->
-			<div
-				class="mt-20 flex flex-col items-center gap-2 opacity-50 animate-bounce"
-			>
-				<span class="text-[10px] tracking-widest uppercase"
-					>Explore</span
-				>
-				{/* Mouse Icon SVG */}
-				<svg
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					class="text-tenx-gold"
-				>
-					<rect x="5" y="2" width="14" height="20" rx="7"></rect>
-					<line x1="12" y1="6" x2="12" y2="10"></line>
-				</svg>
-				<div
-					class="w-px h-8 bg-gradient-to-b from-tenx-gold to-transparent"
-				>
-				</div>
-			</div>
-		</section>
+  <!-- 5. Who you work with -->
+  <section class="section border-t border-rule" aria-labelledby="founder-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        Who you work with
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="founder-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          You deal with the founder, Joash Paul.
+        </h2>
+        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
+          <p class="t-body text-text-muted">
+            Joash runs the assessment call and the walkthrough of your first draft himself. Those
+            are the two meetings in the whole process, and you will not be handed to an account
+            manager for either of them.
+          </p>
+          <p class="t-body text-text-muted">
+            We are based in Johannesburg and work with businesses in the US, the UK, Ireland,
+            Australia, New Zealand, the UAE and South Africa. Running from South Africa keeps our
+            costs lower than a studio in London or Sydney, and that shows in the price you pay.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-		<!-- Bento Grid Navigation -->
-		<section class="relative z-10 py-20" id="ecosystem">
-			<div class="container mx-auto px-4 mb-12">
-				<h2
-					class="text-3xl font-heading font-bold border-l-4 border-tenx-gold pl-4"
-				>
-					{data.ecosystem!.title}
-				</h2>
-			</div>
-			<BentoGrid client:visible />
-		</section>
-
-		<!-- The Hybrid Model Section (From About) -->
-		<section
-			class="relative z-10 border-t border-white/5 bg-black/40 backdrop-blur"
-			id="about"
-		>
-			<div class="grid md:grid-cols-2 min-h-[80vh]">
-				<div
-					class="p-8 md:p-12 lg:p-20 border-r border-white/5 flex flex-col justify-center"
-				>
-					<div class="w-12 h-1 bg-tenx-gold mb-6"></div>
-					<h2
-						class="text-3xl md:text-4xl font-heading font-bold mb-6"
-					>
-						{data.hybridModel!.title}
-					</h2>
-					<p class="text-xl text-white/60 mb-6 leading-relaxed">
-						{data.hybridModel!.descriptionPrimary}
-					</p>
-					<p class="text-white/60 mb-8">
-						{data.hybridModel!.descriptionSecondary}
-					</p>
-					<ul class="space-y-4 font-mono text-sm text-tenx-gold">
-						{
-							data.hybridModel!.steps.map((step) => (
-								<li class="flex items-center gap-3">{step}</li>
-							))
-						}
-					</ul>
-				</div>
-				<TenXCoreProcessor client:visible />
-			</div>
-		</section>
-
-		<!-- Engine Section (Split Screen) -->
-		<section
-			class="relative z-10 w-full bg-black/40 backdrop-blur-sm border-t border-white/5 flex flex-col md:flex-row h-auto md:h-[90vh]"
-		>
-			<div
-				class="w-full md:w-1/2 relative min-h-[500px] md:h-full flex items-center justify-center overflow-hidden"
-			>
-				<BranchingTree client:visible />
-			</div>
-			<div
-				class="w-full md:w-1/2 p-8 md:p-12 lg:p-20 flex flex-col justify-center z-20"
-			>
-				<h2
-					class="text-3xl md:text-5xl font-heading font-bold mb-6 md:mb-8 text-white"
-				>
-					{data.engine!.headline}
-					<br />
-					<span class="text-white/40"
-						>{data.engine!.headlineSecondary}</span
-					>
-				</h2>
-				<p
-					class="text-base md:text-lg text-white/60 leading-relaxed mb-6"
-				>
-					{data.engine!.description}
-				</p>
-
-				<ul class="space-y-4 font-mono text-sm text-tenx-gold mt-4">
-					{
-						data.engine!.pillars.map((pillar) => (
-							<li class="flex items-center gap-3">
-								<span class="w-2 h-2 bg-tenx-gold rounded-full" />{" "}
-								{pillar}
-							</li>
-						))
-					}
-				</ul>
-			</div>
-		</section>
-
-		<!-- Pan-African Footprint Section (From About) -->
-		<section
-			class="relative z-10 py-20 border-t border-white/5 backdrop-blur bg-black/10"
-		>
-			<div class="container mx-auto px-6">
-				<div class="grid md:grid-cols-2 gap-12 items-center">
-					<div class="">
-						<AfricaMap client:visible />
-					</div>
-					<div>
-						<div class="w-12 h-1 bg-tenx-gold mb-6"></div>
-						<h2 class="text-4xl font-heading font-bold mb-6">
-							{data.footprint!.title}
-						</h2>
-						<p class="text-white/60 mb-8 leading-relaxed">
-							{data.footprint!.description}
-						</p>
-						<div class="grid grid-cols-2 gap-4">
-							{
-								data.footprint!.stats.map((stat) => (
-									<div class="border-l-2 border-tenx-gold pl-4">
-										<h4 class="font-bold text-2xl">
-											{stat.value}
-										</h4>
-										<p class="text-xs text-white/40 uppercase tracking-widest">
-											{stat.label}
-										</p>
-									</div>
-								))
-							}
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- Leadership Section -->
-		<!-- <section
-			class="relative z-10 py-20 border-t border-white/5 bg-black/40"
-		>
-			<div class="container mx-auto px-6">
-				<div class="mb-12">
-					<h2
-						class="text-3xl font-heading font-bold border-l-4 border-tenx-gold pl-4"
-					>
-						{data.leadership!.title}
-					</h2>
-					<p class="text-white/60 mt-4 max-w-2xl">
-						{data.leadership!.description}
-					</p>
-				</div>
-
-				<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{
-						teamMembers.map((member, index) => (
-							<TeamMember
-								client:visible
-								member={{ ...member.data, id: member.id }}
-								index={index}
-							/>
-						))
-					}
-				</div>
-			</div>
-		</section> -->
-
-		<!-- IDC Network Section -->
-		<section
-			class="relative z-10 py-24 bg-gradient-to-b from-black/80 to-obsidian-void border-t border-white/5"
-		>
-			<div class="container mx-auto px-4">
-				<div
-					class="flex flex-col md:flex-row items-center justify-between gap-12"
-				>
-					<div class="w-full md:w-1/2">
-						<h2 class="text-4xl font-heading font-bold mb-6">
-							{data.idcNetwork!.title}
-						</h2>
-						<p class="text-xl text-white/80 mb-8 font-light">
-							"{data.idcNetwork!.quote}"
-						</p>
-						<p class="text-white/60 mb-8 leading-relaxed">
-							{data.idcNetwork!.description}
-						</p>
-						<a href={data.idcNetwork!.cta.href}>
-							<GoldButton variant="outline" client:visible
-								>{data.idcNetwork!.cta.label}</GoldButton
-							>
-						</a>
-					</div>
-					<div class="w-full md:w-1/2 flex justify-center">
-						<NetworkCube client:visible />
-					</div>
-				</div>
-			</div>
-		</section>
-	</div>
+  <AssessmentCta />
 </MainLayout>

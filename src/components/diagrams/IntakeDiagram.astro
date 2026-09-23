@@ -1,0 +1,115 @@
+---
+// Build type 01, Intake and onboarding portal. Two-lane before/after (design contract section 7).
+// One gold element: the intake form in the bottom lane.
+const before = [
+  ['Enquiry email'],
+  ['PDF form'],
+  ['Phone call'],
+  ['Spreadsheet', 'row'],
+  ['Chase-up email'],
+];
+const bx = (i: number) => 4 + i * 127;
+const my = (i: number) => 32 + i * 44;
+const title =
+  'Before: a new client’s details pass through an enquiry email, a PDF form, a phone call, a spreadsheet row and a chase-up email, with work doubling back three times. After: one intake form feeds a single straight line into the client record.';
+---
+<figure>
+  <svg class="hidden lg:block w-full h-auto max-w-[40rem]" viewBox="0 0 640 300" role="img" aria-labelledby="d01-d-t">
+    <title id="d01-d-t">{title}</title>
+    <defs>
+      <marker id="d01-d-a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+        <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+      </marker>
+    </defs>
+    <text class="up" x="4" y="24">TODAY</text>
+    {before.map((b, i) => (
+      <g>
+        <rect x={bx(i)} y="40" width="104" height="44" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        {b.length === 1 ? (
+          <text class="lbl" x={bx(i) + 52} y="67" text-anchor="middle">{b[0]}</text>
+        ) : (
+          <text class="lbl" x={bx(i) + 52} y="59" text-anchor="middle">
+            <tspan x={bx(i) + 52} dy="0">{b[0]}</tspan>
+            <tspan x={bx(i) + 52} dy="16">{b[1]}</tspan>
+          </text>
+        )}
+        {i < before.length - 1 && (
+          <line x1={bx(i) + 104} y1="62" x2={bx(i + 1) - 1} y2="62" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d01-d-a)" />
+        )}
+      </g>
+    ))}
+    <g fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d01-d-a)">
+      <path d="M 302 84 C 302 122, 183 122, 183 88" />
+      <path d="M 437 84 C 437 152, 56 152, 56 88" />
+      <path d="M 564 84 C 564 136, 318 136, 318 88" />
+    </g>
+
+    <line x1="0" y1="176" x2="640" y2="176" stroke="var(--color-rule)" stroke-width="1" aria-hidden="true" />
+
+    <text class="up" x="4" y="206">WITH THE PORTAL</text>
+    <rect x="4" y="224" width="170" height="52" fill="var(--color-surface-1)" stroke="var(--color-tenx-gold)" stroke-width="1.5" />
+    <text class="lbl strong" x="89" y="255" text-anchor="middle">Intake form</text>
+    <line x1="174" y1="250" x2="459" y2="250" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d01-d-a)" />
+    <text class="lbl" x="316" y="240" text-anchor="middle">typed once</text>
+    <rect x="460" y="224" width="156" height="52" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    <text class="lbl" x="538" y="255" text-anchor="middle">Client record</text>
+  </svg>
+
+  <svg class="lg:hidden w-full h-auto max-w-[22.5rem]" viewBox="0 0 320 366" role="img" aria-labelledby="d01-m-t">
+    <title id="d01-m-t">{title}</title>
+    <defs>
+      <marker id="d01-m-a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+        <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+      </marker>
+    </defs>
+    <text class="up m" x="0" y="18">TODAY</text>
+    {before.map((b, i) => (
+      <g>
+        <rect x="1" y={my(i)} width="170" height="34" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        <text class="lbl m" x="13" y={my(i) + 22}>{b.join(' ')}</text>
+        {i < before.length - 1 && (
+          <line x1="86" y1={my(i) + 34} x2="86" y2={my(i + 1) - 1} stroke="var(--color-text-faint)" stroke-width="1.5" />
+        )}
+      </g>
+    ))}
+    <g fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d01-m-a)">
+      <path d="M 171 133 C 212 133, 212 93, 175 93" />
+      <path d="M 171 181 C 270 181, 270 49, 175 49" />
+      <path d="M 171 229 C 240 229, 240 141, 175 141" />
+    </g>
+
+    <line x1="0" y1="268" x2="320" y2="268" stroke="var(--color-rule)" stroke-width="1" aria-hidden="true" />
+
+    <text class="up m" x="0" y="294">WITH THE PORTAL</text>
+    <rect x="1" y="310" width="120" height="48" fill="var(--color-surface-1)" stroke="var(--color-tenx-gold)" stroke-width="1.5" />
+    <text class="lbl m strong" x="61" y="339" text-anchor="middle">Intake form</text>
+    <line x1="121" y1="334" x2="189" y2="334" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d01-m-a)" />
+    <rect x="190" y="310" width="129" height="48" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    <text class="lbl m" x="254" y="339" text-anchor="middle">Client record</text>
+  </svg>
+  <figcaption class="t-caption text-text-muted mt-4">Six places a new client’s details get typed, down to one.</figcaption>
+</figure>
+
+<style>
+  .lbl {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--color-text-muted);
+  }
+  .lbl.strong {
+    fill: var(--color-vapor-white);
+  }
+  .up {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    fill: var(--color-text-faint);
+  }
+  .m.lbl {
+    font-size: 14px;
+  }
+  .m.up {
+    font-size: 13.5px;
+  }
+</style>

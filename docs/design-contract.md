@@ -416,6 +416,10 @@ and a link to `/privacy#opt-out` — every cold email points at that anchor, so 
 business description says Joash is the only human, so the team collection goes and the founder
 becomes a single paragraph plus one photograph on `/how-it-works`. Confirm before the commit.
 
+**Implementation note 23 Sep 2026:** Button and PageHeader are built as Astro components
+(`src/components/ui/`) rather than React, so the static pages ship zero JavaScript.
+`GoldButton.tsx` stays until the last React caller is gone.
+
 ---
 
 ## 7. Showing the pipeline and the builds without stock imagery

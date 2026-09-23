@@ -43,6 +43,24 @@ export default defineConfig({
     }
   },
   site: 'https://tenxafrica.co.za',
+  // Old routes from the previous site. On a static GitHub Pages build these
+  // emit meta-refresh pages with canonicals (design contract section 10).
+  redirects: {
+    '/consulting': '/what-we-build',
+    '/consulting/operations-excellence': '/what-we-build',
+    '/consulting/digital-transformation': '/what-we-build',
+    '/consulting/tech-implementation': '/what-we-build',
+    '/venture-studio': '/',
+    '/venture-studio/incubation-and-funding': '/',
+    '/venture-studio/compliance-and-registration': '/',
+    '/impact': '/',
+    '/partner-network': '/',
+    '/coming-soon': '/',
+    '/forms/contact': '/',
+    '/forms/consulting': '/',
+    '/forms/venture-application': '/',
+    '/forms/idc-partner': '/',
+  },
   integrations: [
     react(),
     sitemap({
@@ -52,12 +70,6 @@ export default defineConfig({
       // /internal/* is Joash's tooling, not marketing. The pages also carry
       // a noindex meta tag; this keeps them out of the sitemap as well.
       filter: (page) => !page.includes('/internal/'),
-      customPages: [
-        'https://tenxafrica.co.za',
-        'https://tenxafrica.co.za/consulting',
-        'https://tenxafrica.co.za/insights',
-        'https://tenxafrica.co.za/venture-studio',
-      ],
     })
   ],
   compressHTML: true,

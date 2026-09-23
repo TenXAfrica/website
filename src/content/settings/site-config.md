@@ -1,48 +1,54 @@
 ---
 navigation:
-  - label: HOME
-    href: /
-  - label: CONSULTING
-    href: /consulting
-    children:
-      - label: OPERATIONS EXCELLENCE
-        href: /consulting/operations-excellence
-      - label: DIGITAL TRANSFORMATION
-        href: /consulting/digital-transformation
-      - label: TECH IMPLEMENTATION
-        href: /consulting/tech-implementation
-  - label: INSIGHTS
+  - label: How it works
+    href: /how-it-works
+  - label: What we build
+    href: /what-we-build
+  - label: Pricing
+    href: /pricing
+  - label: Insights
     href: /insights
+  - label: Case studies
+    href: /case-studies
+  - label: Contact
+    href: /contact
 
+navCta:
+  label: Take the free assessment
+  href: /assessment
 
 footer:
-  columns:
-    - title: WHAT WE DO
-      links:
-        - label: Digital Transformation
-          href: /consulting/digital-transformation
-    - title: FIRM
-      links:
-        - label: Insights
-          href: /insights
-        - label: Contact
-          href: /forms/contact
-  newsletter:
-    title: Subscribe for Impact & Tech Trends
-    placeholder: Enter your email
-    buttonText: Subscribe
-  copyright: © {year} Ten X Africa. All rights reserved.
-  socials:
-    - platform: linkedin
-      url: https://linkedin.com/company/tenxafrica
-    - platform: twitter
-      url: https://twitter.com/tenxafrica
-
-quickLinks:
-  - label: Privacy Policy
-    href: /privacy
-  - label: Terms of Service
-    href: /terms
+  links:
+    - label: How it works
+      href: /how-it-works
+    - label: What we build
+      href: /what-we-build
+    - label: Pricing
+      href: /pricing
+    - label: Insights
+      href: /insights
+    - label: Case studies
+      href: /case-studies
+    - label: Contact
+      href: /contact
+    - label: Take the assessment
+      href: /assessment
+    - label: Book a call
+      href: /book
+  legalLinks:
+    - label: Privacy
+      href: /privacy
+    - label: Opt out of email
+      href: /privacy#opt-out
+    - label: Terms
+      href: /terms
+  company:
+    name: Ten X Africa (Pty) Ltd
+    address: 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa
+    registration: Reg 2020/714539/07 · VAT 4250317601
+    email: joash@tenxafrica.co.za
+  copyright: © {year} Ten X Africa (Pty) Ltd.
 ---
 
-Global site configuration including navigation, footer, and social links.
+Global site configuration: header navigation, the one header button, and the footer.
+No social links: the business does not run social media.

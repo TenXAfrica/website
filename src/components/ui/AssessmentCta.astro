@@ -1,0 +1,28 @@
+---
+/**
+ * AssessmentCta — the closing block every page ends on.
+ * The site has exactly two calls to action; both live here.
+ */
+import Button from "./Button.astro";
+
+const BOOKINGS_URL =
+	"https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/";
+---
+
+<section class="container-content" aria-labelledby="assessment-cta-title">
+	<div class="rule section">
+		<h2 id="assessment-cta-title" class="t-h2 max-w-[28rem] lg:max-w-[44rem]">
+			Find out where the hours are going
+		</h2>
+		<p class="t-body measure mt-4 lg:mt-6">
+			Twelve questions show where your week goes on work software could do,
+			and the free 45-minute call turns that into a fixed price and a plan.
+		</p>
+		<div class="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap lg:mt-12">
+			<Button href="/assessment" variant="primary">Take the 3-minute score</Button>
+			<Button href={BOOKINGS_URL} variant="secondary" external>
+				Book the 45-minute assessment
+			</Button>
+		</div>
+	</div>
+</section>

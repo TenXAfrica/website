@@ -16,6 +16,12 @@ results:
     label: "Admin time given back"
 tags: ["quoting", "invoicing"]
 readTime: 4
+before: "Quotes typed up in Word from site notes, sent up to three days later"
+after: "Quote built from the site visit form and sent the same morning"
+timeBack: "11 hours a week of the owner's admin"
+quote:
+  text: "We stopped losing jobs to whoever quoted first."
+  attribution: "Owner, plumbing contractor"
 draft: false
 ---
 
