@@ -447,7 +447,7 @@ export class TwentyClient {
   }
 
   createNoteTarget(input: Record<string, unknown>) {
-    return this.createOne('noteTargets', 'createNoteTarget', input);
+    return this.createOne('noteTargets', 'createNoteTarget', targetKeys(input));
   }
 
   createTask(input: Record<string, unknown>) {
@@ -455,7 +455,7 @@ export class TwentyClient {
   }
 
   createTaskTarget(input: Record<string, unknown>) {
-    return this.createOne('taskTargets', 'createTaskTarget', input);
+    return this.createOne('taskTargets', 'createTaskTarget', targetKeys(input));
   }
 
   async updateOpportunity(
@@ -474,6 +474,27 @@ export class TwentyClient {
 function singular(collection: string): string {
   if (collection === 'people') return 'person';
   return collection.replace(/s$/, '');
+}
+
+/**
+ * This workspace's noteTarget and taskTarget objects name their foreign keys
+ * targetCompanyId / targetPersonId / targetOpportunityId (Twenty renamed them from
+ * the older companyId / personId / opportunityId). Callers keep writing the short
+ * names; this rewrites them so the link records actually land. Verified against
+ * the live CRM on 23 Sep 2026: the short names are refused with a 400.
+ */
+const TARGET_KEY_MAP: Record<string, string> = {
+  companyId: 'targetCompanyId',
+  personId: 'targetPersonId',
+  opportunityId: 'targetOpportunityId',
+};
+
+function targetKeys(input: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    out[TARGET_KEY_MAP[key] ?? key] = value;
+  }
+  return out;
 }
 
 /**

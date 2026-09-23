@@ -163,7 +163,7 @@ describe('company reuse cannot be hijacked by name', () => {
     expect(opportunity['companyId']).not.toBe('co-real');
 
     for (const target of crm.of('noteTargets')) {
-      expect(target.body['companyId']).not.toBe('co-real');
+      expect(target.body['targetCompanyId']).not.toBe('co-real');
     }
   });
 

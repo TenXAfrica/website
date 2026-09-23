@@ -27,7 +27,7 @@ enabled = true
 [vars]
 # Non-secret configuration only.
 TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
-WORKER_VERSION = "dma-worker-0.1.0"
+WORKER_VERSION = "dma-worker-0.1.1"
 
 # --------------------------------------------------------------------------
 # Rate-limit counters. Namespaces "tenx-dma-DMA_RATELIMIT" and its _preview
