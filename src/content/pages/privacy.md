@@ -1,6 +1,6 @@
 ---
 seo:
-  title: Privacy notice
+  title: Privacy notice | Ten X Africa
   description: How Ten X Africa collects, uses and protects your information, your rights under POPIA and UK and EU GDPR, and how to opt out of our emails.
 hero:
   tag: Privacy
