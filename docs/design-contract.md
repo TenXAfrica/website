@@ -39,6 +39,16 @@ disagrees with a later section, this block wins.
 5. **The wordmark shows at every width.** The header shows the logo and "Ten X Africa" on phones
    too; the icon-only header was a bug.
 
+6. **The home page shows, it does not only tell** (added later on 23 Sep after Joash called it a
+   wall of text). Every second section is now a visual object rather than prose: a four-number
+   fact band under the hero (`FactBand.astro`), a glyph checklist for "sound familiar?", the three
+   services as cards with a line glyph each (`ServiceCards.astro`), the five builds as a grid of
+   cards with a tiny line schematic each (`BuildGrid.astro`), and the three plans as columns with
+   the "from" price in the display face (`PricingTeaser.astro`). The line-icon set is
+   `src/components/ui/Glyph.astro`: monochrome, 1.5px, currentColor, no brand icons. Cards are
+   allowed for these because each is a discrete object; prose paragraphs on Home are capped at
+   one per section. Section 2's "icons: a small inline SVG set or nothing" now has its set.
+
 Search: the brand is searched for as "10X Africa" and "TenX Africa" as often as "Ten X Africa",
 and the site was ranking second to an unrelated investment firm. The Organization and WebSite
 structured data now carry those alternate names, the footer says so in one caption line, the home

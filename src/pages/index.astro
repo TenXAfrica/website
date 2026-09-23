@@ -1,46 +1,26 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
 import Button from '../components/ui/Button.astro';
+import Glyph from '../components/ui/Glyph.astro';
 import AssessmentCta from '../components/ui/AssessmentCta.astro';
 import HomePipeline from '../components/diagrams/HomePipeline.astro';
 import AfricaConstellation from '../components/hero/AfricaConstellation.astro';
+import FactBand from '../components/home/FactBand.astro';
+import ServiceCards from '../components/home/ServiceCards.astro';
+import BuildGrid from '../components/home/BuildGrid.astro';
+import PricingTeaser from '../components/home/PricingTeaser.astro';
 
 const BOOKINGS_URL = 'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
 
-// The three service lines, in the order the work happens. Restored 23 Sep 2026
-// from the previous site (operations excellence, digital transformation, tech
-// implementation), rewritten in plain English.
-const services = [
-  {
-    n: '01',
-    name: 'Operations excellence',
-    href: '/what-we-build#operations-excellence',
-    lede: 'Fix the process before touching the software.',
-    body: 'We map how work actually moves through your business, write down the standard way of doing each job, and cut the steps that add nothing. Process maps, standard operating procedures, ISO 9001 readiness.',
-  },
-  {
-    n: '02',
-    name: 'Digital transformation',
-    href: '/what-we-build#digital-transformation',
-    lede: 'Then automate the fixed process.',
-    body: 'Custom software and AI agents that do the typing, the chasing, the sorting and the reporting, connected to the tools you already pay for. This is where the five builds below come from.',
-  },
-  {
-    n: '03',
-    name: 'Tech implementation',
-    href: '/what-we-build#tech-implementation',
-    lede: 'Set up and connect the systems you have chosen.',
-    body: 'A CRM, accounting, HR or job-management platform configured for how you work, joined to each other, your data moved across, and your team trained on it.',
-  },
+// The four things an owner recognises. Short, one glyph each, no paragraph.
+const familiar = [
+  { glyph: 'inbox' as const, text: 'A new client’s details get typed into an email, a form, a spreadsheet and an invoice.' },
+  { glyph: 'spreadsheet' as const, text: 'Quotes are rebuilt from the last one. Nobody is sure which version went out.' },
+  { glyph: 'phone' as const, text: 'The only person who knows where every job stands is the owner.' },
+  { glyph: 'clock' as const, text: 'Hours a week go on chasing, sorting and re-keying, and none of it is billable.' },
 ];
 
-const builds = [
-  { n: '01', name: 'Intake and onboarding portal', replaces: 'Replaces enquiry emails, PDF forms and details typed in three times.' },
-  { n: '02', name: 'Quote to invoice', replaces: 'Replaces copy-pasted quotes, invoices typed from them and chasing payment from memory.' },
-  { n: '03', name: 'Operations dashboard', replaces: 'Replaces the Monday spreadsheet and ringing round to find out where a job is.' },
-  { n: '04', name: 'Document generation', replaces: 'Replaces Word templates with the last client’s name still in them.' },
-  { n: '05', name: 'Inbox triage and routing', replaces: 'Replaces one person reading every email and forwarding it on by hand.' },
-];
+const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'New Zealand', 'UAE', 'South Africa'];
 ---
 
 <MainLayout
@@ -49,7 +29,7 @@ const builds = [
 >
   <!-- Hero: text on the left edge, the constellation on the right at lg and
        behind the text below that. -->
-  <section class="relative overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24">
+  <section class="relative overflow-hidden pt-24 pb-14 sm:pt-28 sm:pb-16 lg:pt-32 lg:pb-20">
     <div class="container-content relative lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-8">
       <div class="hero-constellation lg:col-start-8 lg:col-span-5 lg:row-start-1" aria-hidden="true">
         <AfricaConstellation />
@@ -59,9 +39,9 @@ const builds = [
         <h1 class="t-display text-vapor-white mt-5 max-w-[18ch]">
           We build the software your business is currently doing by hand.
         </h1>
-        <p class="t-lede text-text-muted mt-6 max-w-[38rem]">
-          Intake, quotes, invoices, reporting, document packs, inbox triage — built for how your
-          business actually runs, then kept running for you. Start with a free 45-minute assessment.
+        <p class="t-lede text-text-muted mt-6 max-w-[34rem]">
+          Intake, quotes, invoices, reporting, document packs, inbox triage: built for how your
+          business actually runs, then kept running for you.
         </p>
         <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
@@ -71,69 +51,56 @@ const builds = [
     </div>
   </section>
 
-  <!-- 1. The problem -->
-  <section class="section border-t border-rule" aria-labelledby="problem-heading">
+  <!-- Four facts, one row -->
+  <section aria-label="How we work, in numbers">
+    <FactBand />
+  </section>
+
+  <!-- 1. Sound familiar? -->
+  <section class="section" aria-labelledby="problem-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
-        The problem
+        Sound familiar?
       </p>
       <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
         <h2 id="problem-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
           Most businesses of 5 to 50 people run on spreadsheets, inboxes and memory.
         </h2>
-        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
-          <p class="t-body text-text-muted">
-            A new client’s details get typed into an email, a form, a spreadsheet and an invoice.
-            Quotes are rebuilt from the last one. The only person who knows where every job stands
-            is the owner, and the owner is the one who should be doing something else.
-          </p>
-          <p class="t-body text-text-muted">
-            None of that needs another subscription. It needs a small system built around how your
-            business already works, one that does the typing, the chasing and the sorting for you.
-            That is what we build, and then we keep it running.
-          </p>
-        </div>
+        <ul class="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:mt-12" role="list">
+          {familiar.map((f) => (
+            <li class="flex gap-4 border-t border-rule pt-4">
+              <Glyph name={f.glyph} class="mt-1 h-6 w-6 shrink-0 text-text-faint" />
+              <p class="t-body text-text-muted">{f.text}</p>
+            </li>
+          ))}
+        </ul>
+        <p class="t-lede text-vapor-white measure mt-10">
+          None of that needs another subscription. It needs a small system built around how you
+          already work. We build it, then we run it.
+        </p>
       </div>
     </div>
   </section>
 
   <!-- 2. The three services -->
   <section class="section border-t border-rule" aria-labelledby="services-heading">
-    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
-        What we do
-      </p>
-      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
-        <h2 id="services-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          3 services, done in this order.
-        </h2>
-        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          You cannot automate a mess. So we fix the process first, automate it second, and set up
-          the systems around it third. Most clients need all three; the assessment tells us where
-          to start.
+    <div class="container-content">
+      <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          What we do
         </p>
-        <ol class="mt-8 lg:mt-12 border-b border-rule">
-          {services.map((s) => (
-            <li class="border-t border-rule">
-              <a
-                href={s.href}
-                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 hover:bg-surface-1 sm:grid-cols-[4rem_1fr] -mx-3 px-3 rounded-[2px]"
-              >
-                <span class="t-h3 text-text-faint" aria-hidden="true">{s.n}</span>
-                <span>
-                  <span class="t-h3 block text-vapor-white underline-offset-4 group-hover:underline">
-                    <span class="sr-only">Service {s.n}: </span>{s.name}
-                  </span>
-                  <span class="t-small block text-vapor-white mt-2">{s.lede}</span>
-                  <span class="t-small block text-text-muted mt-1">{s.body}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <div class="mt-8">
-          <Button href="/what-we-build" variant="quiet">See what each service includes</Button>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id="services-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            3 services, done in this order.
+          </h2>
+          <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+            You cannot automate a mess. So we fix the process first, automate it second, and
+            set up the systems around it third.
+          </p>
         </div>
+      </div>
+      <div class="mt-8 lg:mt-12">
+        <ServiceCards />
       </div>
     </div>
   </section>
@@ -149,9 +116,8 @@ const builds = [
           One call with you, then we build it and run it.
         </h2>
         <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          You spend 45 minutes with us on the assessment call. We come back with a fixed price,
-          build the first working draft without another meeting, walk you through it, and then run
-          it for you each month.
+          Forty-five minutes on a call. A fixed price in writing. A first working draft built
+          without another meeting. Then we run it for you every month.
         </p>
         <div class="mt-8 lg:mt-12">
           <HomePipeline />
@@ -165,63 +131,48 @@ const builds = [
 
   <!-- 4. The five build types -->
   <section class="section border-t border-rule" aria-labelledby="builds-heading">
-    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
-        What we build
-      </p>
-      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
-        <h2 id="builds-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          5 things we build, again and again.
-        </h2>
-        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          Most of the hand work in a small business falls into one of these. Your assessment tells
-          us which one to start with.
+    <div class="container-content">
+      <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          What we build
         </p>
-        <ol class="mt-8 lg:mt-12 border-b border-rule">
-          {builds.map((b) => (
-            <li class="border-t border-rule">
-              <a
-                href={`/what-we-build#build-${b.n}`}
-                class="group grid grid-cols-[3rem_1fr] gap-x-4 py-6 transition-colors duration-150 hover:bg-surface-1 sm:grid-cols-[4rem_1fr] -mx-3 px-3 rounded-[2px]"
-              >
-                <span class="t-h3 text-text-faint" aria-hidden="true">{b.n}</span>
-                <span>
-                  <span class="t-h3 block text-vapor-white underline-offset-4 group-hover:underline">
-                    <span class="sr-only">Build type {b.n}: </span>{b.name}
-                  </span>
-                  <span class="t-small block text-text-muted mt-2">{b.replaces}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <div class="mt-8">
-          <Button href="/what-we-build#builds" variant="quiet">See how each one works</Button>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id="builds-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            5 things we build, again and again.
+          </h2>
+          <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+            Most of the hand work in a small business falls into one of these.
+          </p>
         </div>
+      </div>
+      <div class="mt-8 lg:mt-12">
+        <BuildGrid />
       </div>
     </div>
   </section>
 
   <!-- 5. Pricing teaser -->
   <section class="section border-t border-rule" aria-labelledby="pricing-heading">
-    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
-      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
-        Pricing
-      </p>
-      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
-        <h2 id="pricing-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          Fixed price after a free assessment.
-        </h2>
-        <p class="t-lede text-vapor-white measure mt-4 lg:mt-6">
-          Plans from $2,500 plus $249 a month.
+    <div class="container-content">
+      <div class="lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          Pricing
         </p>
-        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          There are 3 plans. The assessment call tells us which one fits, and you get one fixed
-          price for your build, in writing, in US dollars, before any work starts.
-        </p>
-        <div class="mt-8">
-          <Button href="/pricing" variant="quiet">See the three plans</Button>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id="pricing-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            Fixed price after a free assessment.
+          </h2>
+          <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+            Three plans. The assessment call tells us which one fits, and you get one fixed price
+            for your build before any work starts.
+          </p>
         </div>
+      </div>
+      <div class="mt-8 lg:mt-12">
+        <PricingTeaser />
+      </div>
+      <div class="mt-8">
+        <Button href="/pricing" variant="quiet">See what each plan covers</Button>
       </div>
     </div>
   </section>
@@ -236,18 +187,14 @@ const builds = [
         <h2 id="team-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
           You deal with the people who build it.
         </h2>
-        <div class="measure mt-4 lg:mt-6 space-y-4 lg:space-y-6">
-          <p class="t-body text-text-muted">
-            The Ten X Africa team member who runs your assessment call also builds your first
-            draft and walks you through it. Those are the two meetings in the whole process, and
-            you will not be handed to an account manager for either of them.
-          </p>
-          <p class="t-body text-text-muted">
-            We are based in Johannesburg and work with businesses in the US, the UK, Ireland,
-            Australia, New Zealand, the UAE and South Africa. Running from South Africa keeps our
-            costs lower than a studio in London or Sydney, and that shows in the price you pay.
-          </p>
-        </div>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          The team member who runs your assessment call also builds your first draft and walks
+          you through it. Two meetings, no account manager. Based in Johannesburg, which keeps our
+          prices below a studio in London or Sydney.
+        </p>
+        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-rule pt-4" role="list" aria-label="Where our clients are">
+          {countries.map((c) => <li class="t-label text-text-muted">{c}</li>)}
+        </ul>
       </div>
     </div>
   </section>

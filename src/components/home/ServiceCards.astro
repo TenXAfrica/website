@@ -1,0 +1,65 @@
+---
+/**
+ * ServiceCards: the three service lines as three flat cards, each a discrete
+ * thing with a glyph, a number, one line, and where it leads. Cards are
+ * allowed here because each service is a genuine object (design contract
+ * section 2), and they sit side by side at lg so the eye scans, not reads.
+ */
+import Glyph from "../ui/Glyph.astro";
+
+const services = [
+	{
+		n: "01",
+		glyph: "map" as const,
+		name: "Operations excellence",
+		href: "/what-we-build#operations-excellence",
+		lede: "Fix the process before touching the software.",
+		items: ["Process maps", "Standard procedures", "ISO 9001 readiness"],
+	},
+	{
+		n: "02",
+		glyph: "automate" as const,
+		name: "Digital transformation",
+		href: "/what-we-build#digital-transformation",
+		lede: "Then automate the fixed process.",
+		items: ["Custom systems", "AI agents with approval", "Tools joined up"],
+	},
+	{
+		n: "03",
+		glyph: "plug" as const,
+		name: "Tech implementation",
+		href: "/what-we-build#tech-implementation",
+		lede: "Set up and connect the systems you chose.",
+		items: ["CRM, accounting, HR", "Integrations and migration", "Training and hand-over"],
+	},
+];
+---
+
+<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6" role="list">
+	{
+		services.map((s) => (
+			<li class="flex">
+				<a
+					href={s.href}
+					class="group flex w-full flex-col rounded-[2px] border border-rule bg-surface-1 p-6 transition-colors duration-150 hover:border-border-interactive"
+				>
+					<div class="flex items-center justify-between">
+						<Glyph name={s.glyph} class="h-7 w-7 text-tenx-gold" />
+						<span class="t-label">{s.n}</span>
+					</div>
+					<h3 class="t-h3 mt-6 text-vapor-white underline-offset-4 group-hover:underline">{s.name}</h3>
+					<p class="t-small mt-2 text-vapor-white">{s.lede}</p>
+					<ul class="mt-5 border-t border-rule" role="list">
+						{s.items.map((it) => (
+							<li class="t-small flex items-center gap-2 border-b border-rule py-2 text-text-muted">
+								<Glyph name="check" class="h-3.5 w-3.5 shrink-0 text-text-faint" />
+								{it}
+							</li>
+						))}
+					</ul>
+					<span class="t-caption mt-4 text-text-faint group-hover:text-tenx-gold">What it includes →</span>
+				</a>
+			</li>
+		))
+	}
+</ul>
