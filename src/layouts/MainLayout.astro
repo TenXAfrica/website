@@ -360,11 +360,19 @@ const FONTS_URL =
 						}
 					});
 				}, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-				targets.forEach(function (el) {
-					el.classList.add("reveal");
-					// Anything already on screen at load shows immediately: no blank first paint.
+				// Measure every target before changing any class, so the browser lays
+				// the page out once instead of once per section (a forced reflow).
+				var vh = window.innerHeight;
+				var onScreen = Array.prototype.map.call(targets, function (el) {
 					var r = el.getBoundingClientRect();
-					if (r.top < window.innerHeight && r.bottom > 0) show(el); else io.observe(el);
+					return r.top < vh && r.bottom > 0;
+				});
+				targets.forEach(function (el, i) {
+					// Anything already on screen at load is left as it is: no fade from
+					// invisible, so the first paint shows the content straight away.
+					if (onScreen[i]) return;
+					el.classList.add("reveal");
+					io.observe(el);
 				});
 			})();
 		</script>
