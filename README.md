@@ -125,6 +125,15 @@ The body of the case study goes here as ordinary markdown.
 `intake-and-onboarding-portal`, `quote-to-invoice`, `operations-dashboard`,
 `document-generation`, `inbox-triage-and-routing`.
 
+There is a ready-made template at `src/content/case_studies/_example.md`. Copy it rather
+than writing the frontmatter by hand. Its name starts with an underscore, which is how
+Astro is told to ignore it, so the template itself is never published.
+
+**Expected build warning.** Until the first real case study is added, every build prints
+`[WARN] [glob-loader] No files found matching ... in directory src\content\case_studies`.
+That is correct: the collection exists and holds only the ignored template. The warning
+disappears on its own when the first study lands. Nothing needs fixing.
+
 **Naming a client.** Only use a client's real name when they have agreed in writing.
 Otherwise describe them, as in the example above. The build fails loudly on a missing or
 misspelled field, so a bad file never reaches the live site silently.
