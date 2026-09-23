@@ -28,6 +28,9 @@ enabled = true
 # Non-secret configuration only.
 TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
 WORKER_VERSION = "dma-worker-0.2.0"
+# The review preview (preview/wrangler.toml) calls this service from its own
+# workers.dev address. It is an exact origin on our own account, not a wildcard.
+ALLOWED_PREVIEW_ORIGINS = "https://tenx-website-preview.ten-x-africa-main.workers.dev"
 
 # --------------------------------------------------------------------------
 # Rate-limit counters. Namespaces "tenx-dma-DMA_RATELIMIT" and its _preview
