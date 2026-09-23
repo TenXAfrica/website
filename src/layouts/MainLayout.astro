@@ -4,6 +4,7 @@ import CookiesBanner from "../components/CookiesBanner.astro";
 import "../styles/global.css";
 import { getEntry } from "astro:content";
 
+import { Image } from "astro:assets";
 import logoImage from "../assets/Logo.png";
 
 interface Props {
@@ -120,9 +121,7 @@ const FONTS_URL =
 		     scroll-reveal styles only ever hide content that a script will show. -->
 		<script is:inline>document.documentElement.classList.add("js");</script>
 
-		<!-- Preconnect for performance -->
-		<link rel="preconnect" href="https://www.googletagmanager.com" />
-		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+		<!-- Preconnect for performance (analytics is loaded after the page is idle, so no preconnect for it) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
@@ -147,10 +146,21 @@ const FONTS_URL =
 			<link href={FONTS_URL} rel="stylesheet" />
 		</noscript>
 
-		<!-- Google tag (gtag.js) -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-DSYSCC30V3"></script>
+		<!-- Google tag (gtag.js): the library itself is fetched only once the page has
+		     loaded and the browser is idle, so it never competes with the content.
+		     Consent defaults and config are queued on dataLayer first and picked up
+		     when it arrives. -->
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
+			window.addEventListener("load", function () {
+				var go = function () {
+					var s = document.createElement("script");
+					s.async = true;
+					s.src = "https://www.googletagmanager.com/gtag/js?id=G-DSYSCC30V3";
+					document.head.appendChild(s);
+				};
+				if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 4000 }); else setTimeout(go, 1500);
+			});
 			function gtag(){dataLayer.push(arguments);}
 			// Consent mode: nothing is stored until the visitor accepts in the
 			// cookie banner. Advertising storage and signals stay off for everyone.
@@ -190,14 +200,15 @@ const FONTS_URL =
 					href="/"
 					class="flex min-h-11 shrink-0 items-center gap-3 font-heading text-lg font-bold text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
 				>
-					<img
-						src={logoImage.src}
+					<Image
+						src={logoImage}
 						alt=""
 						class="h-10 w-10 object-contain"
 						loading="eager"
 						decoding="async"
-						width="40"
-						height="40"
+						width={80}
+						height={80}
+						format="webp"
 					/>
 					<span class="whitespace-nowrap">Ten X Africa</span>
 				</a>
@@ -250,14 +261,15 @@ const FONTS_URL =
 							href="/"
 							class="inline-flex min-h-11 items-center gap-3 font-heading text-lg font-bold text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
 						>
-							<img
-								src={logoImage.src}
+							<Image
+								src={logoImage}
 								alt=""
 								class="h-10 w-10 object-contain"
 								loading="lazy"
 								decoding="async"
-								width="40"
-								height="40"
+								width={80}
+								height={80}
+								format="webp"
 							/>
 							<span>Ten X Africa</span>
 						</a>

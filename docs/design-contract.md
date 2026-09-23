@@ -13,7 +13,7 @@ disagrees with a later section, this block wins.
 
 1. **The site moves.** Section 2's "Motion" and the banned-visual rows for canvas, particles and
    Africa silhouettes are replaced by this: the home hero carries **one signature animation**,
-   gold nodes drifting together into the outline of Africa (`src/components/hero/AfricaConstellation.tsx`),
+   gold nodes drifting together into the outline of Africa (`src/components/hero/AfricaConstellation.astro`),
    because the previous site had it and it is what made the site feel like an experience. Every
    section fades and rises 12px once as it enters the viewport, with a 3rem gold tick drawing in
    along its top rule. Primary buttons lift 1px on hover; nav links grow a gold hairline. All of it
