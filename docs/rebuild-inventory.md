@@ -73,10 +73,25 @@ or the schema keeps documenting a business that no longer exists.
    engines land somewhere sensible rather than on a 404.
 7. Run the build, then check every internal link.
 
-## 6. Two decisions for Joash, not for the build
+## 6. Three decisions for Joash, not for the build
 
 - The footer links to a LinkedIn page and a Twitter account. The business rule is no social
   media presence. Leave them or remove them, but it is his call.
 - The public contact address on the site is `hello@tenxafrica.co.za`. The company details
   used everywhere else say `joash@tenxafrica.co.za`. The footer is being rebuilt anyway, so
   settle which one the site shows.
+- The `team` collection still holds two people, `Joash-Paul.json` and `Ashley-Paul.json`.
+  The design contract proposes dropping the collection on the grounds that there is one
+  person in the business. That is a judgement about how the business is presented, not a
+  build decision, so nothing has been deleted. Say whether the team section goes, stays with
+  one person, or stays with both.
+
+## 7. Status
+
+Sections 1 and 2 are **done** as of 23 September 2026: the five routes, five content files
+and two terminal forms are deleted, and the navigation, footer and quick links no longer
+point at them. A clean build produces 17 pages, down from 24.
+
+Sections 3, 4 and 5 are **not started**. The home page content, the components and the legal
+pages still carry the old framing, and the dead schema fields are still in `config.ts`.
+Those are rewritten against `docs/design-contract.md` rather than patched.
