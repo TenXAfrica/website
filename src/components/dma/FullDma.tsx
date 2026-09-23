@@ -538,19 +538,19 @@ export function FullDma() {
         <button
           type="button"
           onClick={() => void handleCopy()}
-          className="rounded-md border border-white/20 px-2 py-2 text-xs font-medium text-white/80 hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
+          className="rounded-md border border-border-interactive px-2 py-2 text-xs font-medium text-vapor-white hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
         >
           Copy report
         </button>
         <button
           type="button"
           onClick={handleDownload}
-          className="rounded-md border border-white/20 px-2 py-2 text-xs font-medium text-white/80 hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
+          className="rounded-md border border-border-interactive px-2 py-2 text-xs font-medium text-vapor-white hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
         >
           Download JSON
         </button>
         {failed && (
-          <p className="col-span-2 text-[11px] leading-snug text-amber-300/90">
+          <p className="col-span-2 text-xs leading-snug text-amber-300/90">
             Submit did not go through. Copy or download now — the draft is
             still saved in this browser.
           </p>
@@ -560,13 +560,13 @@ export function FullDma() {
       {submitStatus.kind === 'error' && (
         <p
           role="alert"
-          className="rounded-md border border-red-400/40 bg-red-500/10 px-2 py-1.5 text-[11px] leading-snug text-red-200"
+          className="rounded-md border border-red-400/40 bg-red-500/10 px-2 py-1.5 text-xs leading-snug text-red-200"
         >
           {submitStatus.message}
         </p>
       )}
       {submitStatus.kind === 'ok' && (
-        <p className="rounded-md border border-emerald-400/40 bg-emerald-500/10 px-2 py-1.5 text-[11px] leading-snug text-emerald-200">
+        <p className="rounded-md border border-emerald-400/40 bg-emerald-500/10 px-2 py-1.5 text-xs leading-snug text-emerald-200">
           Submitted. The local draft has been cleared.
         </p>
       )}
@@ -601,16 +601,16 @@ export function FullDma() {
   return (
     <div className="min-h-screen pb-24">
       {/* sticky status bar; on narrow screens the dimension bar rides with it */}
-      <div className="sticky top-0 z-40 border-b border-white/10 bg-obsidian-void/95 backdrop-blur">
+      <div className="sticky top-0 z-40 border-b border-rule bg-obsidian-void/95 backdrop-blur">
         <div className="mx-auto max-w-[1600px] px-4">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2">
           <h1 className="font-heading text-sm font-semibold tracking-tight text-vapor-white">
             Guided DMA
           </h1>
-          <span className="truncate text-xs text-white/50">
+          <span className="truncate text-xs text-text-faint">
             {setup.companyName.trim() || 'No company yet'}
           </span>
-          <span className="text-xs tabular-nums text-white/40">
+          <span className="text-xs tabular-nums text-text-faint">
             {totals.complete}/{TOTAL_QUESTIONS} complete
           </span>
           {liveResult && totals.scored > 0 && (
@@ -621,7 +621,7 @@ export function FullDma() {
           <span
             className={
               'text-xs ' +
-              (saveStatus.kind === 'failed' ? 'text-red-300' : 'text-white/35')
+              (saveStatus.kind === 'failed' ? 'text-red-300' : 'text-text-faint')
             }
           >
             {savedLabel}
@@ -630,12 +630,12 @@ export function FullDma() {
             type="button"
             onClick={() => setSetupOpen((v) => !v)}
             aria-expanded={setupOpen}
-            className="ml-auto rounded border border-white/15 px-2 py-1 text-xs text-white/70 hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold"
+            className="ml-auto rounded border border-border-interactive px-2 py-1 text-xs text-text-muted hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold"
           >
             {setupOpen ? 'Hide setup' : 'Show setup'}
           </button>
         </div>
-        <div className="border-t border-white/5 lg:hidden">
+        <div className="border-t border-rule lg:hidden">
           <DimensionBar progress={progress} activeId={activeDimension} />
         </div>
         </div>
@@ -674,7 +674,7 @@ export function FullDma() {
             <button
               type="button"
               onClick={ignoreRestore}
-              className="rounded-md border border-white/25 px-3 py-1.5 text-xs text-white/75 hover:border-white/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
+              className="rounded-md border border-border-interactive px-3 py-1.5 text-xs text-vapor-white hover:border-vapor-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
             >
               Start fresh
             </button>
@@ -686,7 +686,7 @@ export function FullDma() {
         <div className="hidden lg:block">
           <div className="sticky top-14">
             <DimensionSidebar progress={progress} activeId={activeDimension} />
-            <p className="mt-4 text-[10px] leading-relaxed text-white/25">
+            <p className="mt-4 text-xs leading-relaxed text-text-faint">
               Alt + ↓ / ↑ moves between questions. Nothing here auto-advances.
             </p>
           </div>
@@ -702,7 +702,7 @@ export function FullDma() {
                 Submitted — {finalReport.result.overall}/100,{' '}
                 {finalReport.result.band.label}
               </h2>
-              <p className="mt-1 text-xs text-white/60">
+              <p className="mt-1 text-xs text-text-muted">
                 {finalReport.result.recommendations
                   .map((r, i) => `${i + 1}. ${r.label}`)
                   .join('  ·  ')}
@@ -718,16 +718,16 @@ export function FullDma() {
                 <button
                   type="button"
                   onClick={handleDownload}
-                  className="rounded-md border border-white/25 px-3 py-1.5 text-xs text-white/80 hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
+                  className="rounded-md border border-border-interactive px-3 py-1.5 text-xs text-vapor-white hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold"
                 >
                   Download JSON
                 </button>
               </div>
               <details className="mt-3">
-                <summary className="cursor-pointer text-[11px] tracking-wider text-white/40 uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold">
+                <summary className="cursor-pointer text-xs tracking-wider text-text-faint uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold">
                   Report preview
                 </summary>
-                <pre className="mt-2 max-h-96 overflow-auto rounded border border-white/10 bg-black/50 p-3 text-[11px] leading-relaxed whitespace-pre-wrap text-white/70">
+                <pre className="mt-2 max-h-96 overflow-auto rounded border border-rule bg-surface-1 p-3 text-xs leading-relaxed whitespace-pre-wrap text-text-muted">
                   {finalReport.markdown}
                 </pre>
               </details>
@@ -735,7 +735,7 @@ export function FullDma() {
           )}
 
           {/* compact rail for narrow screens */}
-          <details className="mb-5 rounded-lg border border-white/10 bg-black/30 p-3 lg:hidden">
+          <details className="mb-5 rounded-lg border border-rule bg-surface-1 p-3 lg:hidden">
             <summary className="cursor-pointer font-heading text-sm font-semibold text-vapor-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tenx-gold">
               Live score and actions
               {liveResult && totals.scored > 0 && (
@@ -760,7 +760,7 @@ export function FullDma() {
                   aria-labelledby={`${dimensionSectionId(group.dimension)}-h`}
                   className="scroll-mt-28"
                 >
-                  <header className="mb-3 border-b border-white/10 pb-2">
+                  <header className="mb-3 border-b border-rule pb-2">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <h2
                         id={`${dimensionSectionId(group.dimension)}-h`}
@@ -768,11 +768,11 @@ export function FullDma() {
                       >
                         {group.label}
                       </h2>
-                      <span className="text-[11px] tabular-nums text-white/35">
+                      <span className="text-xs tabular-nums text-text-faint">
                         {p.complete}/{p.total} complete · weight {group.weight}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-xs text-white/45">{group.blurb}</p>
+                    <p className="mt-0.5 text-xs text-text-faint">{group.blurb}</p>
                   </header>
 
                   <div className="space-y-3">
@@ -788,7 +788,7 @@ export function FullDma() {
                     ))}
                   </div>
 
-                  <div className="mt-3 rounded-lg border border-white/10 bg-white/[0.02] p-3">
+                  <div className="mt-3 rounded-lg border border-rule bg-white/[0.02] p-3">
                     <AutoGrowTextarea
                       id={`notes-${group.dimension}`}
                       label={`Notes — ${group.label}`}
@@ -804,7 +804,7 @@ export function FullDma() {
             })}
           </div>
 
-          <div className="mt-8 rounded-lg border border-white/10 bg-black/30 p-4 lg:hidden">
+          <div className="mt-8 rounded-lg border border-rule bg-surface-1 p-4 lg:hidden">
             {actions}
           </div>
         </main>
@@ -814,7 +814,7 @@ export function FullDma() {
               scroll away when the call ends. */}
           <div className="sticky top-14 flex max-h-[calc(100vh-4.5rem)] flex-col gap-3">
             <div className="min-h-0 flex-1 overflow-y-auto pr-1">{railBody}</div>
-            <div className="shrink-0 rounded-lg border border-white/10 bg-black/40 p-2.5">
+            <div className="shrink-0 rounded-lg border border-rule bg-surface-1 p-2.5">
               {actions}
             </div>
           </div>

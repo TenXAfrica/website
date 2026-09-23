@@ -23,7 +23,7 @@ const description =
 			<p class="font-heading text-xl font-semibold text-vapor-white">
 				This assessment needs JavaScript.
 			</p>
-			<p class="mt-3 text-white/70">
+			<p class="mt-3 text-text-muted">
 				It scores your answers in the browser as you go. If you would
 				rather skip it, book the full 45-minute assessment instead — it
 				is free, and it covers far more ground.
@@ -69,7 +69,7 @@ const description =
 	.dma-button-quiet:focus-visible,
 	.dma-inline-link:focus-visible,
 	.dma-checkbox:focus-visible {
-		outline: 2px solid #d68614;
+		outline: 2px solid var(--color-tenx-gold);
 		outline-offset: 3px;
 	}
 
@@ -77,7 +77,7 @@ const description =
 	   means "chosen" here, and a gold ring on an unchosen card reads as a
 	   selection that was never made. */
 	.dma-option:focus-visible {
-		outline: 2px solid #f4f4f9;
+		outline: 2px solid var(--color-vapor-white);
 		outline-offset: 2px;
 	}
 
@@ -95,7 +95,7 @@ const description =
 	}
 
 	.dma-option[aria-checked="true"] {
-		border-color: #d68614;
+		border-color: var(--color-tenx-gold);
 		background-color: rgba(214, 134, 20, 0.1);
 	}
 
@@ -104,13 +104,13 @@ const description =
 		flex: none;
 		width: 1.125rem;
 		height: 1.125rem;
-		border: 1px solid rgba(244, 244, 249, 0.38);
+		border: 1px solid var(--color-border-interactive);
 		border-radius: 9999px;
 		transition: border-color 150ms ease;
 	}
 
 	.dma-option[aria-checked="true"] .dma-marker {
-		border-color: #d68614;
+		border-color: var(--color-tenx-gold);
 	}
 
 	.dma-option[aria-checked="true"] .dma-marker::after {
@@ -118,7 +118,7 @@ const description =
 		position: absolute;
 		inset: 3px;
 		border-radius: 9999px;
-		background-color: #d68614;
+		background-color: var(--color-tenx-gold);
 	}
 
 	.dma-progress-fill {
@@ -128,9 +128,9 @@ const description =
 	/* ---- Fields ------------------------------------------------- */
 
 	.dma-field:focus {
-		outline: 2px solid #d68614;
+		outline: 2px solid var(--color-tenx-gold);
 		outline-offset: 2px;
-		border-color: #d68614;
+		border-color: var(--color-tenx-gold);
 	}
 
 	.dma-select {
@@ -144,12 +144,12 @@ const description =
 
 	.dma-select option,
 	.dma-select optgroup {
-		background-color: #0a0f14;
-		color: #f4f4f9;
+		background-color: var(--color-obsidian-void);
+		color: var(--color-vapor-white);
 	}
 
 	.dma-checkbox {
-		accent-color: #d68614;
+		accent-color: var(--color-tenx-gold);
 	}
 
 	/* ---- Buttons ------------------------------------------------ */
@@ -160,13 +160,13 @@ const description =
 		justify-content: center;
 		min-height: 48px;
 		padding: 0.75rem 1.75rem;
-		border: 1px solid #d68614;
+		border: 1px solid var(--color-tenx-gold);
 		border-radius: 2px;
-		background-color: #d68614;
-		color: #0a0f14;
-		font-family: "Outfit", sans-serif;
-		font-size: 0.8125rem;
-		font-weight: 700;
+		background-color: var(--color-tenx-gold);
+		color: var(--color-obsidian-void);
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		font-weight: 600;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		text-decoration: none;
@@ -177,8 +177,8 @@ const description =
 	}
 
 	.dma-button-primary:hover:not(:disabled) {
-		background-color: #e59c34;
-		border-color: #e59c34;
+		background-color: var(--color-gold-hover);
+		border-color: var(--color-gold-hover);
 	}
 
 	.dma-button-primary:disabled {
@@ -194,19 +194,19 @@ const description =
 		padding: 0 2px;
 		border: 0;
 		background: none;
-		color: rgba(244, 244, 249, 0.75);
-		font-family: "Inter", sans-serif;
-		font-size: 0.875rem;
+		color: var(--color-vapor-white);
+		font-family: var(--font-sans);
+		font-size: 0.9375rem;
 		text-decoration: underline;
 		text-underline-offset: 5px;
-		text-decoration-color: rgba(244, 244, 249, 0.3);
+		text-decoration-color: var(--color-border-interactive);
 		cursor: pointer;
 		transition: color 150ms ease;
 	}
 
 	.dma-button-quiet:hover {
-		color: #d68614;
-		text-decoration-color: #d68614;
+		color: var(--color-tenx-gold);
+		text-decoration-color: var(--color-tenx-gold);
 	}
 
 	/* ---- Motion ------------------------------------------------- */
@@ -251,7 +251,7 @@ const description =
 		html,
 		body {
 			background: #ffffff !important;
-			color: #12171c !important;
+			color: var(--color-paper-ink) !important;
 		}
 
 		main {
@@ -268,12 +268,12 @@ const description =
 		   whole island flips to ink rather than only .dma-result. */
 		.dma-shell,
 		.dma-shell * {
-			color: #12171c !important;
+			color: var(--color-paper-ink) !important;
 			border-color: #d5d5da !important;
 		}
 
 		.dma-shell .text-tenx-gold {
-			color: #8a5a0d !important;
+			color: var(--color-gold-ink) !important;
 		}
 
 		.dma-shell section {
@@ -283,8 +283,8 @@ const description =
 		.dma-button-primary {
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			background-color: #8a5a0d !important;
-			border-color: #8a5a0d !important;
+			background-color: var(--color-gold-ink) !important;
+			border-color: var(--color-gold-ink) !important;
 			color: #ffffff !important;
 		}
 
@@ -299,11 +299,11 @@ const description =
 		}
 
 		.dma-bar-fill {
-			background-color: #8a5a0d !important;
+			background-color: var(--color-gold-ink) !important;
 		}
 
 		.dma-dial-value {
-			stroke: #8a5a0d !important;
+			stroke: var(--color-gold-ink) !important;
 		}
 
 		.dma-dial-track {

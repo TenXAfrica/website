@@ -66,7 +66,7 @@ export const ScoreDial: React.FC<ScoreDialProps> = ({ score }) => {
         <p className="font-heading text-[3.25rem] leading-none font-bold tracking-tight tabular-nums text-vapor-white sm:text-[3.75rem]">
           {safe}
         </p>
-        <p className="mt-2 font-sans text-[11px] tracking-[0.2em] uppercase text-white/60">
+        <p className="mt-2 font-sans text-xs tracking-[0.2em] uppercase text-text-muted">
           out of 100
         </p>
       </div>

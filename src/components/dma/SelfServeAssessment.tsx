@@ -68,11 +68,11 @@ const EMPTY_CONTACT: ContactState = {
 /* ------------------------------------------------------------------ */
 
 const EYEBROW =
-  'font-sans text-[11px] font-medium tracking-[0.22em] uppercase text-tenx-gold';
-const LEDE = 'text-[1.0625rem] leading-relaxed text-white/75 sm:text-lg';
+  'font-sans text-xs font-medium tracking-[0.22em] uppercase text-tenx-gold';
+const LEDE = 'text-[1.0625rem] leading-relaxed text-vapor-white sm:text-lg';
 const FIELD =
-  'dma-field w-full rounded-[2px] border border-white/15 bg-white/[0.03] px-3.5 py-3 text-base text-vapor-white placeholder:text-white/35';
-const LABEL = 'block font-sans text-sm font-medium text-white/80';
+  'dma-field w-full rounded-[2px] border border-border-interactive bg-surface-1 px-3.5 py-3 text-base text-vapor-white placeholder:text-text-faint';
+const LABEL = 'block font-sans text-sm font-medium text-vapor-white';
 const ERROR_TEXT = 'mt-1.5 font-sans text-sm text-[#ffb4a2]';
 const SECTION_HEADING =
   'font-heading text-[1.35rem] font-semibold leading-tight text-vapor-white sm:text-2xl';
@@ -493,7 +493,7 @@ export const SelfServeAssessment: React.FC = () => {
             {question.help && (
               <p
                 id="dma-question-help"
-                className="mt-3 font-sans text-[0.9375rem] leading-relaxed text-white/65"
+                className="mt-3 font-sans text-[0.9375rem] leading-relaxed text-text-muted"
               >
                 {question.help}
               </p>
@@ -518,7 +518,7 @@ export const SelfServeAssessment: React.FC = () => {
                     tabIndex={index === focusIndex ? 0 : -1}
                     onClick={() => selectOption(option.value)}
                     onKeyDown={(event) => onOptionKeyDown(event, index)}
-                    className="dma-option flex min-h-[56px] cursor-pointer items-center gap-3.5 rounded-[2px] border border-white/12 bg-white/[0.025] px-4 py-3 text-left transition-colors duration-150 hover:border-tenx-gold/50 hover:bg-white/[0.055]"
+                    className="dma-option flex min-h-[56px] cursor-pointer items-center gap-3.5 rounded-[2px] border border-rule bg-white/[0.025] px-4 py-3 text-left transition-colors duration-150 hover:border-tenx-gold/50 hover:bg-white/[0.055]"
                   >
                     <span className="dma-marker" aria-hidden="true" />
                     <span className="font-sans text-[0.9375rem] leading-snug text-vapor-white sm:text-base">
@@ -708,7 +708,7 @@ export const SelfServeAssessment: React.FC = () => {
               </Field>
             </div>
 
-            <div className="mt-8 border-t border-white/10 pt-6">
+            <div className="mt-8 border-t border-rule pt-6">
               <label
                 htmlFor="dma-consent"
                 className="flex cursor-pointer items-start gap-3"
@@ -725,9 +725,9 @@ export const SelfServeAssessment: React.FC = () => {
                   data-dma-invalid={errors.consent ? 'true' : undefined}
                   onChange={(e) => setField('consent', e.target.checked)}
                 />
-                <span className="font-sans text-[0.9375rem] leading-snug text-white/85">
+                <span className="font-sans text-[0.9375rem] leading-snug text-vapor-white">
                   Ten X Africa may email me about my results.{' '}
-                  <span className="text-white/55">Optional. You get your score either way.</span>
+                  <span className="text-text-muted">Optional. You get your score either way.</span>
                 </span>
               </label>
               {errors.consent && (
@@ -737,7 +737,7 @@ export const SelfServeAssessment: React.FC = () => {
               )}
               <p
                 id="dma-consent-note"
-                className="mt-3 font-sans text-[0.8125rem] leading-relaxed text-white/60"
+                className="mt-3 font-sans text-[0.8125rem] leading-relaxed text-text-muted"
               >
                 Ten X Africa (Pty) Ltd, 9 Roosevelt Street, Robindale Ext 1,
                 Randburg, Johannesburg, 2194, South Africa. You can ask us to
@@ -822,7 +822,7 @@ const Intro: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       breakdown across six areas, and the two things worth building first.
     </p>
 
-    <ul className="mt-9 flex flex-col gap-0 border-y border-white/10">
+    <ul className="mt-9 flex flex-col gap-0 border-y border-rule">
       {[
         ['Twelve questions', 'One per screen. No essay answers.'],
         ['Under three minutes', 'Most people finish in about two.'],
@@ -831,13 +831,13 @@ const Intro: React.FC<{ onStart: () => void }> = ({ onStart }) => (
         <li
           key={title}
           className={`flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:gap-6 ${
-            i > 0 ? 'border-t border-white/10' : ''
+            i > 0 ? 'border-t border-rule' : ''
           }`}
         >
           <span className="font-heading text-[0.9375rem] font-semibold text-vapor-white sm:w-48 sm:shrink-0">
             {title}
           </span>
-          <span className="font-sans text-[0.9375rem] leading-snug text-white/65">
+          <span className="font-sans text-[0.9375rem] leading-snug text-text-muted">
             {note}
           </span>
         </li>
@@ -850,7 +850,7 @@ const Intro: React.FC<{ onStart: () => void }> = ({ onStart }) => (
       </button>
     </div>
 
-    <p className="mt-6 font-sans text-[0.8125rem] leading-relaxed text-white/60">
+    <p className="mt-6 font-sans text-[0.8125rem] leading-relaxed text-text-muted">
       Your answers are scored in your browser as you go, so you will see your
       result either way.
     </p>
@@ -868,14 +868,14 @@ const Progress: React.FC<{ value: number; left: string; right: string }> = ({
 }) => (
   <div>
     <div className="flex items-baseline justify-between gap-4">
-      <p className="font-sans text-[11px] font-medium tracking-[0.2em] uppercase text-white/60">
+      <p className="font-sans text-xs font-medium tracking-[0.2em] uppercase text-text-muted">
         {left}
       </p>
-      <p className="shrink-0 font-heading text-[11px] font-semibold tracking-[0.2em] tabular-nums text-white/60">
+      <p className="shrink-0 font-heading text-xs font-semibold tracking-[0.2em] tabular-nums text-text-muted">
         {right}
       </p>
     </div>
-    <div className="mt-3 h-px w-full bg-white/15" aria-hidden="true">
+    <div className="mt-3 h-px w-full bg-rule" aria-hidden="true">
       <div
         className="dma-progress-fill h-px bg-tenx-gold"
         style={{ width: `${value}%` }}
@@ -920,11 +920,11 @@ const Field: React.FC<{
       <label htmlFor={id} className={LABEL}>
         {label}
         {optional && (
-          <span className="font-normal text-white/50"> (optional)</span>
+          <span className="font-normal text-text-faint"> (optional)</span>
         )}
       </label>
       {hint && (
-        <p id={hintId} className="mt-1 font-sans text-[0.8125rem] text-white/55">
+        <p id={hintId} className="mt-1 font-sans text-[0.8125rem] text-text-muted">
           {hint}
         </p>
       )}
@@ -973,25 +973,25 @@ const Result: React.FC<{
         <h1 className="font-heading text-[clamp(2rem,8vw,3rem)] leading-[1.05] font-bold tracking-[-0.02em] text-vapor-white">
           {result.band.label}
         </h1>
-        <p className="mt-4 font-sans text-[1.0625rem] leading-relaxed text-white/75">
+        <p className="mt-4 font-sans text-[1.0625rem] leading-relaxed text-vapor-white">
           {result.band.meaning}
         </p>
       </div>
     </div>
 
-    <section className="mt-14 border-t border-white/10 pt-8">
+    <section className="mt-14 border-t border-rule pt-8">
       <h2 className={SECTION_HEADING}>The six areas</h2>
-      <p className="mt-2 mb-7 font-sans text-[0.9375rem] leading-relaxed text-white/65">
+      <p className="mt-2 mb-7 font-sans text-[0.9375rem] leading-relaxed text-text-muted">
         The overall number is weighted. Operations and data count for most,
         because that is where the hours usually sit.
       </p>
       <DimensionBars dimensions={result.dimensions} />
     </section>
 
-    <section className="mt-14 border-t border-white/10 pt-8">
+    <section className="mt-14 border-t border-rule pt-8">
       <h2 className={SECTION_HEADING}>Start with these two</h2>
       {typeof result.estimatedHoursPerWeek === 'number' && (
-        <p className="mt-2 font-sans text-[0.9375rem] leading-relaxed text-white/65">
+        <p className="mt-2 font-sans text-[0.9375rem] leading-relaxed text-text-muted">
           You put roughly {result.estimatedHoursPerWeek} hours a week into
           repeat admin. Here is where we would aim first.
         </p>
@@ -1011,10 +1011,10 @@ const Result: React.FC<{
                 <h3 className="font-heading text-[1.125rem] leading-snug font-semibold text-vapor-white sm:text-xl">
                   {rec.label}
                 </h3>
-                <p className="mt-2.5 font-sans text-[0.9375rem] leading-relaxed text-white/75">
+                <p className="mt-2.5 font-sans text-[0.9375rem] leading-relaxed text-vapor-white">
                   {rec.summary}
                 </p>
-                <p className="mt-3 font-sans text-[0.875rem] leading-relaxed text-white/60">
+                <p className="mt-3 font-sans text-[0.875rem] leading-relaxed text-text-muted">
                   Pointed to by {joinList(rec.drivers.map(dimensionLabel))}.
                 </p>
                 {rec.roi && (
@@ -1027,7 +1027,7 @@ const Result: React.FC<{
           ))}
         </ol>
       ) : (
-        <p className="mt-6 font-sans text-[0.9375rem] leading-relaxed text-white/75">
+        <p className="mt-6 font-sans text-[0.9375rem] leading-relaxed text-vapor-white">
           Nothing stands out as the obvious first build, which is rare and a
           good sign. The call is where we would go looking for the edges.
         </p>
@@ -1036,7 +1036,7 @@ const Result: React.FC<{
 
     <section className="mt-14 border border-tenx-gold/35 p-6 sm:p-8">
       <h2 className={SECTION_HEADING}>Book your full assessment</h2>
-      <p className="mt-3 font-sans text-[0.9375rem] leading-relaxed text-white/75">
+      <p className="mt-3 font-sans text-[0.9375rem] leading-relaxed text-vapor-white">
         Twelve questions can only get you so far. On the call we go through the
         processes that actually run your business, put hours against them, and
         turn that into a build you can price. You keep the output either way.
@@ -1051,7 +1051,7 @@ const Result: React.FC<{
           Book your full assessment
         </a>
       </div>
-      <p className="mt-4 font-sans text-[0.8125rem] text-white/65">
+      <p className="mt-4 font-sans text-[0.8125rem] text-text-muted">
         Free · 45 minutes · on Teams, at a time you choose
         <span className="sr-only"> (opens in a new tab)</span>
       </p>
@@ -1065,7 +1065,7 @@ const Result: React.FC<{
       Johannesburg, 2194, South Africa · {CONTACT_EMAIL} · tenxafrica.co.za
     </p>
 
-    <div className="dma-no-print mt-10 border-t border-white/10 pt-6">
+    <div className="dma-no-print mt-10 border-t border-rule pt-6">
       <SaveNote state={saveState} mailtoHref={mailtoHref} />
       <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
         <button
@@ -1079,7 +1079,7 @@ const Result: React.FC<{
           Start again
         </button>
       </div>
-      <p className="mt-5 font-sans text-[0.8125rem] leading-relaxed text-white/55">
+      <p className="mt-5 font-sans text-[0.8125rem] leading-relaxed text-text-muted">
         This page keeps your answers in its web address, so you can bookmark it
         or send it to a colleague and it will look the same.
       </p>
@@ -1093,21 +1093,21 @@ const SaveNote: React.FC<{ state: SaveState; mailtoHref: string }> = ({
 }) => {
   if (state === 'saved') {
     return (
-      <p className="font-sans text-[0.875rem] leading-relaxed text-white/70">
+      <p className="font-sans text-[0.875rem] leading-relaxed text-text-muted">
         Saved. Joash will pick this up and be in touch.
       </p>
     );
   }
   if (state === 'restored') {
     return (
-      <p className="font-sans text-[0.875rem] leading-relaxed text-white/70">
+      <p className="font-sans text-[0.875rem] leading-relaxed text-text-muted">
         This is your result, rebuilt from the link. Nothing was sent to us.
       </p>
     );
   }
   if (state === 'failed') {
     return (
-      <p className="font-sans text-[0.875rem] leading-relaxed text-white/70">
+      <p className="font-sans text-[0.875rem] leading-relaxed text-text-muted">
         We could not save this one — your score above is still correct. If you
         want it on our side,{' '}
         <a

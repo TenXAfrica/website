@@ -25,7 +25,7 @@ function state(p: DimensionProgress): 'done' | 'partial' | 'empty' {
 const DOT: Record<'done' | 'partial' | 'empty', string> = {
   done: 'bg-tenx-gold',
   partial: 'bg-amber-400/60',
-  empty: 'bg-white/15',
+  empty: 'bg-border-interactive',
 };
 
 export function DimensionSidebar({
@@ -37,7 +37,7 @@ export function DimensionSidebar({
 }) {
   return (
     <nav aria-label="Dimensions">
-      <h2 className="mb-2 text-[10px] tracking-wider text-white/35 uppercase">
+      <h2 className="mb-2 text-xs tracking-wider text-text-faint uppercase">
         Dimensions
       </h2>
       <ol className="space-y-0.5">
@@ -54,7 +54,7 @@ export function DimensionSidebar({
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold ' +
                   (active
                     ? 'bg-tenx-gold/10 text-vapor-white'
-                    : 'text-white/55 hover:bg-white/5 hover:text-white/85')
+                    : 'text-text-muted hover:bg-surface-1 hover:text-vapor-white')
                 }
               >
                 <span
@@ -62,7 +62,7 @@ export function DimensionSidebar({
                   className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[s]}`}
                 />
                 <span className="min-w-0 flex-1">{p.label}</span>
-                <span className="shrink-0 text-[10px] tabular-nums text-white/35">
+                <span className="shrink-0 text-xs tabular-nums text-text-faint">
                   {p.complete}/{p.total}
                 </span>
               </a>
@@ -95,11 +95,11 @@ export function DimensionBar({
             href={`#${dimensionSectionId(p.dimension)}`}
             aria-current={active ? 'true' : undefined}
             className={
-              'flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] whitespace-nowrap ' +
+              'flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs whitespace-nowrap ' +
               'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold ' +
               (active
                 ? 'border-tenx-gold/60 bg-tenx-gold/10 text-vapor-white'
-                : 'border-white/12 text-white/55')
+                : 'border-rule text-text-muted')
             }
           >
             <span
@@ -107,7 +107,7 @@ export function DimensionBar({
               className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOT[s]}`}
             />
             {p.label}
-            <span className="tabular-nums text-white/35">
+            <span className="tabular-nums text-text-faint">
               {p.complete}/{p.total}
             </span>
           </a>

@@ -22,7 +22,7 @@ export interface SetupHeaderProps {
 
 function FromLink() {
   return (
-    <span className="rounded border border-tenx-gold/40 px-1 py-px text-[9px] tracking-wider text-tenx-gold/80 uppercase">
+    <span className="rounded border border-tenx-gold/40 px-1 py-px text-xs tracking-wider text-tenx-gold/80 uppercase">
       from link
     </span>
   );
@@ -43,7 +43,7 @@ export function SetupHeader({
   return (
     <section
       aria-label="Session setup"
-      className="border-b border-white/8 bg-black/30"
+      className="border-b border-rule bg-surface-1"
     >
       <div className="mx-auto max-w-[1600px] px-4 py-3">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
@@ -91,7 +91,7 @@ export function SetupHeader({
           />
         </div>
 
-        <div className="mt-3 grid gap-3 border-t border-white/5 pt-3 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+        <div className="mt-3 grid gap-3 border-t border-rule pt-3 md:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
           <TextField
             id="setup-token"
             label="Worker token"
@@ -101,10 +101,10 @@ export function SetupHeader({
             onChange={onTokenChange}
             hint="Remembered in this browser only. Needed for submit, not for the copy/download fallback."
           />
-          <div className="self-end text-[11px] leading-snug text-white/35">
+          <div className="self-end text-xs leading-snug text-text-faint">
             <p>
               Posting to{' '}
-              <code className="text-white/55">
+              <code className="text-text-muted">
                 {workerUrl ? `${workerUrl}/api/dma/full` : 'PUBLIC_DMA_WORKER_URL is not set'}
               </code>
             </p>

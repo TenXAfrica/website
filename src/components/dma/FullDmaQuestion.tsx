@@ -69,16 +69,16 @@ function FullDmaQuestionInner({
           ? 'border-tenx-gold/25'
           : hasText
             ? 'border-amber-400/30'
-            : 'border-white/10')
+            : 'border-rule')
       }
     >
       <header className="mb-3 flex items-start gap-3">
         <span
           className={
-            'mt-0.5 shrink-0 rounded px-1.5 py-0.5 font-heading text-[11px] font-semibold tabular-nums ' +
+            'mt-0.5 shrink-0 rounded px-1.5 py-0.5 font-heading text-xs font-semibold tabular-nums ' +
             (scored
               ? 'bg-tenx-gold/20 text-tenx-gold'
-              : 'bg-white/8 text-white/40')
+              : 'bg-rule text-text-faint')
           }
         >
           {index}
@@ -91,13 +91,13 @@ function FullDmaQuestionInner({
             {question.prompt}
           </h3>
           {question.help && (
-            <p className="mt-0.5 text-xs leading-snug text-white/40">
+            <p className="mt-0.5 text-xs leading-snug text-text-faint">
               {question.help}
             </p>
           )}
         </div>
         {hasText && !scored && (
-          <span className="shrink-0 rounded border border-amber-400/40 px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-amber-300/90 uppercase">
+          <span className="shrink-0 rounded border border-amber-400/40 px-1.5 py-0.5 text-xs font-medium tracking-wide text-amber-300/90 uppercase">
             No maturity
           </span>
         )}
@@ -142,7 +142,7 @@ function FullDmaQuestionInner({
           value={a.pain}
           onChange={(v) => onPatch(question.id, { pain: v })}
           trailing={
-            <span className="truncate text-[11px] text-white/40">
+            <span className="truncate text-xs text-text-faint">
               {painLabel(a.pain)}
             </span>
           }
@@ -155,21 +155,21 @@ function FullDmaQuestionInner({
           value={a.maturity}
           onChange={(v) => onPatch(question.id, { maturity: v })}
           trailing={
-            <span className="truncate text-[11px] text-white/40">
+            <span className="truncate text-xs text-text-faint">
               {maturityLabel(a.maturity)}
             </span>
           }
         />
       </div>
 
-      <footer className="mt-3 flex items-center justify-between gap-3 border-t border-white/5 pt-2">
-        <span className="text-[11px] text-white/25">
+      <footer className="mt-3 flex items-center justify-between gap-3 border-t border-rule pt-2">
+        <span className="text-xs text-text-faint">
           Alt + arrow keys move between questions
         </span>
         <button
           type="button"
           onClick={() => onStep(question.id, 1)}
-          className="rounded border border-white/15 px-2.5 py-1 text-xs font-medium text-white/70 hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold"
+          className="rounded border border-border-interactive px-2.5 py-1 text-xs font-medium text-text-muted hover:border-tenx-gold hover:text-tenx-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold"
         >
           Next question
         </button>
