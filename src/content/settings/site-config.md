@@ -11,39 +11,20 @@ navigation:
         href: /consulting/digital-transformation
       - label: TECH IMPLEMENTATION
         href: /consulting/tech-implementation
-  - label: VENTURE STUDIO
-    href: /venture-studio
-    children:
-      - label: COMPLIANCE & REGISTRATION
-        href: /venture-studio/compliance-and-registration
-      - label: INCUBATION & FUNDING
-        href: /venture-studio/incubation-and-funding
-  - label: PARTNER NETWORK
-    href: /partner-network
-  - label: IMPACT
-    href: /impact
   - label: INSIGHTS
     href: /insights
 
 
 footer:
   columns:
-    - title: ECOSYSTEM
+    - title: WHAT WE DO
       links:
         - label: Digital Transformation
           href: /consulting/digital-transformation
-        - label: Ventures
-          href: /venture-studio
-        - label: Impact Funding
-          href: /impact
     - title: FIRM
       links:
-        - label: Our Philosophy
-          href: /impact
         - label: Insights
           href: /insights
-        - label: Join Network
-          href: /partner-network
         - label: Contact
           href: /forms/contact
   newsletter:
@@ -58,8 +39,6 @@ footer:
       url: https://twitter.com/tenxafrica
 
 quickLinks:
-  - label: Join Network
-    href: /partner-network
   - label: Privacy Policy
     href: /privacy
   - label: Terms of Service
