@@ -16,13 +16,13 @@ import {
 } from 'react';
 
 export const FIELD_BASE =
-  'w-full rounded-md border border-white/15 bg-black/40 px-2.5 py-1.5 text-sm text-vapor-white ' +
-  'placeholder:text-white/25 outline-none transition-colors duration-100 ' +
-  'hover:border-white/25 focus:border-tenx-gold ' +
+  'w-full rounded-md border border-border-interactive bg-surface-1 px-2.5 py-1.5 text-sm text-vapor-white ' +
+  'placeholder:text-text-faint outline-none transition-colors duration-100 ' +
+  'hover:border-border-interactive focus:border-tenx-gold ' +
   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tenx-gold';
 
 export const LABEL_BASE =
-  'block text-[11px] font-medium uppercase tracking-wider text-white/45';
+  'block text-xs font-medium uppercase tracking-wider text-text-faint';
 
 /* ------------------------------------------------------------------ */
 
@@ -70,7 +70,7 @@ export function TextField({
         aria-describedby={hint ? `${id}-hint` : undefined}
       />
       {hint && (
-        <p id={`${id}-hint`} className="mt-1 text-[11px] leading-snug text-white/35">
+        <p id={`${id}-hint`} className="mt-1 text-xs leading-snug text-text-faint">
           {hint}
         </p>
       )}
@@ -121,7 +121,7 @@ export function NumberField({
         aria-describedby={hint ? `${id}-hint` : undefined}
       />
       {hint && (
-        <p id={`${id}-hint`} className="mt-1 text-[11px] leading-snug text-white/35">
+        <p id={`${id}-hint`} className="mt-1 text-xs leading-snug text-text-faint">
           {hint}
         </p>
       )}
@@ -182,7 +182,7 @@ export function AutoGrowTextarea({
         aria-describedby={hint ? `${id}-hint` : undefined}
       />
       {hint && (
-        <p id={`${id}-hint`} className="mt-1 text-[11px] leading-snug text-white/35">
+        <p id={`${id}-hint`} className="mt-1 text-xs leading-snug text-text-faint">
           {hint}
         </p>
       )}
@@ -251,7 +251,7 @@ export function ScaleSelector<T extends number>({
                   'peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-1 peer-focus-visible:outline-tenx-gold ' +
                   (selected
                     ? 'border-tenx-gold bg-tenx-gold/15 text-vapor-white'
-                    : 'border-white/12 bg-black/30 text-white/55 hover:border-white/30 hover:text-white/80')
+                    : 'border-rule bg-surface-1 text-text-muted hover:border-border-interactive hover:text-vapor-white')
                 }
               >
                 <span
@@ -262,7 +262,7 @@ export function ScaleSelector<T extends number>({
                 >
                   {opt.value}
                 </span>
-                <span className="text-[10px] leading-[1.15] text-balance">
+                <span className="text-xs leading-[1.15] text-balance">
                   {opt.label}
                 </span>
               </label>

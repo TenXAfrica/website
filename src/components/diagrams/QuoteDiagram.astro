@@ -1,0 +1,79 @@
+---
+// Build type 02, Quote to invoice. A five-rung ladder with a clock on each rung
+// (design contract section 7). One gold element: the "accepted" rung.
+// Times are illustrative, and the caption says so. Real figures come from the assessment call.
+const rungs = [
+  { stage: 'Quote built', time: '40 min → 4 min' },
+  { stage: 'Quote sent', time: '10 min → sent for you' },
+  { stage: 'Accepted', time: '3 chases → reminders sent', gold: true },
+  { stage: 'Invoice raised', time: '20 min → automatic' },
+  { stage: 'Paid', time: '15 min → matched for you' },
+];
+const dy = (i: number) => 56 + i * 60;
+const my = (i: number) => 76 + i * 76;
+const title =
+  'A ladder of five stages from top to bottom: quote built, quote sent, accepted, invoice raised, paid. Each stage shows the time it takes by hand and after the build. The accepted stage is highlighted because it triggers everything below it.';
+---
+<figure>
+  <svg class="hidden lg:block w-full h-auto max-w-[40rem]" viewBox="0 0 640 320" role="img" aria-labelledby="d02-d-t">
+    <title id="d02-d-t">{title}</title>
+    <line x1="16" y1="16" x2="16" y2="312" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    <line x1="624" y1="16" x2="624" y2="312" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    {rungs.map((r, i) => (
+      <g>
+        <line
+          x1="16"
+          y1={dy(i)}
+          x2="624"
+          y2={dy(i)}
+          stroke={r.gold ? 'var(--color-tenx-gold)' : 'var(--color-text-faint)'}
+          stroke-width={r.gold ? 2 : 1.5}
+        />
+        <text class="lbl strong" x="36" y={dy(i) - 12}>{r.stage}</text>
+        <circle cx="380" cy={dy(i) - 17} r="9" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        <path d={`M 380 ${dy(i) - 17} V ${dy(i) - 23} M 380 ${dy(i) - 17} H 384`} fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        <text class="lbl" x="398" y={dy(i) - 12}>{r.time}</text>
+      </g>
+    ))}
+  </svg>
+
+  <svg class="lg:hidden w-full h-auto max-w-[22.5rem]" viewBox="0 0 320 396" role="img" aria-labelledby="d02-m-t">
+    <title id="d02-m-t">{title}</title>
+    <line x1="8" y1="8" x2="8" y2="392" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    <line x1="312" y1="8" x2="312" y2="392" stroke="var(--color-text-faint)" stroke-width="1.5" />
+    {rungs.map((r, i) => (
+      <g>
+        <line
+          x1="8"
+          y1={my(i)}
+          x2="312"
+          y2={my(i)}
+          stroke={r.gold ? 'var(--color-tenx-gold)' : 'var(--color-text-faint)'}
+          stroke-width={r.gold ? 2 : 1.5}
+        />
+        <text class="lbl m strong" x="24" y={my(i) - 42}>{r.stage}</text>
+        <circle cx="33" cy={my(i) - 19} r="8" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        <path d={`M 33 ${my(i) - 19} V ${my(i) - 24} M 33 ${my(i) - 19} H 37`} fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        <text class="lbl m" x="50" y={my(i) - 14}>{r.time}</text>
+      </g>
+    ))}
+  </svg>
+  <figcaption class="t-caption text-text-muted mt-4">
+    Where the hours go on one quote, by hand and after the build. The times are an example; yours
+    come out of the assessment call. Everything below “accepted” runs on its own.
+  </figcaption>
+</figure>
+
+<style>
+  .lbl {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--color-text-muted);
+  }
+  .lbl.strong {
+    fill: var(--color-vapor-white);
+  }
+  .m.lbl {
+    font-size: 14px;
+  }
+</style>

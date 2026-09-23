@@ -1,0 +1,22 @@
+---
+/**
+ * PageHeader — the opening block of every page except Home.
+ * Left-aligned: label eyebrow, h1, one lede paragraph, hairline beneath.
+ * No background, no image, no centring (design contract section 6).
+ */
+interface Props {
+	eyebrow: string;
+	title: string;
+	lede?: string;
+}
+
+const { eyebrow, title, lede } = Astro.props;
+---
+
+<div class="container-content">
+	<div class="section border-b border-rule">
+		<p class="t-label">{eyebrow}</p>
+		<h1 class="t-h1 mt-4 max-w-[28rem] lg:mt-6 lg:max-w-[44rem]">{title}</h1>
+		{lede && <p class="t-lede measure mt-4 lg:mt-6">{lede}</p>}
+	</div>
+</div>

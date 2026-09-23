@@ -1,191 +1,101 @@
 ---
 seo:
-  title: Terms of Service
-  description: Terms governing your use of Ten X Africa's services, compliant with South African law (ECTA, CPA, POPIA).
+  title: "Terms of service | Ten X Africa"
+  description: "The terms on which Ten X Africa (Pty) Ltd scopes, builds and runs software for its clients, and on which you use this website."
 hero:
-  headline: Terms of Service
-  subheadline: The legal framework for your partnership with Ten X Africa.
+  tag: "Legal"
+  headline: "Terms of service"
+  subheadline: "How we scope, price, build and run work for you, and the terms on which you use this website. Last updated 23 September 2026."
 ---
 
-## Agreement to Terms
+## Who we are
 
-These Terms of Service ("Terms") govern your use of the Ten X Africa website and services. By accessing our platform, you agree to be bound by these Terms. If you do not agree, please discontinue use immediately.
+This website and the services described on it are provided by Ten X Africa (Pty) Ltd, a private company registered in South Africa (registration number 2020/714539/07, VAT number 4250317601). You can reach us at [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za).
 
----
+In these terms, "we", "us" and "our" mean Ten X Africa (Pty) Ltd. "You" means the person or business using this website or buying our services.
 
-## Nature of Services
+## What these terms cover
 
-Ten X Africa operates as a hybrid consulting and venture support engine across three pillars:
+These terms apply to your use of this website and to any work we do for you. When we take on paid work, we also send you a written scope and quote. If the written scope and these terms disagree, the written scope wins for that piece of work.
 
-**Consulting:**
-- Strategic advisory and technical implementation services
-- Digital transformation and operational optimization
+By using this website or accepting a quote from us, you agree to these terms.
 
-**Venture Studio:**
-- Compliance administration and regulatory support
-- Business incubation and acceleration services
+## What we do
 
-**Partner Network:**
-- A curated network of independent professionals and consultants
-- Project matching and collaboration facilitation
+We are an automation and software consultancy. We build and run business software for owner-led businesses: things like intake and onboarding portals, quote-to-invoice systems, operations dashboards, document generation and inbox routing.
 
----
+We do not provide legal, tax, accounting, financial or investment advice, and nothing we say or build should be treated as such advice.
 
-## Critical Disclaimer: Not Financial Advice / Not a Bank
+## The free assessment
 
-**⚠️ IMPORTANT:** Ten X Africa is a strategic consultancy and venture builder. We are **NOT** a registered Financial Services Provider (FSP), Bank, or Investment Advisor.
+Every build starts with a free Digital Maturity Assessment: a short online score and a 45-minute call. The assessment is free and places you under no obligation to buy anything. The results are an indication based on what you tell us, not a guarantee of any outcome.
 
-- Any mention of "Capital," "Funding," or "Investment" refers to our role in preparing your business for investment (e.g., Pitch Decks, Due Diligence preparation) and introducing you to our network of investors
-- We do **not** guarantee funding of any kind
-- All investment decisions are made solely by third-party investors at their discretion
-- No information provided constitutes financial, investment, or legal advice
+## Scope and price
 
----
+After the assessment we send you a written scope and a price for the build, agreed with you, together with the monthly retainer that applies once it is live. The price covers the work described in the scope. Changes you ask for that go beyond the scope are quoted separately before we do them.
 
-## User Obligations
+All prices are quoted in US dollars unless the written quote says otherwise. VAT is added where South African law requires it.
 
-**Accuracy:**
-You warrant that all information provided to us (especially for CIPC/Compliance services, funding applications, or partner profiles) is accurate, complete, and truthful.
+## Payment
 
-**Account Security:**
-You are responsible for maintaining the confidentiality of your login credentials for the Client Portal. Notify us immediately of any unauthorized access.
+- **Build fee.** 50% of the agreed price is due as a deposit before we start. The remaining 50% is due when you accept the finished build.
+- **Acceptance.** After the walkthrough call we make the agreed changes and hand the build over for you to accept. A build is accepted when you tell us so in writing or when you start using it in your day-to-day work, whichever comes first.
+- **Retainer.** The monthly retainer starts when the build goes live and has a 12-month minimum term. After the minimum term it continues month to month until either of us gives one month's written notice.
+- **Tool costs.** Third-party tools, hosting and software subscriptions that your system needs are passed through to you at cost, or billed to you directly by the provider. We tell you what these are in the written scope.
+- **Late payment.** Invoices are due within the period stated on the invoice. If a payment is late, we may pause work or the retainer service until it is paid.
 
-**Lawful Use:**
-You agree to use our services only for lawful purposes and in compliance with all applicable South African legislation.
+## What the retainer includes
 
----
+The retainer covers keeping the system we built running: monitoring, fixes, updates to the tools it depends on, and the small changes set out in your written scope. New features or new systems are quoted separately.
 
-## Intellectual Property (IP)
+## Who owns what
 
-**Our IP:**
-All content, branding (including "Ten X Africa," "Compliance Factory," "Venture Studio"), design, technology, and website code are owned by Ten X Africa or its licensors. You may not copy, modify, distribute, or reverse engineer without permission.
+Once you have paid the build fee in full, **you own the system we built for you** and the data in it. Your data is yours throughout: we use it only to build, run and support your system, and we give you a copy on request or when our work for you ends.
 
-**Your IP:**
-You retain ownership of your business data and confidential information. However, you grant us a limited license to use this data to deliver requested services (e.g., filing your CIPC registration, processing tax returns, or preparing pitch materials).
+We keep ownership of our general know-how and of any reusable tools, templates and code we had before your project or that are not specific to your business. Where these form part of your system, you receive a permanent, royalty-free licence to use them as part of that system.
 
----
+Third-party tools and services used in your system stay subject to their own licences and terms.
 
-## Limitation of Liability
+## Your part
 
-To the maximum extent permitted by South African law (including the Consumer Protection Act):
-
-- Ten X Africa is **not liable** for any indirect, incidental, consequential, special, or punitive damages arising from your use of our services
-- We are **not liable** for delays or failures caused by third parties (CIPC, SARS, government institutions, etc.) outside our control
-- We are **not liable** for business decisions you make based on our advisory services
-- Our total aggregate liability related to these Terms will not exceed R5,000 or the fees paid for the specific service, whichever is greater
-
----
-
-## Payment and Refunds
-
-**Fees:**
-All paid engagements are governed by separate written agreements (Statement of Work, Invoice, or Engagement Letter) outlining:
-- Scope of work
-- Fees and payment terms
-- Invoicing schedule
-
-**Cooling-Off Period:**
-In terms of ECTA Section 44, consumers may have a right to cancel certain electronic transactions within 7 days. This does not apply to:
-- Personalized or customized services once performance has begun
-- Compliance services once filed with government agencies
-- Digital content already consumed
-
----
+You agree to give us accurate information, timely access to the people, accounts and systems the work needs, and feedback within a reasonable time. Delays on your side may move delivery dates. You are responsible for making sure you have the right to share any data you give us.
 
 ## Confidentiality
 
-If we exchange confidential information during your engagement, both parties agree to:
-- Protect it from unauthorized access or disclosure
-- Use it only for the intended business purpose
-- Not disclose it to third parties without consent (except as required by law)
+We each keep the other's confidential information private, use it only for the work, and share it only with people who need it for the work or where the law requires. This continues after our work together ends.
 
-All confidential obligations are subject to any separate Non-Disclosure Agreement (NDA).
+## Personal information
 
----
+We handle personal information in line with the Protection of Personal Information Act (POPIA). Our [privacy policy](/privacy) explains what we collect and why, and how to [opt out](/privacy#opt-out) of any contact from us.
 
-## ECTA Disclosures (Required by South African Law)
+## Information on this website
 
-In accordance with Section 43 of the Electronic Communications and Transactions Act:
+The content on this website, including articles, examples and assessment scores, is provided as general information, not advice. We try to keep it accurate and up to date but do not guarantee that it is complete or correct for your situation. Before relying on it for a business decision, talk to us or to a suitable adviser.
 
-**Full Legal Name:** Ten X Africa (Pty) Ltd  
-**Registration Number:** [CIPC Registration - to be filled in]  
-**Physical Address:** [Office Address - to be filled in]  
-**Office Bearers/Directors:** [Names - to be filled in]  
-**Email Address:** hello@tenxafrica.co.za  
-**Website:** www.tenxafrica.co.za
+You may read, print and share the content for your own use. You may not copy it for commercial use, or copy our name, logo or site design, without our written permission.
 
----
+## Limitation of liability
 
-## Privacy
+To the extent the law allows:
 
-Your use of the site is governed by our Privacy Policy, which explains how we collect, use, and protect your data in compliance with POPIA.
+- We are not liable for indirect or consequential loss, such as lost profit, lost revenue or lost data, arising from this website or our services.
+- We are not liable for failures or outages of third-party tools, hosting or services that are outside our control.
+- Our total liability for any piece of work is limited to the fees you paid us for that work in the 12 months before the claim.
 
----
+Nothing in these terms limits any right you have under the Consumer Protection Act or other law that cannot lawfully be limited.
 
-## Warranties and Disclaimers
+## Ending the work
 
-The site and all content are provided "AS IS" without warranties of any kind. We disclaim:
-- Implied warranties of merchantability
-- Fitness for a particular purpose
-- Non-infringement of third-party rights
-- Uninterrupted or error-free service
+Either of us may end a project or the retainer if the other seriously breaches these terms and does not fix the breach within 14 days of being told in writing. If a project ends early, you pay for the work done up to that point, and we hand over what has been built and your data. Retainer fees for the minimum term remain payable unless the retainer ends because of our breach.
 
----
+## Changes to these terms
 
-## Indemnity
+We may update these terms from time to time. The date at the top shows when they last changed. Changes do not affect a written scope you have already accepted.
 
-You agree to indemnify and defend Ten X Africa, its directors, employees, and agents against any claims, damages, or costs (including legal fees) arising from:
-- Your use of the site or services
-- Your violation of these Terms
-- Your infringement of third-party rights
-- Your breach of applicable law
+## Governing law
 
----
-
-## Termination
-
-**By Us:**
-We may suspend or terminate your access at any time for any reason, including breach of these Terms, illegal activity, or violation of our acceptable use policy.
-
-**By You:**
-You may stop using the site and services at any time.
-
-**Effect:**
-Upon termination, your right to use the services ceases immediately, though obligations regarding confidentiality and indemnity survive.
-
----
-
-## Governing Law and Dispute Resolution
-
-**Governing Law:**
-These Terms are governed by the laws of the Republic of South Africa, without regard to conflict of laws principles.
-
-**Jurisdiction:**
-Any disputes arising from these Terms are subject to the exclusive jurisdiction of the South African courts.
-
-**Dispute Resolution:**
-Before initiating legal action, parties agree to attempt good-faith resolution through negotiation.
-
----
-
-## Updates to These Terms
-
-We may update these Terms periodically to reflect changes in our services, applicable law, or business practices. Continued use of the site and services after updates means you accept the modified Terms. We recommend reviewing these Terms regularly.
-
----
-
-## Severability
-
-If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions continue in full force and effect.
-
----
+These terms are governed by the laws of the Republic of South Africa. Any dispute goes first to good-faith discussion between us; if it cannot be settled that way, it is subject to the jurisdiction of the South African courts.
 
 ## Contact
 
-Questions or concerns about these Terms?
-
-**Email:** hello@tenxafrica.co.za  
-
----
-
-**Last Updated:** January 2026
+Questions about these terms: [hello@tenxafrica.co.za](mailto:hello@tenxafrica.co.za).

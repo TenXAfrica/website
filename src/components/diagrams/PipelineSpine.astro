@@ -1,0 +1,86 @@
+---
+// Desktop (lg and up) seven-step pipeline spine for /how-it-works.
+// Design contract section 7: one horizontal spine, seven 40px nodes, step name above in label
+// casing, owner below. Steps 3 and 6 (the two calls) are the only gold nodes. Hidden below lg;
+// PipelineSteps.astro is the mobile rendering.
+const steps = [
+  { lines: ['We find you,', 'you find us'], owner: 'Us' },
+  { lines: ['You take', 'the score'], owner: 'You' },
+  { lines: ['Assessment', 'call, 45 min'], owner: 'Both', human: true },
+  { lines: ['Assessment', 'becomes spec'], owner: 'Us' },
+  { lines: ['First working', 'draft'], owner: 'Us' },
+  { lines: ['Walkthrough', 'call'], owner: 'Both', human: true },
+  { lines: ['Changes,', 'deploy, run'], owner: 'Us' },
+];
+const x = (i: number) => 72 + i * 136;
+const spineY = 116;
+---
+<figure class="hidden lg:block">
+  <svg class="w-full h-auto max-w-[70rem]" viewBox="0 0 960 224" role="img" aria-labelledby="spine-title" aria-describedby="spine-desc">
+    <title id="spine-title">The seven steps, with your two calls at steps 3 and 6</title>
+    <desc id="spine-desc">
+      The seven steps in order. 1, we find you or you find us (us). 2, you take the 3-minute score (you).
+      3, the 45-minute assessment call (both of us). 4, the assessment becomes the spec (us).
+      Between steps 4 and 5 the first draft is built with no meeting needed. 5, we build the first
+      working draft (us). 6, the walkthrough call (both of us). 7, changes, deploy, then we run it (us).
+      Steps 3 and 6 are the only two moments you are in a meeting.
+    </desc>
+    <line x1="24" y1={spineY} x2="936" y2={spineY} stroke="var(--color-text-faint)" stroke-width="1.5" />
+
+    {steps.map((s, i) => (
+      <g>
+        <text class="up" x={x(i)} y="58" text-anchor="middle">
+          <tspan x={x(i)} dy="0">{s.lines[0].toUpperCase()}</tspan>
+          <tspan x={x(i)} dy="17">{s.lines[1].toUpperCase()}</tspan>
+        </text>
+        <circle
+          cx={x(i)}
+          cy={spineY}
+          r="20"
+          fill="var(--color-surface-1)"
+          stroke={s.human ? 'var(--color-tenx-gold)' : 'var(--color-text-faint)'}
+          stroke-width="1.5"
+        />
+        <text class={s.human ? 'num gold' : 'num'} x={x(i)} y={spineY + 5} text-anchor="middle">{i + 1}</text>
+        <text class="owner" x={x(i)} y={spineY + 46} text-anchor="middle">{s.owner}</text>
+      </g>
+    ))}
+
+    <!-- bracket between steps 4 and 5 -->
+    <path
+      d={`M ${x(3) + 24} 176 V 182 H ${x(4) - 24} V 176`}
+      fill="none"
+      stroke="var(--color-text-faint)"
+      stroke-width="1.5"
+    />
+    <text class="lbl" x={(x(3) + x(4)) / 2} y="204" text-anchor="middle">first draft — no meeting needed</text>
+  </svg>
+  <figcaption class="t-caption text-text-muted mt-4">
+    Seven steps. You are on two calls, steps 3 and 6. Everything else is ours to do.
+  </figcaption>
+</figure>
+
+<style>
+  .up {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    fill: var(--color-text-muted);
+  }
+  .num {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 15px;
+    fill: var(--color-vapor-white);
+  }
+  .num.gold {
+    fill: var(--color-tenx-gold);
+  }
+  .owner,
+  .lbl {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--color-text-muted);
+  }
+</style>

@@ -364,6 +364,8 @@ export interface FullNoteInput {
   result: ScoreResult;
   version: string;
   receivedAt: string;
+  /** Sign-in verified by Cloudflare Access, when present. */
+  interviewerEmail?: string;
 }
 
 export function fullNoteTitle(submission: FullSubmission): string {
@@ -395,6 +397,7 @@ export function renderFullNote(input: FullNoteInput): string {
     mdInline(result.band.meaning, 600),
     '',
     '- Interviewer: ' + mdInline(submission.interviewer),
+    ...(input.interviewerEmail ? ['- Interviewer sign-in: ' + mdInline(input.interviewerEmail)] : []),
     '- Conducted: ' + mdInline(submission.conductedAt),
     '- Recorded (server time): ' + receivedAt,
     '- Blended hourly rate used: ' + usd(submission.hourlyRateUsd) + '/hr',

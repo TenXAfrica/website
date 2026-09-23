@@ -1,7 +1,7 @@
 ---
 interface Props {
 	title: string;
-	description: string;
+	description?: string;
 	image?: string;
 	imageAlt?: string;
 	publishedDate?: string;
@@ -30,14 +30,20 @@ const {
 
 const siteUrl = 'https://tenxafrica.co.za';
 const currentURL = canonicalURL || new URL(Astro.url.pathname, siteUrl).href;
+// Default share image: public/og-default.jpg, to be the logo on obsidian
+// (1200x630). No stock photography — see docs/design-contract.md section 7.
+// TODO: the file does not exist in public/ yet; add it before launch.
 const ogImage = image || `${siteUrl}/og-default.jpg`;
+const DEFAULT_DESCRIPTION =
+	'Ten X Africa builds and runs the software owner-led businesses of 5 to 50 people are doing by hand. Start with a free 45-minute assessment.';
+const metaDescription = description || DEFAULT_DESCRIPTION;
 
 // Structured data for articles
 const structuredData = type === 'article' && publishedDate ? {
 	'@context': 'https://schema.org',
 	'@type': 'BlogPosting',
 	headline: title,
-	description: description,
+	description: metaDescription,
 	image: ogImage,
 	datePublished: publishedDate,
 	dateModified: modifiedDate || publishedDate,
@@ -74,7 +80,7 @@ const structuredData = type === 'article' && publishedDate ? {
 <meta property="og:type" content={type} />
 <meta property="og:url" content={currentURL} />
 <meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
+<meta property="og:description" content={metaDescription} />
 <meta property="og:image" content={ogImage} />
 {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
 <meta property="og:site_name" content="Ten X Africa" />
@@ -87,7 +93,7 @@ const structuredData = type === 'article' && publishedDate ? {
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:url" content={currentURL} />
 <meta name="twitter:title" content={title} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:description" content={metaDescription} />
 <meta name="twitter:image" content={ogImage} />
 {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
 

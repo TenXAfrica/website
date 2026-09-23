@@ -1,621 +1,512 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { twMerge } from 'tailwind-merge';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import TurnstileImport from 'react-turnstile';
+import { DMA_WORKER_URL, TURNSTILE_SITE_KEY } from './dma/util';
 
-import {
-    getCountries,
-    getCountryCallingCode,
-    parsePhoneNumber,
-    formatPhoneNumberIntl
-} from 'react-phone-number-input';
-import type { CountryCode } from 'libphonenumber-js';
-import 'react-phone-number-input/style.css';
-import en from 'react-phone-number-input/locale/en.json';
-import { GoldButton } from './GoldButton';
-import Turnstile from 'react-turnstile';
-import type { ContactInterest } from '../types/components';
+// react-turnstile ships CommonJS; during the static build the default import
+// arrives wrapped in an object, so unwrap it before rendering.
+const Turnstile = ((TurnstileImport as unknown as { default?: typeof TurnstileImport }).default ?? TurnstileImport) as typeof TurnstileImport;
+
+/**
+ * The /contact form.
+ *
+ * Where it posts, in order of precedence:
+ * 1. PUBLIC_CONTACT_WEBHOOK_URL, if set at build time (any endpoint that
+ *    accepts the JSON body below).
+ * 2. <DMA Worker>/api/contact. This is the same Cloudflare Worker the
+ *    assessment uses; it checks Turnstile, rate-limits, and writes a Company,
+ *    Person, Note and an "@claude Follow up contact" Task into the CRM.
+ * 3. Nothing (local dev with neither set): the submission is simulated.
+ *
+ * The Worker's contact contract accepts fullName, email, company, website,
+ * phone, message, consent and turnstileToken. It does not store country or
+ * the weekly time-sink as separate fields, so both are folded into the
+ * message text as well as sent on their own, and nothing is lost.
+ */
+
+const CONTACT_ENDPOINT: string = (() => {
+    const explicit = (import.meta.env.PUBLIC_CONTACT_WEBHOOK_URL as string | undefined)?.trim();
+    if (explicit) return explicit;
+    if (DMA_WORKER_URL) return `${DMA_WORKER_URL}/api/contact`;
+    return '';
+})();
+
+const LIMITS = {
+    name: 200,
+    email: 320,
+    company: 200,
+    country: 100,
+    timeSink: 400,
+    message: 1400,
+} as const;
 
 interface ContactFormProps {
-    interests: {
-        value: ContactInterest;
-        label: string;
-        description?: string;
-        subOptions?: {
-            value: string;
-            label: string;
-        }[];
-    }[];
-    submitText?: string;
-    successMessage?: string;
-    errorMessage?: string;
-    placeholders?: {
-        name: string;
-        email: string;
-        phone: string;
-        company: string;
-        message: string;
-    };
     className?: string;
-    defaultInterest?: ContactInterest;
 }
 
 interface FormState {
     name: string;
     email: string;
-    phone: string | undefined;
     company: string;
-    role: string;
-    website: string;
-    interest: ContactInterest;
-    subInterest?: string; // e.g., 'startup' | 'investor'
-    applicantType?: 'individual' | 'company';
+    country: string;
+    timeSink: string;
     message: string;
-    turnstileToken?: string;
+    consent: boolean;
 }
 
-/**
- * Multi-step, dynamic contact form.
- */
-export const ContactForm: React.FC<ContactFormProps> = ({
-    interests,
-    submitText = 'Send Message',
-    successMessage = "We'll get back to you within 24-48 hours.",
-    errorMessage = 'Something went wrong. Please try again or email us directly.',
-    placeholders = {
-        name: 'Your full name',
-        email: 'you@company.com',
-        phone: '+XX XX XXX XXXX',
-        company: 'Your organization',
-        message: 'Tell us about your needs...',
-    },
-    className,
-    defaultInterest = 'general',
-}) => {
-    const [step, setStep] = useState(1);
-    const [form, setForm] = useState<FormState>({
-        name: '',
-        email: '',
-        phone: undefined,
-        company: '',
-        role: '',
-        website: '',
-        interest: defaultInterest,
-        applicantType: 'company',
-        message: '',
-    });
+type FieldName = keyof FormState | 'turnstile';
+type Errors = Partial<Record<FieldName, string>>;
+type Status = 'idle' | 'sending' | 'success' | 'error';
 
-    // Phone Input State
-    const [country, setCountry] = useState<CountryCode>('ZA');
-    // We keep a separate "display" value for the input so we don't force format while typing
-    const [phoneDisplay, setPhoneDisplay] = useState('');
+const EMPTY: FormState = {
+    name: '',
+    email: '',
+    company: '',
+    country: '',
+    timeSink: '',
+    message: '',
+    consent: false,
+};
 
-    // Update display if form.phone is set externally (e.g. drafts or prepopulation)
-    // simplistic check to avoid overwrite loop
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Field styles: 48px controls, interactive border, gold focus ring.
+const CONTROL =
+    'block w-full min-h-12 rounded-[2px] border border-border-interactive bg-surface-1 px-4 py-3 ' +
+    'text-base text-vapor-white placeholder:text-text-faint ' +
+    'transition-colors duration-150 ' +
+    'focus:border-tenx-gold focus:outline-2 focus:outline-offset-2 focus:outline-tenx-gold';
+const CONTROL_INVALID = 'border-signal-bad';
+const LABEL = 'block text-[0.9375rem] font-medium text-vapor-white';
+const HINT = 'mt-1 text-[0.8125rem] leading-snug text-text-muted';
+const ERROR = 'mt-2 text-[0.9375rem] text-signal-bad';
+
+function validate(form: FormState, turnstileToken: string): Errors {
+    const errors: Errors = {};
+    if (!form.name.trim()) errors.name = 'Enter your name.';
+    if (!form.email.trim()) errors.email = 'Enter your work email.';
+    else if (!EMAIL_RE.test(form.email.trim())) errors.email = 'Enter an email address like name@company.com.';
+    if (!form.company.trim()) errors.company = 'Enter your company name.';
+    if (!form.country.trim()) errors.country = 'Enter the country your business is in.';
+    if (!form.message.trim()) errors.message = 'Tell us a little about what you need.';
+    if (!form.consent) errors.consent = 'Tick the box so we can reply to your enquiry.';
+    if (!turnstileToken) errors.turnstile = 'Wait for the security check to finish, then send again.';
+    return errors;
+}
+
+function composeMessage(form: FormState): string {
+    const lines = [`Country: ${form.country.trim()}`];
+    if (form.timeSink.trim()) lines.push(`Biggest weekly time-sink: ${form.timeSink.trim()}`);
+    lines.push('', form.message.trim());
+    return lines.join('\n');
+}
+
+export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
+    const uid = useId();
+    const id = (name: string) => `${uid}-${name}`;
+
+    const [form, setForm] = useState<FormState>(EMPTY);
+    const [errors, setErrors] = useState<Errors>({});
+    const [status, setStatus] = useState<Status>('idle');
+    const [announcement, setAnnouncement] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState('');
+    const [turnstileKey, setTurnstileKey] = useState(0);
+    const [turnstileBroken, setTurnstileBroken] = useState(false);
+
+    const [hydrated, setHydrated] = useState(false);
+
+    const formRef = useRef<HTMLFormElement>(null);
+    const successRef = useRef<HTMLHeadingElement>(null);
+    const announceTimer = useRef<number | undefined>(undefined);
+
+    // The submit button stays disabled until React has hydrated, so an early
+    // tap cannot fall through to a native form post.
     useEffect(() => {
-        if (form.phone && form.phone !== phoneDisplay && !phoneDisplay) {
-            setPhoneDisplay(form.phone);
-        }
-    }, [form.phone]);
+        setHydrated(true);
+        return () => window.clearTimeout(announceTimer.current);
+    }, []);
 
-    // Update placeholder based on selected country
-    // We can use getExampleNumber or similar if we want deeper logic, 
-    // but honestly just removing the "+XX" hardcode and letting it be "Phone Number" or similar is better UX if dynamic isn't easy.
-    // However, the user specifically hated "+27 ...". 
-    // Let's just use "Phone Number" or void to keep it clean, as the country code next to it implies the format somewhat.
-    // Or better, we just show the Calling Code in the select, and the input is empty.
-
-    const handlePhoneBlur = () => {
-        if (!phoneDisplay) return;
-
-        // Try to parse with selected country
-        // parsePhoneNumber returns undefined if invalid
-        const phoneNumber = parsePhoneNumber(phoneDisplay, country);
-
-        if (phoneNumber) {
-            // Valid-ish number
-            // Update display to nice international format
-            setPhoneDisplay(formatPhoneNumberIntl(phoneNumber.number) || phoneDisplay);
-            // Update form state to E.164
-            setForm(prev => ({ ...prev, phone: phoneNumber.number as string }));
-        } else {
-            // Invalid, just sending raw text? Or maybe keep it as is?
-            // User requirement: "updates ... if they enter it wrong ... on blur"
-            // If it's totally invalid garbage, we can't format it. 
-            // We'll just leave it and let the user see it's wrong (maybe add validation later)
-            // But we should ensure form.phone gets the raw value at least so validation can catch it
-            setForm(prev => ({ ...prev, phone: phoneDisplay }));
-        }
+    // Set the live-region text after a short delay so screen readers treat a
+    // repeated message as new (the region is cleared at the start of submit).
+    const announce = (message: string) => {
+        window.clearTimeout(announceTimer.current);
+        announceTimer.current = window.setTimeout(() => setAnnouncement(message), 50);
     };
 
-    // Determine total steps based on interest
-    // Step 1: Door Selection
-    // Step 2: Context/Details
-    // Step 3: Contact Info
-    const totalSteps = 3;
-
-    const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'exists'>('idle');
-    const [serverMessage, setServerMessage] = useState('');
-
-    // Pre-select door if valid defaultInterest provided
-    // Check for URL parameters on mount to override default/selection
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const interestParam = params.get('interest');
-            const subOptionsParam = params.get('sub'); // Optional if we want to deep link sub-options too
+        if (status === 'success') successRef.current?.focus();
+    }, [status]);
 
-            if (interestParam) {
-                const found = interests.find(i => i.value === interestParam);
-                if (found) {
-                    setForm(prev => ({
-                        ...prev,
-                        interest: found.value as ContactInterest,
-                        // If deep link has sub-option (e.g. ?interest=catalyst&sub=investor)
-                        subInterest: subOptionsParam || undefined
-                    }));
-                }
-            }
-        }
-    }, [interests]);
-
-    const activeInterest = interests.find(i => i.value === form.interest);
-
-    const validateStep = (currentStep: number): boolean => {
-        const newErrors: Partial<Record<keyof FormState, string>> = {};
-
-        if (currentStep === 1) {
-            // Validate Door Selection
-            if (!form.interest) newErrors.interest = 'Please select an option';
-            // If catalyst, validate sub-interest
-            if (form.interest === 'catalyst' && !form.subInterest) {
-                // We handle this in the UI by forcing selection to advance, but good to have check
-            }
-        }
-
-        if (currentStep === 2) {
-            // Validate Context Fields
-            // Catalyst Startup/Investor logic:
-            // If user explicitly says they are a COMPANY, require company name.
-            // If they are an INDIVIDUAL, we skip company name.
-
-            const isCompany = form.applicantType === 'company';
-            const isStartup = form.interest === 'catalyst' && form.subInterest === 'startup';
-
-            if (isCompany) {
-                if (!form.company.trim()) newErrors.company = 'Organization name is required';
-            }
-
-            // For startups, we usually want a website, but strict requirement might block early stage individuals.
-            // Let's keep it required for COMPANIES, optional for INDIVIDUALS? 
-            // Or just required if they have one. Let's make it required for Startups generally, 
-            // but if they are an individual maybe they don't have one yet?
-            // User request was just to allow the flow. Let's make website required only if isCompany for now, 
-            // or maybe just relax it for individuals. 
-            // Let's enforce website for Startups (Company) but optional for Startup (Individual).
-            if (isStartup && isCompany) {
-                if (!form.website.trim()) newErrors.website = 'Website URL is required';
-            }
-        }
-
-        if (currentStep === 3) {
-            // Validate Contact Info
-            if (!form.name.trim()) newErrors.name = 'Name is required';
-            if (!form.email.trim()) {
-                newErrors.email = 'Email is required';
-            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-                newErrors.email = 'Please enter a valid email';
-            }
-            if (!form.message.trim()) newErrors.message = 'Message is required';
-            if (!form.turnstileToken) newErrors.turnstileToken = 'Please complete the security check';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+    const update = <K extends keyof FormState>(name: K, value: FormState[K]) => {
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
     };
 
-    const handleNext = () => {
-        if (validateStep(step)) {
-            setStep(prev => Math.min(prev + 1, totalSteps));
-        }
-    };
+    const onText =
+        (name: Exclude<keyof FormState, 'consent'>) =>
+        (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+            update(name, e.target.value);
 
-    const handleBack = () => {
-        setStep(prev => Math.max(prev - 1, 1));
+    const focusFirstError = (errs: Errors) => {
+        const order: FieldName[] = ['name', 'email', 'company', 'country', 'timeSink', 'message', 'consent', 'turnstile'];
+        const first = order.find((k) => errs[k]);
+        if (first) {
+            document.getElementById(id(first))?.focus();
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (status === 'sending') return;
+        window.clearTimeout(announceTimer.current);
+        setAnnouncement('');
 
-        if (!validateStep(3)) return;
+        const errs = validate(form, turnstileToken);
+        setErrors(errs);
+        const count = Object.values(errs).filter(Boolean).length;
+        if (count > 0) {
+            announce(
+                count === 1 ? 'One thing needs fixing before we can send this.' : `${count} things need fixing before we can send this.`
+            );
+            focusFirstError(errs);
+            return;
+        }
 
-        setIsSubmitting(true);
-        setSubmitStatus('idle');
-        setServerMessage('');
+        setStatus('sending');
+        announce('Sending your message.');
+
+        const payload = {
+            fullName: form.name.trim(),
+            name: form.name.trim(),
+            email: form.email.trim(),
+            company: form.company.trim(),
+            country: form.country.trim(),
+            biggestTimeSink: form.timeSink.trim(),
+            message: composeMessage(form),
+            consent: form.consent,
+            turnstileToken,
+            source: 'website-contact',
+            submittedAt: new Date().toISOString(),
+        };
 
         try {
-            const webhookUrl = import.meta.env.PUBLIC_CONTACT_WEBHOOK_URL;
-
-            if (!webhookUrl) {
-                console.warn('PUBLIC_CONTACT_WEBHOOK_URL is not set. Simulating submission.');
-                console.log('Webhook Payload:', { ...form, submittedAt: new Date().toISOString() });
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                setSubmitStatus('success');
-            } else {
-                const payload = { ...form, submittedAt: new Date().toISOString() };
-                console.log('Webhook Payload:', payload);
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                });
-
-                // Parse response manually to handle n8n custom statuses
-                const data = await response.json().catch(() => null);
-
-                if (data && data.status === 'error') {
-                    if (data.message === 'Invalid Captcha') {
-                        setErrors(prev => ({ ...prev, turnstileToken: 'Security check failed. Please try again.' }));
-                        // Reset turnstile here ideally if we had a ref, or just let user re-click
-                        throw new Error('Invalid CAPTCHA');
-                    }
-                    if (data.message === 'Lead already exists') {
-                        setSubmitStatus('exists');
-                        return; // Exit here, 'exists' is treated as a handled state
-                    }
-                    throw new Error(data.message || 'Submission failed');
-                }
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                // If success (or just 200 OK with no specific error body)
-                setSubmitStatus('success');
+            if (!CONTACT_ENDPOINT) {
+                // Local development with no endpoint configured.
+                console.warn('No contact endpoint configured. Simulating submission.');
+                await new Promise((resolve) => setTimeout(resolve, 800));
+                setStatus('success');
+                announce('Message sent.');
+                setForm(EMPTY);
+                return;
             }
 
-            setForm(prev => ({ ...prev, message: '' }));
-        } catch (error) {
-            console.error('Form submission error:', error);
-            if (error instanceof Error && error.message !== 'Invalid CAPTCHA') {
-                // Only show generic error if it wasn't a handled UI error
-                setSubmitStatus('error');
+            const response = await fetch(CONTACT_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = (await response.json().catch(() => null)) as
+                | { ok?: boolean; error?: string; status?: string; message?: string }
+                | null;
+
+            const captchaFailed =
+                data?.error === 'turnstile_failed' ||
+                data?.error === 'turnstile_missing' ||
+                (data?.status === 'error' && data?.message === 'Invalid Captcha');
+
+            if (captchaFailed) {
+                setTurnstileToken('');
+                setTurnstileKey((k) => k + 1);
+                setErrors({ turnstile: 'The security check did not pass. Wait for it to reload, then send again.' });
+                setStatus('idle');
+                announce('The security check did not pass. Please try again.');
+                return;
             }
-        } finally {
-            setIsSubmitting(false);
+
+            // Older webhook convention: an existing lead is still a delivered message.
+            const alreadyKnown = data?.status === 'error' && data?.message === 'Lead already exists';
+            const failed = !alreadyKnown && (!response.ok || data?.ok === false || data?.status === 'error');
+            if (failed) throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
+
+            setStatus('success');
+            announce('Message sent.');
+            setForm(EMPTY);
+        } catch (err) {
+            console.error('Contact form submission failed:', err);
+            setStatus('error');
+            announce('Your message did not send. You can try again or email hello@tenxafrica.co.za.');
+            setTurnstileToken('');
+            setTurnstileKey((k) => k + 1);
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
-        if (errors[name as keyof FormState]) setErrors(prev => ({ ...prev, [name]: undefined }));
-    };
+    const describedBy = (name: FieldName, hint = false) =>
+        [hint ? id(`${name}-hint`) : '', errors[name] ? id(`${name}-error`) : ''].filter(Boolean).join(' ') || undefined;
 
-    // Helper to render current step content
-    const renderStepContent = () => {
-        const inputClasses = 'w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/30 focus:border-tenx-gold/50 focus:outline-none focus:ring-1 focus:ring-tenx-gold/50 transition-colors';
-        const labelClasses = 'block text-sm font-medium text-white/80 mb-2';
-        const errorClasses = 'text-xs text-red-400 mt-1';
+    const fieldError = (name: FieldName) =>
+        errors[name] ? (
+            <p id={id(`${name}-error`)} className={ERROR}>
+                {errors[name]}
+            </p>
+        ) : null;
 
-        switch (step) {
-            case 1: // The Doors
-                return (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-heading font-bold text-white mb-6">How can we help you?</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {interests.map((item) => (
-                                <motion.div
-                                    key={item.value}
-                                    onClick={() => {
-                                        setForm(prev => ({ ...prev, interest: item.value, subInterest: undefined }));
-                                        // Auto-advance if no sub-options
-                                        if (!item.subOptions) {
-                                            // slightly delayed for visual feedback
-                                            setTimeout(() => setStep(2), 200);
-                                        }
-                                    }}
-                                    className={twMerge(
-                                        'cursor-pointer relative overflow-hidden rounded-xl p-5 border transition-all duration-300',
-                                        form.interest === item.value
-                                            ? 'bg-tenx-gold/10 border-tenx-gold'
-                                            : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
-                                    )}
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                >
-                                    <h3 className={twMerge("font-heading font-bold text-lg mb-2", form.interest === item.value ? "text-tenx-gold" : "text-white")}>
-                                        {item.label}
-                                    </h3>
-                                    {item.description && <p className="text-sm text-white/60 mb-4">{item.description}</p>}
-
-                                    {/* Sub-options for Catalyst */}
-                                    {item.subOptions && form.interest === item.value && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            className="space-y-2 mt-4 pt-4 border-t border-white/10"
-                                        >
-                                            <p className="text-xs text-tenx-gold uppercase tracking-wider font-bold mb-2">Select your role:</p>
-                                            {item.subOptions.map(sub => (
-                                                <div
-                                                    key={sub.value}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setForm(prev => ({ ...prev, subInterest: sub.value }));
-                                                        setTimeout(() => setStep(2), 200);
-                                                    }}
-                                                    className={twMerge(
-                                                        "p-3 rounded-lg border text-sm transition-colors flex items-center justify-between",
-                                                        form.subInterest === sub.value
-                                                            ? "bg-tenx-gold text-black border-tenx-gold"
-                                                            : "bg-black/20 border-white/10 hover:border-white/30 text-white"
-                                                    )}
-                                                >
-                                                    {sub.label}
-                                                    {form.subInterest === sub.value && <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>}
-                                                </div>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                );
-
-            case 2: // Details
-                const isCatalystStartup = form.interest === 'catalyst' && form.subInterest === 'startup';
-                const isCatalystInvestor = form.interest === 'catalyst' && form.subInterest === 'investor';
-                // Now allow toggle for consulting AND catalyst as well
-                const showCompanyToggle = form.interest === 'general' || form.interest === 'network' || form.interest === 'consulting' || form.interest === 'catalyst';
-
-                return (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-heading font-bold text-white mb-6">
-                            {isCatalystStartup ? 'Startup Details' :
-                                isCatalystInvestor ? 'Investment Profile' :
-                                    'Tell us a bit more'}
-                        </h2>
-
-                        {showCompanyToggle && (
-                            <div className="flex gap-4 mb-6">
-                                {(['company', 'individual'] as const).map(type => (
-                                    <button
-                                        key={type}
-                                        type="button"
-                                        onClick={() => setForm(prev => ({ ...prev, applicantType: type }))}
-                                        className={twMerge(
-                                            "px-4 py-2 rounded-lg text-sm font-medium transition-colors border",
-                                            form.applicantType === type
-                                                ? "bg-tenx-gold text-black border-tenx-gold"
-                                                : "bg-transparent text-white/60 border-white/10 hover:border-white/30"
-                                        )}
-                                    >
-                                        I represent a {type === 'company' ? 'Company' : 'Individual'}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {(form.applicantType === 'company') && (
-                                <>
-                                    <div className="md:col-span-2">
-                                        <label htmlFor="company" className={labelClasses}>
-                                            {isCatalystStartup ? 'Startup Name' : isCatalystInvestor ? 'Firm / Organization Name' : 'Organization Name'} <span className="text-tenx-gold">*</span>
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="company"
-                                            name="company"
-                                            value={form.company}
-                                            onChange={handleChange}
-                                            placeholder={placeholders.company}
-                                            className={twMerge(inputClasses, errors.company && 'border-red-400')}
-                                        />
-                                        {errors.company && <p className={errorClasses}>{errors.company}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="role" className={labelClasses}>Your Role</label>
-                                        <input
-                                            type="text"
-                                            id="role"
-                                            name="role"
-                                            value={form.role}
-                                            onChange={handleChange}
-                                            placeholder="e.g. CEO, Partner, Manager"
-                                            className={inputClasses}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="website" className={labelClasses}>Website {isCatalystStartup && <span className="text-tenx-gold">*</span>}</label>
-                                        <input
-                                            type="url"
-                                            id="website"
-                                            name="website"
-                                            value={form.website}
-                                            onChange={handleChange}
-                                            placeholder="https://..."
-                                            className={twMerge(inputClasses, errors.website && 'border-red-400')}
-                                        />
-                                        {errors.website && <p className={errorClasses}>{errors.website}</p>}
-                                    </div>
-                                </>
-                            )}
-
-                            {/* If purely individual general inquiry, maybe just skip straight to message? 
-                                But let's keep it consistent. */}
-                        </div>
-                    </div>
-                );
-
-            case 3: // Contact Info & Message
-                return (
-                    <div className="space-y-6">
-                        <h2 className="text-xl font-heading font-bold text-white mb-6">Final Step: Contact Info</h2>
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <label htmlFor="name" className={labelClasses}>Full Name <span className="text-tenx-gold">*</span></label>
-                                <input type="text" id="name" name="name" value={form.name} onChange={handleChange} placeholder={placeholders.name} className={twMerge(inputClasses, errors.name && 'border-red-400')} />
-                                {errors.name && <p className={errorClasses}>{errors.name}</p>}
-                            </div>
-                            <div>
-                                <label htmlFor="email" className={labelClasses}>Email <span className="text-tenx-gold">*</span></label>
-                                <input type="email" id="email" name="email" value={form.email} onChange={handleChange} placeholder={placeholders.email} className={twMerge(inputClasses, errors.email && 'border-red-400')} />
-                                {errors.email && <p className={errorClasses}>{errors.email}</p>}
-                            </div>
-                            <div className="md:col-span-2">
-                                <label htmlFor="phone" className={labelClasses}>Phone</label>
-                                <div className={twMerge(inputClasses, "py-0 pl-0 flex items-center p-0 overflow-hidden focus-within:border-tenx-gold/50 focus-within:ring-1 focus-within:ring-tenx-gold/50")}>
-                                    {/* Custom Country Select */}
-                                    <div className="relative border-r border-white/10 h-full max-w-[120px] md:max-w-[180px] flex-shrink-0">
-                                        <select
-                                            value={country}
-                                            onChange={(e) => setCountry(e.target.value as CountryCode)}
-                                            className="appearance-none bg-transparent text-white/80 py-3 pl-4 pr-8 focus:outline-none cursor-pointer h-full w-full truncate text-base md:text-sm"
-                                        >
-                                            {getCountries().map((c) => (
-                                                <option key={c} value={c} className="bg-black text-white">
-                                                    {en[c]} +{getCountryCallingCode(c)}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/50">
-                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                                        </div>
-                                    </div>
-
-                                    <input
-                                        type="tel"
-                                        value={phoneDisplay}
-                                        onChange={(e) => {
-                                            setPhoneDisplay(e.target.value);
-                                            // Also update form state on change (raw) to prevent lag if they submit immediately?
-                                            // Actually, safer to update form only on blur or submit if we want strict formatting?
-                                            // Let's update raw to form state so 'required' checks pass if they type but don't blur
-                                            setForm(prev => ({ ...prev, phone: e.target.value }));
-                                        }}
-                                        onBlur={handlePhoneBlur}
-
-                                        placeholder="Phone number"
-                                        className="flex-1 bg-transparent border-none text-white placeholder:text-white/30 px-4 py-3 focus:ring-0 focus:outline-none text-base md:text-sm min-w-0"
-                                    />
-                                </div>
-                            </div>
-                            <div className="md:col-span-2">
-                                <textarea id="message" name="message" value={form.message} onChange={handleChange} placeholder={placeholders.message} rows={4} className={twMerge(inputClasses, 'resize-none', errors.message && 'border-red-400')} />
-                                {errors.message && <p className={errorClasses}>{errors.message}</p>}
-                            </div>
-
-                            <div className="md:col-span-2 flex justify-center py-4">
-                                <Turnstile
-                                    sitekey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA"}
-                                    onVerify={(token) => {
-                                        setForm(prev => ({ ...prev, turnstileToken: token }));
-                                        setErrors(prev => ({ ...prev, turnstileToken: undefined }));
-                                    }}
-                                    theme="dark"
-                                />
-                                {errors.turnstileToken && <p className={twMerge(errorClasses, "block text-center w-full")}>{errors.turnstileToken}</p>}
-                            </div>
-                        </div>
-                    </div>
-                );
-        }
-    };
-
-    if (submitStatus === 'success') {
-        return (
-            <motion.div className={twMerge("bg-black/60 backdrop-blur-xl border border-tenx-gold/30 rounded-xl p-8 text-center", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="w-16 h-16 bg-tenx-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-8 h-8 text-tenx-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                </div>
-                <h3 className="text-2xl font-heading font-bold text-white mb-2">Message Sent!</h3>
-                <p className="text-white/60 mb-6">{successMessage}</p>
-                <GoldButton onClick={() => { setSubmitStatus('idle'); setStep(1); setForm(prev => ({ ...prev, message: '' })); }}>
-                    Send Another Message
-                </GoldButton>
-            </motion.div>
-        );
-    }
-
-    if (submitStatus === 'exists') {
-        return (
-            <motion.div className={twMerge("bg-black/60 backdrop-blur-xl border border-tenx-gold/30 rounded-xl p-8 text-center", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <h3 className="text-2xl font-heading font-bold text-white mb-2">We already have your details!</h3>
-                <p className="text-white/60 mb-6">You are already in our system. Please wait 24 hours for us to get back to you, or email us directly for immediate assistance.</p>
-                <a href="mailto:hello@tenxafrica.co.za" className="text-tenx-gold hover:text-white transition-colors underline mb-6 block">hello@tenxafrica.co.za</a>
-                <GoldButton onClick={() => { setSubmitStatus('idle'); setStep(1); setForm(prev => ({ ...prev, message: '' })); }}>
-                    Back to Form
-                </GoldButton>
-            </motion.div>
-        );
-    }
+    const statusRegion = (
+        <p role="status" aria-live="polite" className="sr-only">
+            {announcement}
+        </p>
+    );
 
     return (
         <div className={className}>
-            {/* Progress Bar */}
-            <div className="mb-8 p-1 bg-white/5 rounded-full relative h-2 overflow-hidden">
-                <motion.div
-                    className="absolute top-0 left-0 h-full bg-tenx-gold"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(step / totalSteps) * 100}%` }}
-                    transition={{ duration: 0.3 }}
-                />
-            </div>
-
-            <motion.form
-                onSubmit={handleSubmit}
-                className="bg-black/60 backdrop-blur-xl border border-tenx-gold/30 rounded-xl p-6 md:p-8 min-h-[500px] flex flex-col justify-between"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-            >
-                <div className="flex-1">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={step}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.2 }}
+            {/* One status region for the life of the component, never re-created. */}
+            {statusRegion}
+            {status === 'success' ? (
+                <div className="border-t border-rule pt-8">
+                    <h2 ref={successRef} tabIndex={-1} className="t-h2 text-vapor-white focus:outline-none">
+                        Thanks. Your message is with us.
+                    </h2>
+                    <p className="t-body mt-4 max-w-[34rem] text-text-muted">
+                        The team reads every enquiry and usually replies within one working day, from hello@tenxafrica.co.za.
+                        If you would rather talk now, book the free 45-minute assessment.
+                    </p>
+                    <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                        <a
+                            href="https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-secondary"
                         >
-                            {renderStepContent()}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-
-                {/* Footer / Navigation */}
-                <div className="mt-8 flex justify-between pt-6 border-t border-white/5">
-                    {step > 1 ? (
+                            Book the assessment
+                            <span className="sr-only"> (opens in a new tab)</span>
+                        </a>
                         <button
                             type="button"
-                            onClick={handleBack}
-                            className="px-6 py-3 text-white/60 hover:text-white transition-colors"
+                            onClick={() => {
+                                window.clearTimeout(announceTimer.current);
+                                setStatus('idle');
+                                setAnnouncement('');
+                                setErrors({});
+                            }}
+                            className="btn-quiet"
                         >
-                            Back
+                            Send another message
                         </button>
-                    ) : <div></div>}
-
-                    {step < totalSteps && (
-                        <GoldButton type="button" onClick={handleNext}>
-                            Next Step
-                        </GoldButton>
-                    )}
-
-                    {step === totalSteps && (
-                        <GoldButton type="submit" disabled={isSubmitting || !form.turnstileToken}>
-                            {isSubmitting ? 'Sending...' : submitText}
-                        </GoldButton>
-                    )}
+                    </div>
                 </div>
-            </motion.form>
+            ) : (
+            <form
+                ref={formRef}
+                method="post"
+                action="#"
+                onSubmit={handleSubmit}
+                noValidate
+                aria-describedby={id('required-note')}
+            >
+                <p id={id('required-note')} className="t-small text-text-muted">
+                    All fields are required except the weekly time-sink.
+                </p>
+
+                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label htmlFor={id('name')} className={LABEL}>
+                            Your name
+                        </label>
+                        <input
+                            id={id('name')}
+                            name="name"
+                            type="text"
+                            autoComplete="name"
+                            required
+                            maxLength={LIMITS.name}
+                            value={form.name}
+                            onChange={onText('name')}
+                            aria-invalid={errors.name ? true : undefined}
+                            aria-describedby={describedBy('name')}
+                            className={`${CONTROL} mt-2 ${errors.name ? CONTROL_INVALID : ''}`}
+                        />
+                        {fieldError('name')}
+                    </div>
+
+                    <div>
+                        <label htmlFor={id('email')} className={LABEL}>
+                            Work email
+                        </label>
+                        <input
+                            id={id('email')}
+                            name="email"
+                            type="email"
+                            inputMode="email"
+                            autoComplete="email"
+                            required
+                            maxLength={LIMITS.email}
+                            value={form.email}
+                            onChange={onText('email')}
+                            aria-invalid={errors.email ? true : undefined}
+                            aria-describedby={describedBy('email')}
+                            className={`${CONTROL} mt-2 ${errors.email ? CONTROL_INVALID : ''}`}
+                        />
+                        {fieldError('email')}
+                    </div>
+
+                    <div>
+                        <label htmlFor={id('company')} className={LABEL}>
+                            Company
+                        </label>
+                        <input
+                            id={id('company')}
+                            name="company"
+                            type="text"
+                            autoComplete="organization"
+                            required
+                            maxLength={LIMITS.company}
+                            value={form.company}
+                            onChange={onText('company')}
+                            aria-invalid={errors.company ? true : undefined}
+                            aria-describedby={describedBy('company')}
+                            className={`${CONTROL} mt-2 ${errors.company ? CONTROL_INVALID : ''}`}
+                        />
+                        {fieldError('company')}
+                    </div>
+
+                    <div>
+                        <label htmlFor={id('country')} className={LABEL}>
+                            Country
+                        </label>
+                        <input
+                            id={id('country')}
+                            name="country"
+                            type="text"
+                            autoComplete="country-name"
+                            required
+                            maxLength={LIMITS.country}
+                            value={form.country}
+                            onChange={onText('country')}
+                            aria-invalid={errors.country ? true : undefined}
+                            aria-describedby={describedBy('country')}
+                            className={`${CONTROL} mt-2 ${errors.country ? CONTROL_INVALID : ''}`}
+                        />
+                        {fieldError('country')}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label htmlFor={id('timeSink')} className={LABEL}>
+                            What takes the most time each week?{' '}
+                            <span className="font-normal text-text-muted">(optional)</span>
+                        </label>
+                        <p id={id('timeSink-hint')} className={HINT}>
+                            For example: re-typing enquiries into a spreadsheet, chasing unpaid invoices, building the monthly report.
+                        </p>
+                        <textarea
+                            id={id('timeSink')}
+                            name="timeSink"
+                            rows={2}
+                            maxLength={LIMITS.timeSink}
+                            value={form.timeSink}
+                            onChange={onText('timeSink')}
+                            aria-describedby={describedBy('timeSink', true)}
+                            className={`${CONTROL} mt-2 resize-y`}
+                        />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label htmlFor={id('message')} className={LABEL}>
+                            Message
+                        </label>
+                        <textarea
+                            id={id('message')}
+                            name="message"
+                            rows={5}
+                            required
+                            maxLength={LIMITS.message}
+                            value={form.message}
+                            onChange={onText('message')}
+                            aria-invalid={errors.message ? true : undefined}
+                            aria-describedby={describedBy('message')}
+                            className={`${CONTROL} mt-2 resize-y ${errors.message ? CONTROL_INVALID : ''}`}
+                        />
+                        {fieldError('message')}
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <div className="flex items-start gap-3">
+                            <input
+                                id={id('consent')}
+                                name="consent"
+                                type="checkbox"
+                                required
+                                checked={form.consent}
+                                onChange={(e) => update('consent', e.target.checked)}
+                                aria-invalid={errors.consent ? true : undefined}
+                                aria-describedby={describedBy('consent')}
+                                className="mt-0.5 h-6 w-6 shrink-0 cursor-pointer rounded-[2px] border border-border-interactive bg-surface-1 accent-tenx-gold focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-tenx-gold"
+                            />
+                            <label htmlFor={id('consent')} className="cursor-pointer text-[0.9375rem] leading-relaxed text-text-muted">
+                                Ten X Africa may contact me about this enquiry. We use your details only to reply, as set
+                                out in our{' '}
+                                <a href="/privacy" className="text-tenx-gold underline underline-offset-2">
+                                    privacy notice
+                                </a>
+                                .
+                            </label>
+                        </div>
+                        {fieldError('consent')}
+                    </div>
+
+                    <div
+                        id={id('turnstile')}
+                        tabIndex={-1}
+                        aria-describedby={errors.turnstile ? id('turnstile-error') : undefined}
+                        className="sm:col-span-2 focus:outline-2 focus:outline-offset-[3px] focus:outline-tenx-gold"
+                    >
+                        <Turnstile
+                            key={turnstileKey}
+                            sitekey={TURNSTILE_SITE_KEY}
+                            theme="dark"
+                            onVerify={(token) => {
+                                setTurnstileToken(token);
+                                setTurnstileBroken(false);
+                                setErrors((prev) => ({ ...prev, turnstile: undefined }));
+                            }}
+                            onError={() => setTurnstileBroken(true)}
+                            onTimeout={() => setTurnstileBroken(true)}
+                            onExpire={() => setTurnstileToken('')}
+                        />
+                        {errors.turnstile && (
+                            <p id={id('turnstile-error')} className={ERROR}>
+                                {errors.turnstile}
+                            </p>
+                        )}
+                        {turnstileBroken && !errors.turnstile && (
+                            <p className={HINT}>
+                                The security check did not load. Refresh the page, or email hello@tenxafrica.co.za instead.
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                {status === 'error' && (
+                    <p className="mt-8 border-l-2 border-signal-bad pl-4 text-[0.9375rem] text-signal-bad">
+                        Your message did not send. Please try again, or email{' '}
+                        <a href="mailto:hello@tenxafrica.co.za" className="underline underline-offset-2">
+                            hello@tenxafrica.co.za
+                        </a>
+                        .
+                    </p>
+                )}
+
+                <div className="mt-8">
+                    <button
+                        type="submit"
+                        disabled={!hydrated || status === 'sending'}
+                        aria-busy={status === 'sending'}
+                        className="btn btn-primary disabled:cursor-wait disabled:opacity-70"
+                    >
+                        {status === 'sending' ? 'Sending…' : 'Send message'}
+                    </button>
+                </div>
+            </form>
+            )}
         </div>
     );
 };
+
+export default ContactForm;

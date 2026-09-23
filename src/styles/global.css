@@ -1,65 +1,678 @@
 @import "tailwindcss";
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);
+
+/* ------------------------------------------------------------------
+   Ten X Africa — sitewide tokens and component classes.
+   Built to docs/design-contract.md (sections 3, 4, 5 and 8).
+   One dark theme, one accent (gold), hairlines instead of cards.
+   ------------------------------------------------------------------ */
 
 @theme {
+  /* Keep — names unchanged so the assessment keeps working */
   --color-obsidian-void: #0a0f14;
   --color-tenx-gold: #d68614;
   --color-vapor-white: #F4F4F9;
-  --color-slate-teal: #2F4858;
-  
-  --font-sans: "Inter", sans-serif;
-  --font-heading: "Outfit", sans-serif;
+
+  /* Add */
+  --color-gold-hover: #e59c34;
+  --color-gold-ink: #8a5a0d;
+  --color-text-muted: #8E969F;
+  --color-text-faint: #7B848E;
+  --color-surface-1: #111820;
+  --color-surface-2: #161E27;
+  --color-rule: #1E262E;
+  --color-border-interactive: #57616B;
+  --color-paper: #F4F4F9;
+  --color-paper-ink: #12171C;
+  --color-signal-bad: #ffb4a2;
+  --color-signal-good: #7FD1A7;
+
+  --font-sans: "Inter", "Inter-fallback", system-ui, sans-serif;
+  --font-heading: "Outfit", "Outfit-fallback", system-ui, sans-serif;
 }
 
-/* Custom Utilities */
-@layer utilities {
-  .text-scramble {
-    /* Custom effect hooks if needed */
+/* ---- Base --------------------------------------------------------- */
+
+@layer base {
+  html {
+    background-color: var(--color-obsidian-void);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-obsidian-void);
+    color: var(--color-vapor-white);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-tenx-gold);
+    color: var(--color-obsidian-void);
+  }
+
+  /* Every in-page anchor clears the sticky header */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  /* One visible focus style sitewide (contract section 8) */
+  :focus-visible {
+    outline: 2px solid var(--color-tenx-gold);
+    outline-offset: 3px;
   }
 }
 
-body {
-  @apply bg-obsidian-void text-vapor-white font-sans;
-  background-color: var(--color-obsidian-void);
-  color: var(--color-vapor-white);
+/* ---- Components --------------------------------------------------- */
+
+@layer components {
+  /* Skip link: first focusable element, visible only on focus */
+  .skip-link {
+    position: absolute;
+    left: max(1.25rem, env(safe-area-inset-left));
+    top: 0.75rem;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 1rem;
+    border-radius: 2px;
+    background-color: var(--color-tenx-gold);
+    color: var(--color-obsidian-void);
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: none;
+  }
+
+  /* ---- Containers (section 5) ---- */
+
+  .container-content,
+  .container-wide {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+  }
+
+  .container-content {
+    max-width: 68rem;
+  }
+
+  .container-wide {
+    max-width: 80rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-content,
+    .container-wide {
+      padding-left: max(2rem, env(safe-area-inset-left));
+      padding-right: max(2rem, env(safe-area-inset-right));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-content,
+    .container-wide {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  .measure {
+    max-width: 34rem;
+  }
+
+  @media (min-width: 1024px) {
+    .measure {
+      max-width: 38rem;
+    }
+  }
+
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 640px) {
+    .section {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section {
+      padding-top: 7rem;
+      padding-bottom: 7rem;
+    }
+  }
+
+  .rule {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  /* ---- Type scale (section 4) ---- */
+
+  .t-display {
+    font-family: var(--font-heading);
+    font-size: clamp(2.25rem, 9vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--color-vapor-white);
+    text-wrap: balance;
+  }
+
+  .t-h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.875rem, 7.5vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    color: var(--color-vapor-white);
+    text-wrap: balance;
+  }
+
+  .t-h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: var(--color-vapor-white);
+    text-wrap: balance;
+  }
+
+  .t-h3 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+    line-height: 1.3;
+    letter-spacing: 0;
+    font-weight: 600;
+    color: var(--color-vapor-white);
+  }
+
+  .t-lede {
+    font-family: var(--font-sans);
+    font-size: clamp(1.125rem, 3.6vw, 1.25rem);
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+
+  .t-body {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 1024px) {
+    .t-body {
+      font-size: 1.125rem;
+    }
+  }
+
+  .t-small {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    font-weight: 400;
+    color: var(--color-text-muted);
+  }
+
+  .t-caption {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    font-weight: 400;
+    color: var(--color-text-faint);
+  }
+
+  .t-label {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-text-faint);
+  }
+
+  /* ---- Buttons (lifted from the assessment's .dma-button-*) ---- */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .btn-primary {
+    border-color: var(--color-tenx-gold);
+    background-color: var(--color-tenx-gold);
+    color: var(--color-obsidian-void);
+  }
+
+  .btn-primary:hover {
+    border-color: var(--color-gold-hover);
+    background-color: var(--color-gold-hover);
+  }
+
+  .btn-secondary {
+    border-color: var(--color-border-interactive);
+    background-color: transparent;
+    color: var(--color-vapor-white);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--color-vapor-white);
+  }
+
+  .btn-quiet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0 2px;
+    border: 0;
+    background: none;
+    color: var(--color-vapor-white);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-color: var(--color-border-interactive);
+    cursor: pointer;
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+
+  .btn-quiet:hover {
+    color: var(--color-tenx-gold);
+    text-decoration-color: var(--color-tenx-gold);
+  }
+
+  /* ---- Long-form prose (insights, privacy, terms, case studies) ----
+     .legal-content is kept as an alias so older markup keeps rendering
+     until every page moves to .prose-tenx. */
+
+  .prose-tenx,
+  .legal-content {
+    max-width: 34rem;
+    color: var(--color-text-muted);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+  }
+
+  @media (min-width: 1024px) {
+    .prose-tenx,
+    .legal-content {
+      max-width: 38rem;
+      font-size: 1.125rem;
+    }
+  }
+
+  .prose-tenx > * + *,
+  .legal-content > * + * {
+    margin-top: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .prose-tenx > * + *,
+    .legal-content > * + * {
+      margin-top: 1.5rem;
+    }
+  }
+
+  .prose-tenx h1,
+  .legal-content h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.875rem, 7.5vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    color: var(--color-vapor-white);
+  }
+
+  .prose-tenx h2,
+  .legal-content h2 {
+    margin-top: 3rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: var(--color-vapor-white);
+  }
+
+  .prose-tenx h3,
+  .legal-content h3 {
+    margin-top: 2rem;
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--color-vapor-white);
+  }
+
+  .prose-tenx h4,
+  .legal-content h4 {
+    margin-top: 2rem;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-text-faint);
+  }
+
+  .prose-tenx h2 + *,
+  .prose-tenx h3 + *,
+  .prose-tenx h4 + *,
+  .legal-content h2 + *,
+  .legal-content h3 + *,
+  .legal-content h4 + * {
+    margin-top: 1rem;
+  }
+
+  .prose-tenx ul,
+  .prose-tenx ol,
+  .legal-content ul,
+  .legal-content ol {
+    padding-left: 1.25rem;
+  }
+
+  .prose-tenx ul,
+  .legal-content ul {
+    list-style: disc;
+  }
+
+  .prose-tenx ol,
+  .legal-content ol {
+    list-style: decimal;
+  }
+
+  .prose-tenx li + li,
+  .legal-content li + li {
+    margin-top: 0.5rem;
+  }
+
+  .prose-tenx li::marker,
+  .legal-content li::marker {
+    color: var(--color-tenx-gold);
+  }
+
+  .prose-tenx strong,
+  .legal-content strong {
+    color: var(--color-vapor-white);
+    font-weight: 600;
+  }
+
+  .prose-tenx a,
+  .legal-content a {
+    color: var(--color-tenx-gold);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: color 150ms ease;
+  }
+
+  .prose-tenx a:hover,
+  .legal-content a:hover {
+    color: var(--color-gold-hover);
+  }
+
+  .prose-tenx blockquote,
+  .legal-content blockquote {
+    border-left: 2px solid var(--color-tenx-gold);
+    padding-left: 1.25rem;
+    color: var(--color-vapor-white);
+    font-family: var(--font-heading);
+    font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+  .prose-tenx hr,
+  .legal-content hr {
+    border: 0;
+    border-top: 1px solid var(--color-rule);
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .prose-tenx code,
+  .legal-content code {
+    font-size: 0.9375em;
+    background-color: var(--color-surface-2);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+    color: var(--color-vapor-white);
+  }
+
+  .prose-tenx pre,
+  .legal-content pre {
+    background-color: var(--color-surface-2);
+    padding: 1rem;
+    border-radius: 2px;
+    overflow-x: auto;
+    font-size: 0.9375rem;
+  }
+
+  .prose-tenx pre code,
+  .legal-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .prose-tenx img,
+  .legal-content img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose-tenx table,
+  .legal-content table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .prose-tenx th,
+  .legal-content th {
+    text-align: left;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-text-faint);
+    padding: 0.75rem 1rem 0.75rem 0;
+    border-bottom: 1px solid var(--color-rule);
+    vertical-align: bottom;
+  }
+
+  .prose-tenx td,
+  .legal-content td {
+    padding: 0.75rem 1rem 0.75rem 0;
+    border-bottom: 1px solid var(--color-rule);
+    vertical-align: top;
+  }
 }
 
-/* Glassmorphism Utilities */
-.glass-panel {
-  @apply bg-black/60 backdrop-blur-xl border border-tenx-gold/30 hover:border-tenx-gold/80 transition-colors duration-300;
+/* ---- Motion (section 8): document-wide ------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-/* Legal/markdown content styling (privacy/terms) */
-.legal-content h1 {
-  @apply text-3xl md:text-4xl font-heading font-bold text-white leading-tight mb-4;
+/* ---- Motion: scroll reveal and the hero constellation ----------------
+   Decided 23 Sep 2026: the site keeps its restraint but is no longer static.
+   Sections rise 12px and fade in once as they enter the viewport; the home
+   hero carries the one signature animation (gold nodes forming Africa).
+   Everything here collapses to "visible, still" under reduced motion, and
+   the hidden state only ever applies when html.js is present, so a page
+   without JavaScript is never blank. */
+
+@layer components {
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  html.js .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* A short gold tick draws in along the top rule of each section as it
+     enters. One gold element per section, and it is 3rem long. */
+  html.js main > section.reveal {
+    position: relative;
+  }
+
+  html.js main > section.reveal::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    height: 1px;
+    width: 3rem;
+    background: var(--color-tenx-gold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1) 150ms;
+  }
+
+  html.js main > section.reveal.is-in::before {
+    transform: scaleX(1);
+  }
+
+  /* The hero has no rule above it, so no tick. */
+  html.js main > section.reveal:first-child::before {
+    display: none;
+  }
+
+  /* Primary buttons lift one pixel on hover; secondary borders brighten. */
+  .btn {
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Nav links: a gold hairline grows under the link on hover. */
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    height: 1px;
+    background: var(--color-tenx-gold);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 200ms ease;
+  }
+
+  .nav-link:hover::after,
+  .nav-link[aria-current="page"]::after {
+    transform: scaleX(1);
+  }
+
+  /* Home hero layout: text on the left edge, the constellation on the right
+     at lg, and behind the text (dimmed) below that. */
+  .hero-constellation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-constellation {
+      position: relative;
+      inset: auto;
+      opacity: 1;
+      pointer-events: auto;
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      max-height: 34rem;
+    }
+  }
 }
 
-.legal-content h2 {
-  @apply text-2xl md:text-3xl font-heading font-bold text-white mt-10 mb-4 border-l-4 border-tenx-gold pl-3;
-}
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal,
+  html.js main > section.reveal::before {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
 
-.legal-content h3 {
-  @apply text-xl md:text-2xl font-heading font-bold text-white mt-6 mb-3;
-}
-
-.legal-content p {
-  @apply text-white/70 leading-relaxed mb-4;
-}
-
-.legal-content ul,
-.legal-content ol {
-  @apply text-white/70 leading-relaxed mb-6 pl-6 space-y-2;
-}
-
-.legal-content li {
-  @apply marker:text-tenx-gold;
-}
-
-.legal-content strong {
-  @apply text-white font-semibold;
-}
-
-.legal-content a {
-  @apply text-tenx-gold underline-offset-2 hover:underline;
+  .btn:hover {
+    transform: none;
+  }
 }

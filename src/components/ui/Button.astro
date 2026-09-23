@@ -1,0 +1,38 @@
+---
+/**
+ * Button — a link styled as one of three variants. Zero JavaScript.
+ *   primary   gold fill, obsidian text (the one gold control in view)
+ *   secondary interactive-border outline, vapor-white text
+ *   quiet     underlined text link, 44px target
+ * Styles live in src/styles/global.css (.btn, .btn-primary, ...).
+ */
+interface Props {
+	href: string;
+	variant?: "primary" | "secondary" | "quiet";
+	class?: string;
+	external?: boolean;
+}
+
+const {
+	href,
+	variant = "primary",
+	class: className,
+	external = false,
+} = Astro.props;
+
+const variantClass =
+	variant === "quiet"
+		? "btn-quiet"
+		: variant === "secondary"
+			? "btn btn-secondary"
+			: "btn btn-primary";
+---
+
+<a
+	href={href}
+	class:list={[variantClass, className]}
+	target={external ? "_blank" : undefined}
+	rel={external ? "noopener noreferrer" : undefined}
+>
+	<slot />{external && <span class="sr-only"> (opens in a new tab)</span>}
+</a>

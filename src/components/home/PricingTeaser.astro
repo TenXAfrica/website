@@ -1,0 +1,42 @@
+---
+/**
+ * PricingTeaser: the three plans as three columns with a ballpark starting
+ * figure in the display face. The real price is agreed with the client after
+ * the assessment call; this only says roughly where things land.
+ */
+const plans = [
+	{ name: "Launch", from: "$2,500", month: "$249", fit: "One process, one team", featured: false },
+	{ name: "Growth", from: "$6,500", month: "$649", fit: "A few processes that hand work to each other", featured: true },
+	{ name: "Scale", from: "$15,000", month: "$1,450", fit: "The whole operation, across several teams", featured: false },
+];
+---
+
+<ul class="grid gap-4 sm:grid-cols-3 lg:gap-6" role="list">
+	{
+		plans.map((p) => (
+			<li
+				class:list={[
+					"rounded-[2px] border p-5 lg:p-6",
+					p.featured ? "border-l-2 border-l-tenx-gold border-rule bg-surface-1" : "border-rule",
+				]}
+			>
+				<div class="flex items-baseline justify-between gap-3">
+					<h3 class="t-h3 text-vapor-white">{p.name}</h3>
+					{p.featured && <span class="t-label text-tenx-gold">Usual starting point</span>}
+				</div>
+				<p class="mt-4">
+					<span class="t-caption block">typically from</span>
+					<span class="font-heading text-[clamp(1.75rem,5vw,2.25rem)] leading-none font-bold tracking-[-0.02em] text-vapor-white tabular-nums">
+						{p.from}
+					</span>
+				</p>
+				<p class="t-small mt-2 text-text-muted">then about {p.month} a month to keep it running</p>
+				<p class="t-small mt-4 border-t border-rule pt-3 text-text-muted">{p.fit}</p>
+			</li>
+		))
+	}
+</ul>
+<p class="t-caption mt-4">
+	Prices in US dollars. Half up front, half when you are happy with the finished build. Any tools
+	the system runs on are passed on at cost.
+</p>

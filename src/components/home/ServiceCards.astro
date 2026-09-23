@@ -1,0 +1,63 @@
+---
+/**
+ * ServiceCards: the three service lines as three flat cards, each with a
+ * glyph, a number, one plain sentence, and three things it includes.
+ */
+import Glyph from "../ui/Glyph.astro";
+
+const services = [
+	{
+		n: "01",
+		glyph: "map" as const,
+		name: "Operations excellence",
+		href: "/what-we-build#operations-excellence",
+		lede: "We look at how the work really flows through your business and fix the process first.",
+		items: ["Map how a job actually moves", "Write down the standard way of doing it", "Cut the steps that add nothing"],
+	},
+	{
+		n: "02",
+		glyph: "automate" as const,
+		name: "Digital transformation",
+		href: "/what-we-build#digital-transformation",
+		lede: "Then we build the software that does the repetitive part for you.",
+		items: ["Systems built around your process", "AI that drafts, sorts and routes, with a person approving", "Your existing tools connected so data is typed once"],
+	},
+	{
+		n: "03",
+		glyph: "plug" as const,
+		name: "Tech implementation",
+		href: "/what-we-build#tech-implementation",
+		lede: "Or we set up and connect the tools you have already chosen.",
+		items: ["CRM, accounting and job systems set up properly", "Integrations, and moving off spreadsheets", "Training so your team actually uses it"],
+	},
+];
+---
+
+<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6" role="list">
+	{
+		services.map((s) => (
+			<li class="flex">
+				<a
+					href={s.href}
+					class="group flex w-full flex-col rounded-[2px] border border-rule bg-surface-1 p-6 transition-colors duration-150 hover:border-border-interactive"
+				>
+					<div class="flex items-center justify-between">
+						<Glyph name={s.glyph} class="h-7 w-7 text-tenx-gold" />
+						<span class="t-label">{s.n}</span>
+					</div>
+					<h3 class="t-h3 mt-6 text-vapor-white underline-offset-4 group-hover:underline">{s.name}</h3>
+					<p class="t-small mt-2 text-vapor-white">{s.lede}</p>
+					<ul class="mt-5 border-t border-rule" role="list">
+						{s.items.map((it) => (
+							<li class="t-small flex items-start gap-2 border-b border-rule py-2 text-text-muted">
+								<Glyph name="check" class="mt-1 h-3.5 w-3.5 shrink-0 text-text-faint" />
+								{it}
+							</li>
+						))}
+					</ul>
+					<span class="t-caption mt-4 text-text-faint group-hover:text-tenx-gold">More about this →</span>
+				</a>
+			</li>
+		))
+	}
+</ul>

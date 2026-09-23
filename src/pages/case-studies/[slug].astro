@@ -1,0 +1,185 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import SEOHead from "../../components/SEOHead.astro";
+import AssessmentCta from "../../components/ui/AssessmentCta.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+
+const BUILD_TYPE_LABELS = {
+    "intake-and-onboarding-portal": "Intake and onboarding portal",
+    "quote-to-invoice": "Quote to invoice",
+    "operations-dashboard": "Operations dashboard",
+    "document-generation": "Document generation",
+    "inbox-triage-and-routing": "Inbox triage and routing",
+} as const;
+
+export async function getStaticPaths() {
+    // Never publish the `_example.md` template (or any underscore file) or a draft.
+    const studies = await getCollection(
+        "case_studies",
+        ({ id, slug, data }) => !id.startsWith("_") && !slug.startsWith("_") && !data.draft,
+    );
+    return studies.map((entry) => ({
+        params: { slug: entry.slug },
+        props: { entry },
+    }));
+}
+
+interface Props {
+    entry: CollectionEntry<"case_studies">;
+}
+
+const { entry } = Astro.props;
+const { data, slug } = entry;
+const { Content } = await entry.render();
+
+const buildLabel = BUILD_TYPE_LABELS[data.buildType];
+const siteUrl = "https://tenxafrica.co.za";
+const canonicalURL = `${siteUrl}/case-studies/${slug}`;
+const publishedISO = data.publishedAt.toISOString();
+
+// Only our own hosted screenshots are shown or used for link previews.
+const hasShot = data.image.src.startsWith("/");
+const ogImage = hasShot ? new URL(data.image.src, siteUrl).href : undefined;
+
+const tableRows = [
+    { label: "Before", value: data.before },
+    { label: "After", value: data.after },
+    { label: "Time back", value: data.timeBack },
+].filter((row): row is { label: string; value: string } => Boolean(row.value));
+
+const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description: data.excerpt,
+    ...(ogImage ? { image: ogImage } : {}),
+    datePublished: publishedISO,
+    dateModified: publishedISO,
+    author: { "@type": "Organization", name: "Ten X Africa", url: siteUrl },
+    publisher: {
+        "@type": "Organization",
+        name: "Ten X Africa",
+        url: siteUrl,
+        logo: { "@type": "ImageObject", url: `${siteUrl}/logo.png` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalURL },
+    keywords: data.tags.join(", "),
+};
+---
+
+<MainLayout title={`${data.title} | Ten X Africa`} description={data.excerpt}>
+    <Fragment slot="head">
+        <SEOHead
+            title={data.title}
+            description={data.excerpt}
+            image={ogImage}
+            imageAlt={ogImage ? data.image.alt : undefined}
+            tags={data.tags}
+            type="article"
+            canonicalURL={canonicalURL}
+        />
+        <meta property="article:published_time" content={publishedISO} />
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    </Fragment>
+
+    <article>
+        <header class="pt-16 sm:pt-20 lg:pt-28">
+            <div class="container-content">
+                <p class="t-label text-text-faint">
+                    {data.sector}<span aria-hidden="true"> · </span>{data.country}<span
+                        aria-hidden="true"> · </span>{buildLabel}
+                </p>
+                <h1 class="t-h1 mt-4 max-w-[28rem] lg:mt-6 lg:max-w-[44rem]">{data.title}</h1>
+                <p class="t-lede measure mt-4 text-text-muted lg:mt-6">{data.excerpt}</p>
+                <p class="t-small mt-6 text-text-faint">{data.client}</p>
+            </div>
+        </header>
+
+        <div class="pb-16 pt-12 sm:pb-20 lg:pb-28 lg:pt-16">
+            <div class="container-content">
+                {
+                    tableRows.length > 0 && (
+                        <table class="measure w-full border-collapse text-left">
+                            <caption class="sr-only">What changed for {data.client}</caption>
+                            <tbody>
+                                {tableRows.map((row) => (
+                                    <tr class="border-t border-rule last:border-b">
+                                        <th
+                                            scope="row"
+                                            class="t-label w-28 py-4 pr-4 align-top text-text-faint sm:w-36"
+                                        >
+                                            {row.label}
+                                        </th>
+                                        <td class="t-small py-4 align-top text-vapor-white">{row.value}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )
+                }
+
+                {
+                    data.results.length > 0 && (
+                        <dl class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                            {data.results.map((result) => (
+                                <div class="border-t border-rule pt-4">
+                                    <dt class="t-caption text-text-muted">{result.label}</dt>
+                                    <dd class="t-h2 mt-2">{result.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    )
+                }
+
+                {
+                    hasShot && (
+                        <figure class="mt-12 lg:mt-16">
+                            <div class="rounded-[2px] border border-rule bg-paper p-6">
+                                <img
+                                    src={data.image.src}
+                                    alt={data.image.alt}
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="block h-auto w-full"
+                                />
+                            </div>
+                            <figcaption class="t-caption mt-3 text-text-muted">
+                                {buildLabel} built for {data.client}.
+                            </figcaption>
+                        </figure>
+                    )
+                }
+
+                <div class="prose-tenx measure mt-12 lg:mt-16">
+                    <Content />
+                </div>
+
+                {
+                    data.quote && (
+                        <figure class="measure mt-12 border-l-2 border-tenx-gold pl-6 lg:mt-16">
+                            <blockquote class="t-h3">
+                                <p>{data.quote.text}</p>
+                            </blockquote>
+                            {data.quote.attribution && (
+                                <figcaption class="t-small mt-4 text-text-muted">
+                                    {data.quote.attribution}
+                                </figcaption>
+                            )}
+                        </figure>
+                    )
+                }
+
+                <p class="measure mt-12 border-t border-rule pt-6">
+                    <a
+                        href="/case-studies"
+                        class="t-label inline-flex min-h-11 items-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
+                    >
+                        All case studies
+                    </a>
+                </p>
+            </div>
+        </div>
+    </article>
+
+    <AssessmentCta />
+</MainLayout>

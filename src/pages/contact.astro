@@ -1,0 +1,78 @@
+---
+/**
+ * /contact — the promoted ContactForm plus a side rail with the direct
+ * email, the company line and the booking route. No postal address: it is private.
+ * The form posts to the DMA Worker's /api/contact (or
+ * PUBLIC_CONTACT_WEBHOOK_URL when set); see ContactForm.tsx.
+ */
+import MainLayout from "../layouts/MainLayout.astro";
+import PageHeader from "../components/ui/PageHeader.astro";
+import Button from "../components/ui/Button.astro";
+import { ContactForm } from "../components/ContactForm";
+
+const BOOKINGS_URL =
+	"https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/";
+---
+
+<MainLayout
+	title="Contact | Ten X Africa"
+	description="Write to Ten X Africa about the software your business is doing by hand. The team reads every message and usually replies within one working day."
+>
+	<PageHeader
+		eyebrow="Contact"
+		title="Tell us what is taking the time"
+		lede="A few lines is enough. The team reads every message and usually replies within one working day."
+	/>
+
+	<section class="container-content" aria-labelledby="form-title">
+		<div class="section grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
+			<div class="lg:col-span-8">
+				<h2 id="form-title" class="sr-only">Send a message</h2>
+				<ContactForm client:visible className="max-w-[44rem]" />
+			</div>
+
+			<div class="border-t border-rule pt-8 lg:col-span-4 lg:border-t-0 lg:pt-0">
+				<h2 class="sr-only">Other ways to reach us</h2>
+				<p class="t-label">Email</p>
+				<p class="t-body mt-2">
+					<a
+						href="mailto:hello@tenxafrica.co.za"
+						class="text-vapor-white underline decoration-border-interactive underline-offset-4 transition-colors duration-150 hover:text-tenx-gold"
+					>
+						hello@tenxafrica.co.za
+					</a>
+				</p>
+
+				<p class="t-label mt-8">Company</p>
+				<p class="t-small mt-2">Ten X Africa (Pty) Ltd, registered in South Africa. We work from Johannesburg with clients in the US, the UK, Ireland, Australia, New Zealand, the UAE and South Africa.</p>
+				<p class="t-caption mt-2">Reg 2020/714539/07 · VAT 4250317601</p>
+
+				<div class="mt-8 border-t border-rule pt-8">
+					<p class="t-label">Prefer to talk?</p>
+					<p class="t-small mt-2">
+						The free 45-minute call on Teams is the quickest way to a scope and a price.
+					</p>
+					<div class="mt-2">
+						<Button href={BOOKINGS_URL} variant="quiet" external>
+							Book the assessment
+									</Button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Ends on the assessment -->
+	<section class="container-content" aria-labelledby="score-title">
+		<div class="rule section">
+			<h2 id="score-title" class="t-h3">Not sure what to ask?</h2>
+			<p class="t-body measure mt-4">
+				Take the 3-minute score. Twelve questions show where your week goes, and the result gives
+				you something concrete to write to us about.
+			</p>
+			<div class="mt-6">
+				<Button href="/assessment" variant="quiet">Take the 3-minute score</Button>
+			</div>
+		</div>
+	</section>
+</MainLayout>

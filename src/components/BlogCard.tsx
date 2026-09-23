@@ -1,117 +1,50 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { twMerge } from 'tailwind-merge';
-import type { BlogPost } from '../types/blog';
 
 interface BlogCardProps {
-    post: BlogPost;
-    index?: number;
-    variant?: 'default' | 'featured';
+    /** Where the title links to, e.g. `/insights/how-we-price`. */
+    href: string;
+    /** Small uppercase line above the title, e.g. "23 Sep 2026 · 6 min read". */
+    eyebrow: string;
+    title: string;
+    excerpt: string;
+    /** Heading element for the title. Pages with an h1 and no section h2 use h2. */
+    as?: 'h2' | 'h3';
     className?: string;
 }
 
 /**
- * Blog post preview card with image, title, excerpt, and metadata.
+ * Listing entry for Insights and Case studies.
+ * No image and no card border: a hairline above, a label eyebrow, the title
+ * as the link, and a two-line excerpt. Renders as static HTML when used from
+ * Astro without a client directive.
  */
 export const BlogCard: React.FC<BlogCardProps> = ({
-    post,
-    index = 0,
-    variant = 'default',
-    className,
-}) => {
-    const isFeatured = variant === 'featured';
+    href,
+    eyebrow,
+    title,
+    excerpt,
+    as: Heading = 'h2',
+    className = '',
+}) => (
+    <article className={`border-t border-rule pt-6 ${className}`}>
+        <p className="t-label text-text-faint">{eyebrow}</p>
+        <Heading className="t-h3 mt-3">
+            <a
+                href={href}
+                className="-my-2 block py-2 text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
+            >
+                {title}
+            </a>
+        </Heading>
+        <p className="t-small mt-3 line-clamp-2 text-text-muted">{excerpt}</p>
+    </article>
+);
 
-    return (
-        <motion.a
-            href={`/insights/${post.slug}`}
-            className={twMerge(
-                'group block relative overflow-hidden rounded-xl bg-black/60 backdrop-blur-xl border border-white/10',
-                'hover:border-tenx-gold/50 transition-all duration-300',
-                isFeatured ? 'md:flex' : '',
-                className
-            )}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.4 }}
-        >
-            {/* Image */}
-            <div className={twMerge(
-                'relative overflow-hidden',
-                isFeatured ? 'md:w-1/2 h-64 md:h-auto' : 'h-48'
-            )}>
-                {/* Placeholder gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-tenx-gold/20 via-slate-teal/20 to-obsidian-void" />
-
-                {post.image?.src && (
-                    <img
-                        src={post.image.src}
-                        alt={post.image.alt || post.title}
-                        className="w-full h-full object-cover grayscale brightness-75 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                    />
-                )}
-
-                {/* Reading time badge */}
-                <div className="absolute top-4 right-4 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white/80">
-                    {post.readTime} min read
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className={twMerge(
-                'p-6',
-                isFeatured ? 'md:w-1/2 md:flex md:flex-col md:justify-center md:p-8' : ''
-            )}>
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                    {post.tags.slice(0, 3).map(tag => (
-                        <span
-                            key={tag}
-                            className="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-tenx-gold bg-tenx-gold/10 rounded"
-                        >
-                            {tag}
-                        </span>
-                    ))}
-                </div>
-
-                {/* Title */}
-                <h3 className={twMerge(
-                    'font-heading font-bold text-white group-hover:text-tenx-gold transition-colors mb-2',
-                    isFeatured ? 'text-2xl md:text-3xl' : 'text-lg'
-                )}>
-                    {post.title}
-                </h3>
-
-                {/* Excerpt */}
-                <p className={twMerge(
-                    'text-white/60 leading-relaxed mb-4',
-                    isFeatured ? 'text-base line-clamp-3' : 'text-sm line-clamp-2'
-                )}>
-                    {post.excerpt}
-                </p>
-
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-xs text-white/40">
-                    {/* Author */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-tenx-gold/20 flex items-center justify-center">
-                            <span className="text-[10px] font-bold text-tenx-gold">
-                                {post.author.name.split(' ').map(n => n[0]).join('')}
-                            </span>
-                        </div>
-                        <span>{post.author.name}</span>
-                    </div>
-
-                    {/* Date */}
-                    <span>
-                        {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                        })}
-                    </span>
-                </div>
-            </div>
-        </motion.a>
-    );
-};
+/** "23 Sep 2026". Dates in frontmatter are calendar dates, so format in UTC. */
+export const formatPostDate = (value: string | Date): string =>
+    new Date(value).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+    });

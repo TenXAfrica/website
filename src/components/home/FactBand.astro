@@ -1,0 +1,30 @@
+---
+/**
+ * FactBand: four plain facts set in the display face, on one hairline row.
+ * Nothing animates and nothing is a marketing counter.
+ */
+const facts = [
+	{ n: "5–50", unit: "people", note: "The size of business we work with" },
+	{ n: "45", unit: "minutes", note: "The first call, which is free" },
+	{ n: "2", unit: "calls", note: "The only meetings you need to be on" },
+	{ n: "1", unit: "quote", note: "Agreed with you before we start" },
+];
+---
+
+<div class="container-content">
+	<dl class="grid grid-cols-2 gap-y-8 border-y border-rule py-8 lg:grid-cols-4 lg:gap-y-0 lg:py-10">
+		{
+			facts.map((f, i) => (
+				<div class:list={["pr-6", i > 0 && "lg:border-l lg:border-rule lg:pl-8"]}>
+					<dt class="t-label">{f.note}</dt>
+					<dd class="mt-2 flex items-baseline gap-2">
+						<span class="font-heading text-[clamp(2.25rem,6vw,3rem)] leading-none font-bold tracking-[-0.02em] text-vapor-white tabular-nums">
+							{f.n}
+						</span>
+						<span class="t-small">{f.unit}</span>
+					</dd>
+				</div>
+			))
+		}
+	</dl>
+</div>

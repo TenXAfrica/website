@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { RATE_LIMIT_MAX } from '../src/limits';
 import {
-  RATE_LIMIT_MAX,
   checkRateLimit,
   corsHeaders,
   extraOrigins,

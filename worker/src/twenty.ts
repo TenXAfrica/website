@@ -410,6 +410,84 @@ export class TwentyClient {
     );
   }
 
+  /* --------------------- reads for the internal tool ---------------- */
+
+  private async findMany(
+    collection: string,
+    filter: string,
+    hints: string[],
+    limit = 10,
+    depth = 0
+  ): Promise<TwentyRecord[]> {
+    const json = await this.request('GET', '/rest/' + collection, {
+      query: { filter, limit: String(limit), depth: String(depth) },
+    });
+    return unwrapMany(json, hints);
+  }
+
+  private async findById(collection: string, id: string, hints: string[]): Promise<TwentyRecord | null> {
+    if (!/^[A-Za-z0-9-]{8,64}$/.test(id)) return null;
+    const json = await this.request('GET', '/rest/' + collection + '/' + encodeURIComponent(id), {
+      query: { depth: '0' },
+    });
+    return unwrapOne(json, hints);
+  }
+
+  findCompanyById(id: string) {
+    return this.findById('companies', id, ['company']);
+  }
+
+  findOpportunityById(id: string) {
+    return this.findById('opportunities', id, ['opportunity']);
+  }
+
+  /** Case-insensitive contains match on the company name. */
+  findCompaniesByNameLike(name: string, limit = 6): Promise<TwentyRecord[]> {
+    if (!isFilterSafe(name)) return Promise.resolve([]);
+    return this.findMany(
+      'companies',
+      'name[ilike]:"%' + escapeFilterValue(name).replace(/%/g, '') + '%"',
+      ['companies'],
+      limit
+    );
+  }
+
+  findCompaniesByDomainLike(domain: string, limit = 6): Promise<TwentyRecord[]> {
+    if (!isFilterSafe(domain)) return Promise.resolve([]);
+    return this.findMany(
+      'companies',
+      'domainName.primaryLinkUrl[ilike]:"%' + escapeFilterValue(domain).replace(/%/g, '') + '%"',
+      ['companies'],
+      limit
+    );
+  }
+
+  findPeopleByCompany(companyId: string): Promise<TwentyRecord[]> {
+    if (!isFilterSafe(companyId)) return Promise.resolve([]);
+    return this.findMany('people', 'companyId[eq]:"' + escapeFilterValue(companyId) + '"', ['people'], 10);
+  }
+
+  findOpportunitiesByCompany(companyId: string): Promise<TwentyRecord[]> {
+    if (!isFilterSafe(companyId)) return Promise.resolve([]);
+    return this.findMany(
+      'opportunities',
+      'companyId[eq]:"' + escapeFilterValue(companyId) + '"',
+      ['opportunities'],
+      10
+    );
+  }
+
+  /** Note links on a company, with the note itself expanded (depth 1). */
+  findNoteTargetsByCompany(companyId: string): Promise<TwentyRecord[]> {
+    if (!isFilterSafe(companyId)) return Promise.resolve([]);
+    return this.findMany(
+      'noteTargets',
+      'targetCompanyId[eq]:"' + escapeFilterValue(companyId) + '"',
+      ['noteTargets'],
+      40,
+      1
+    );
+  }
   findPersonByEmail(email: string): Promise<TwentyRecord | null> {
     if (!isFilterSafe(email)) return Promise.resolve(null);
     return this.findFirst(

@@ -6,6 +6,9 @@
  * marketing page, so it carries no site navigation, no footer and no canvas
  * hero. It is also not linked from anywhere on the site.
  *
+ * Sign-in: Cloudflare Access (Microsoft 365) in front of /internal on the live
+ * site; the API under /api/internal sits behind the same sign-in.
+ *
  * Indexing: noindex/nofollow below. The sitemap still needs /internal/
  * excluding in astro.config.mjs — handled centrally, not from this file.
  */
@@ -23,7 +26,7 @@ import "../../styles/global.css";
 		<meta name="referrer" content="no-referrer" />
 		<meta name="generator" content={Astro.generator} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<title>Guided DMA — internal</title>
+		<title>Guided assessment (internal) | Ten X Africa</title>
 
 		<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

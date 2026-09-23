@@ -1,0 +1,49 @@
+---
+/**
+ * Glyph: the site's small line-icon set. Monochrome, 1.5px strokes,
+ * currentColor, drawn on a 24-grid. Decorative by default (aria-hidden);
+ * pass a `label` when the glyph carries meaning on its own.
+ */
+interface Props {
+	name:
+		| "inbox"
+		| "spreadsheet"
+		| "phone"
+		| "clock"
+		| "map"
+		| "automate"
+		| "plug"
+		| "check";
+	class?: string;
+	label?: string;
+}
+const { name, class: className, label } = Astro.props;
+
+const paths: Record<Props["name"], string> = {
+	inbox: "M3 7h18v12H3zM3 7l9 7 9-7M3 4h18",
+	spreadsheet: "M4 4h16v16H4zM4 10h16M4 15h16M10 4v16",
+	phone: "M6 3h5l2 5-3 2a11 11 0 0 0 4 4l2-3 5 2v5a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2z",
+	clock: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 3",
+	map: "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2zM9 4v14M15 6v14",
+	automate: "M4 12h9M11 8l4 4-4 4M17 5a7 7 0 1 1 0 14",
+	plug: "M8 3v5M16 3v5M5 8h14v3a7 7 0 0 1-14 0zM12 18v3",
+	check: "M4 12l5 5 11-11",
+};
+---
+
+<svg
+	viewBox="0 0 24 24"
+	width="24"
+	height="24"
+	fill="none"
+	stroke="currentColor"
+	stroke-width="1.5"
+	stroke-linecap="square"
+	stroke-linejoin="miter"
+	class={className}
+	aria-hidden={label ? undefined : "true"}
+	role={label ? "img" : undefined}
+	aria-label={label}
+>
+	<path d={paths[name]}></path>
+</svg>

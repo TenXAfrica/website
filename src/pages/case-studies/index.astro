@@ -1,0 +1,79 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import SEOHead from "../../components/SEOHead.astro";
+import PageHeader from "../../components/ui/PageHeader.astro";
+import AssessmentCta from "../../components/ui/AssessmentCta.astro";
+import { BlogCard } from "../../components/BlogCard";
+import { getCollection } from "astro:content";
+
+const BUILD_TYPE_LABELS = {
+    "intake-and-onboarding-portal": "Intake and onboarding portal",
+    "quote-to-invoice": "Quote to invoice",
+    "operations-dashboard": "Operations dashboard",
+    "document-generation": "Document generation",
+    "inbox-triage-and-routing": "Inbox triage and routing",
+} as const;
+
+// Never publish the `_example.md` template (or any underscore file) or a draft.
+const studies = (
+    await getCollection(
+        "case_studies",
+        ({ id, slug, data }) => !id.startsWith("_") && !slug.startsWith("_") && !data.draft,
+    )
+).sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const title = "Case studies | Ten X Africa";
+const description =
+    "Systems Ten X Africa has built and runs for owner-led businesses: what the work looked like before, what we built, and the time it gave back.";
+---
+
+<MainLayout title={title} description={description}>
+    <SEOHead
+        slot="head"
+        title={title}
+        description={description}
+        canonicalURL="https://tenxafrica.co.za/case-studies"
+    />
+
+    <PageHeader
+        eyebrow="Case studies"
+        title={studies.length ? "What we built, and what changed" : "Case studies are on the way"}
+        lede={studies.length ? "Each study shows the work before, the system we built, and the hours it gave back, told with the client's permission." : undefined}
+    />
+
+    <section class="section">
+        <div class="container-content">
+            {
+                studies.length > 0 ? (
+                    <div class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                        {studies.map((study) => (
+                            <BlogCard
+                                href={`/case-studies/${study.slug}`}
+                                eyebrow={`${study.data.sector} · ${study.data.country} · ${BUILD_TYPE_LABELS[study.data.buildType]}`}
+                                title={study.data.title}
+                                excerpt={study.data.excerpt}
+                                as="h2"
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p class="t-body measure text-text-muted">
+                        Our first client builds are in progress. Case studies will appear here
+                        once those clients have approved them, with real numbers and nothing
+                        made up. If you want to see where your own business stands in the
+                        meantime,{" "}
+                        <a
+                            href="/assessment"
+                            class="text-tenx-gold underline underline-offset-4 transition-colors duration-150 hover:text-vapor-white"
+                        >
+                            take the 3-minute score
+                        </a>
+                        .
+                    </p>
+                )
+            }
+        </div>
+    </section>
+
+    <AssessmentCta />
+</MainLayout>

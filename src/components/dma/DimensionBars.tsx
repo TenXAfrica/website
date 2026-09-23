@@ -23,13 +23,13 @@ export const DimensionBars: React.FC<DimensionBarsProps> = ({ dimensions }) => {
             <span className="font-heading text-[0.95rem] leading-snug font-semibold text-vapor-white sm:text-base">
               {dimension.label}
             </span>
-            <span className="shrink-0 font-heading text-sm font-semibold tabular-nums text-white/70">
+            <span className="shrink-0 font-heading text-sm font-semibold tabular-nums text-text-muted">
               {dimension.score}
-              <span className="text-white/45">/100</span>
+              <span className="text-text-faint">/100</span>
             </span>
           </div>
           <div
-            className="dma-bar-track mt-2.5 h-[3px] w-full overflow-hidden bg-white/12"
+            className="dma-bar-track mt-2.5 h-[3px] w-full overflow-hidden bg-rule"
             aria-hidden="true"
           >
             <div

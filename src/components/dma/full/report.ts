@@ -247,7 +247,7 @@ export function buildMarkdown(
   lines.push('---');
   lines.push('');
   lines.push(
-    'Ten X Africa (Pty) Ltd · 9 Roosevelt Street, Robindale Ext 1, Randburg, Johannesburg, 2194, South Africa'
+    'Ten X Africa (Pty) Ltd · tenxafrica.co.za'
   );
   lines.push('');
 

@@ -1,55 +1,25 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
-import { CanvasHero } from "../components/CanvasHero";
-import { GoldButton } from "../components/GoldButton";
+import Button from "../components/ui/Button.astro";
 ---
 
 <MainLayout
-    title="404 - Page Not Found | Ten X Africa"
-    description="The page you are looking for does not exist."
+	title="Page not found | Ten X Africa"
+	description="The page you are looking for does not exist."
+	noindex
 >
-    <div
-        class="relative w-full min-h-[80vh] flex flex-col items-center justify-center overflow-hidden"
-    >
-        <!-- Africa Node Background -->
-        <CanvasHero
-            client:only="react"
-            variant="shape"
-            className="fixed inset-0 z-0"
-        />
-
-        <!-- Content -->
-        <div
-            class="relative z-10 text-center px-4 space-y-8 max-w-4xl mx-auto py-20"
-        >
-            <div
-                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-2 animate-fade-in-up"
-            >
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"
-                ></span>
-                <span class="text-xs font-mono tracking-widest text-white/70"
-                    >404</span
-                >
-            </div>
-
-            <h1
-                class="text-6xl md:text-8xl font-heading font-bold tracking-tighter leading-tight text-white"
-            >
-                Oops!
-            </h1>
-
-            <p
-                class="text-xl text-white/60 leading-relaxed font-light max-w-2xl mx-auto"
-            >
-                The page you requested could not be found. Let's get you back to
-                the heart of the innovation engine.
-            </p>
-
-            <div class="pt-4">
-                <a href="/">
-                    <GoldButton client:load>Return Home</GoldButton>
-                </a>
-            </div>
-        </div>
-    </div>
+	<div class="container-content">
+		<div class="section flex min-h-[60vh] flex-col items-center justify-center text-center">
+			<p class="t-label">Error 404</p>
+			<h1 class="t-h1 mt-4 max-w-[28rem] lg:mt-6">This page does not exist</h1>
+			<p class="t-lede measure mt-4 lg:mt-6">
+				The link may be old, or the page may have moved. Start from the home
+				page, or take the three-minute score and see where your week goes.
+			</p>
+			<div class="mt-8 flex flex-col items-center gap-4 sm:flex-row lg:mt-12">
+				<Button href="/assessment" variant="primary">Take the 3-minute score</Button>
+				<Button href="/" variant="secondary">Back to the home page</Button>
+			</div>
+		</div>
+	</div>
 </MainLayout>

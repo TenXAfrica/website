@@ -209,6 +209,8 @@ export function validateFull(body: unknown): ValidationResult<FullSubmission> {
 export interface FullDeps {
   twenty: TwentyClient;
   version: string;
+  /** Verified sign-in of the person submitting, when the request came through Cloudflare Access. */
+  interviewerEmail?: string;
   now?: () => Date;
 }
 
@@ -246,6 +248,7 @@ export async function handleFull(body: unknown, deps: FullDeps): Promise<FullHan
     result,
     version: deps.version,
     receivedAt,
+    ...(deps.interviewerEmail ? { interviewerEmail: deps.interviewerEmail } : {}),
   };
 
   const failures: string[] = [];

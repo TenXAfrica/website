@@ -27,7 +27,7 @@ enabled = true
 [vars]
 # Non-secret configuration only.
 TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
-WORKER_VERSION = "dma-worker-0.1.1"
+WORKER_VERSION = "dma-worker-0.2.0"
 
 # --------------------------------------------------------------------------
 # Rate-limit counters. Namespaces "tenx-dma-DMA_RATELIMIT" and its _preview
@@ -65,3 +65,35 @@ preview_id = "c84d85f3345d4910927b9e23c5987272"
 # [vars]
 # ALLOWED_PREVIEW_ORIGINS = "https://preview.website.pages.dev"
 # --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# Internal API for the guided assessment tool (added 23 Sep 2026).
+#
+# Same code, second script, on the apex zone under /api/internal/*. Those paths
+# sit inside the "Internal - guided assessment" Cloudflare Access application,
+# so Access authenticates every request with Microsoft 365 before the Worker
+# sees it, and the Worker verifies the Access token (src/access.ts) instead of
+# a shared pasted secret. Deploy with:
+#   node node_modules/wrangler/bin/wrangler.js deploy --env internal
+# Push TWENTY_API_KEY to it with:
+#   pwsh scripts/push-worker-secret.ps1 -Env internal
+# --------------------------------------------------------------------------
+[env.internal]
+name = "tenx-dma-internal"
+workers_dev = false
+routes = [
+  { pattern = "tenxafrica.co.za/api/internal/*", zone_name = "tenxafrica.co.za" },
+  { pattern = "www.tenxafrica.co.za/api/internal/*", zone_name = "tenxafrica.co.za" },
+]
+
+[env.internal.vars]
+TWENTY_BASE_URL = "https://crm.tenxafrica.co.za"
+WORKER_VERSION = "dma-worker-0.2.0-internal"
+ACCESS_TEAM_DOMAIN = "tenxafrica.cloudflareaccess.com"
+# AUD tag of the "Internal - guided assessment" Access application.
+ACCESS_AUD = "a3698717e9a4c8ecdd7606f6ac971acaa1b6b06b72072359ede0f06a5698d413"
+
+[[env.internal.kv_namespaces]]
+binding = "DMA_RATELIMIT"
+id = "16de54db5f494928befd678c584f6b12"
+preview_id = "c84d85f3345d4910927b9e23c5987272"

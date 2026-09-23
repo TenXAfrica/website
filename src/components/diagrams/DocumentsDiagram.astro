@@ -1,0 +1,77 @@
+---
+// Build type 04, Document generation. A fan: one source record, three documents, and a dashed
+// return to the record (design contract section 7). One gold element: the source record.
+const docs = ['Proposal', 'Contract', 'Report'];
+const dTop = (i: number) => 20 + i * 100; // desktop doc tops: 20, 120, 220
+const docPath = (x: number, y: number, w: number, h: number, f: number) =>
+  `M ${x} ${y} H ${x + w - f} L ${x + w} ${y + f} V ${y + h} H ${x} Z M ${x + w - f} ${y} V ${y + f} H ${x + w}`;
+const mX = (i: number) => 10 + i * 107; // mobile doc lefts: 10, 117, 224
+const title =
+  'One client record on the left feeds three documents: a proposal, a contract and a report. A dashed line returns from the documents to the record, labelled signed, filed, logged.';
+---
+<figure>
+  <svg class="hidden lg:block w-full h-auto max-w-[40rem]" viewBox="0 0 640 330" role="img" aria-labelledby="d04-d-t">
+    <title id="d04-d-t">{title}</title>
+    <defs>
+      <marker id="d04-d-a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+        <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+      </marker>
+    </defs>
+    <rect x="20" y="120" width="150" height="80" fill="var(--color-surface-1)" stroke="var(--color-tenx-gold)" stroke-width="1.5" />
+    <text class="lbl strong" x="95" y="156" text-anchor="middle">Client record</text>
+    <text class="lbl" x="95" y="176" text-anchor="middle">one set of facts</text>
+    {docs.map((d, i) => (
+      <g>
+        <line x1="170" y1="160" x2="398" y2={dTop(i) + 40} stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d04-d-a)" />
+        <path d={docPath(400, dTop(i), 110, 80, 18)} fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        {[34, 48, 62].map((o) => (
+          <line x1="414" y1={dTop(i) + o} x2="490" y2={dTop(i) + o} stroke="var(--color-text-faint)" stroke-width="1.5" />
+        ))}
+        <text class="lbl strong" x="526" y={dTop(i) + 45}>{d}</text>
+      </g>
+    ))}
+    <path d="M 455 300 V 314 H 95 V 204" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#d04-d-a)" />
+    <text class="lbl" x="275" y="306" text-anchor="middle">signed, filed, logged</text>
+  </svg>
+
+  <svg class="lg:hidden w-full h-auto max-w-[22.5rem]" viewBox="0 0 320 360" role="img" aria-labelledby="d04-m-t">
+    <title id="d04-m-t">{title}</title>
+    <defs>
+      <marker id="d04-m-a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+        <path d="M1 1 L9 5 L1 9" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+      </marker>
+    </defs>
+    <rect x="80" y="4" width="160" height="62" fill="var(--color-surface-1)" stroke="var(--color-tenx-gold)" stroke-width="1.5" />
+    <text class="lbl m strong" x="160" y="32" text-anchor="middle">Client record</text>
+    <text class="lbl m" x="160" y="52" text-anchor="middle">one set of facts</text>
+    {docs.map((d, i) => (
+      <g>
+        <line x1="160" y1="66" x2={mX(i) + 43} y2="128" stroke="var(--color-text-faint)" stroke-width="1.5" marker-end="url(#d04-m-a)" />
+        <path d={docPath(mX(i), 130, 86, 100, 16)} fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" />
+        {[40, 54, 68].map((o) => (
+          <line x1={mX(i) + 12} y1={130 + o} x2={mX(i) + 70} y2={130 + o} stroke="var(--color-text-faint)" stroke-width="1.5" />
+        ))}
+        <text class="lbl m strong" x={mX(i) + 43} y="254" text-anchor="middle">{d}</text>
+      </g>
+    ))}
+    <path d="M 53 266 V 300 H 314 V 35 H 244" fill="none" stroke="var(--color-text-faint)" stroke-width="1.5" stroke-dasharray="5 5" marker-end="url(#d04-m-a)" />
+    <text class="lbl m" x="160" y="326" text-anchor="middle">signed, filed, logged</text>
+  </svg>
+  <figcaption class="t-caption text-text-muted mt-4">
+    One set of facts, many documents, and each signed copy filed back against the client.
+  </figcaption>
+</figure>
+
+<style>
+  .lbl {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    fill: var(--color-text-muted);
+  }
+  .lbl.strong {
+    fill: var(--color-vapor-white);
+  }
+  .m.lbl {
+    font-size: 14px;
+  }
+</style>
