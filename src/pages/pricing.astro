@@ -73,15 +73,15 @@ const faqs = [
 	{
 		q: "Why is the price a range and not a number?",
 		a: [
-			"Two businesses that both want an intake portal can need very different amounts of work. One has a single form; another has five sources, three approvals and a legacy spreadsheet to import.",
-			"The range tells you roughly what to expect before we talk. The assessment call gives us enough to set one fixed price inside that range, in writing, before any work starts.",
+			"Because two businesses that both want, say, an intake portal can need very different amounts of work. One has a single form. Another has five places enquiries come in, three people who need to approve things, and an old spreadsheet to bring across.",
+			"The ranges are there so you know roughly what to expect before we talk. Once we have gone through your business on the call, we give you one price for your build, in writing, and we agree it with you before anything starts.",
 		],
 	},
 	{
 		q: "What happens on the assessment call?",
 		a: [
-			"It is a free 45-minute Teams call with the Ten X Africa team. We go through how work moves through your business today, where the hours go, and which part is worth building first.",
-			"Afterwards you get a written scope and one fixed price. If it is not worth building, we say so.",
+			"It is a free 45-minute call on Microsoft Teams. We go through how work moves through your business today, where the hours are going, and which part is worth fixing first.",
+			"Afterwards you get a written scope and a price for it. If we do not think it is worth building, we will tell you that instead.",
 		],
 	},
 	{
@@ -115,12 +115,12 @@ const faqs = [
 
 <MainLayout
 	title="Pricing | Ten X Africa"
-	description="Three plans in US dollars: Launch from $2,500, Growth from $6,500, Scale from $15,000, each with a monthly retainer. One fixed price after a free 45-minute assessment."
+	description="Ballpark prices in US dollars: Launch from about $2,500, Growth from about $6,500, Scale from about $15,000, each with a monthly fee to keep it running. The real price is agreed with you after a free 45-minute call."
 >
 	<PageHeader
 		eyebrow="Pricing · USD"
-		title="Three plans, one fixed price after the call"
-		lede="Every build is scoped and priced after a free 45-minute assessment. The plans below show where your build is likely to land and what the monthly retainer costs to keep it running."
+		title="Ballpark figures now, one clear price after we have talked"
+		lede="Every build is priced for your business, not off a rate card. The three plans below show roughly where builds tend to land and what it costs each month to keep one running, so you know what to expect before the call."
 	/>
 
 	<!-- Plans -->
@@ -140,18 +140,18 @@ const faqs = [
 							aria-labelledby={`plan-${plan.id}`}
 						>
 							<p class:list={["t-label", plan.featured && "text-tenx-gold"]}>
-								{plan.featured ? "Most clients start here" : "Plan"}
+								{plan.featured ? "Usual starting point" : "Plan"}
 							</p>
 							<h3 id={`plan-${plan.id}`} class="t-h3 mt-4">
 								{plan.name}
 							</h3>
 							<p class="t-h2 mt-4">
-								<span class="t-small align-baseline text-text-muted">from </span>
+								<span class="t-small align-baseline text-text-muted">typically from </span>
 								{plan.from}
 							</p>
-							<p class="t-small mt-2">+ {plan.monthly} per month</p>
+							<p class="t-small mt-2">then about {plan.monthly} a month to keep it running</p>
 							<p class="t-caption mt-2">
-								Build range {plan.band} USD
+								Builds in this plan usually land between {plan.band}
 							</p>
 
 							<h4 class="t-label mt-8">Good fit when</h4>
@@ -176,12 +176,12 @@ const faqs = [
 			<div class="mt-12 border-t border-rule pt-6 lg:mt-16">
 				<h3 class="t-label">The terms</h3>
 				<ul class="t-caption measure mt-4 space-y-2" role="list">
-					<li>All prices are in US dollars (USD).</li>
-					<li>Every build is scoped and priced after the free assessment.</li>
-					<li>The assessment call produces one fixed price inside the matching band.</li>
-					<li>Retainers have a 12-month minimum.</li>
-					<li>Tool and hosting costs are passed through at cost, with no mark-up.</li>
-					<li>50% deposit to start, 50% on acceptance of the finished build.</li>
+					<li>Prices are in US dollars.</li>
+					<li>The figures above are ballpark. Your build is scoped and priced after the free call, and we agree the price with you before anything starts.</li>
+					<li>Once agreed, the price does not move unless you ask for more.</li>
+					<li>The monthly fee runs for at least 12 months, because the first year is when a new system needs the most looking after.</li>
+					<li>Any tools or hosting the system needs are passed on at cost, with no mark-up.</li>
+					<li>Half up front, half when you are happy with the finished build.</li>
 				</ul>
 			</div>
 		</div>
@@ -196,8 +196,8 @@ const faqs = [
 					What the retainer covers
 				</h2>
 				<p class="t-body measure mt-4 lg:mt-6">
-					The build is the start. The retainer keeps the system running and changing with your
-					business, at a fixed monthly fee.
+					Building it is the start. The monthly fee is for keeping it running and changing it as
+					your business changes, so you are never left with software nobody looks after.
 				</p>
 				<ul class="measure mt-8 border-t border-rule lg:mt-12" role="list">
 					{

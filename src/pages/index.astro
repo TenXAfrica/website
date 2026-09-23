@@ -12,12 +12,12 @@ import PricingTeaser from '../components/home/PricingTeaser.astro';
 
 const BOOKINGS_URL = 'https://bookings.cloud.microsoft/book/DiscoveryCall@tenxafrica.co.za/';
 
-// The four things an owner recognises. Short, one glyph each, no paragraph.
+// Four things an owner will recognise from their own week.
 const familiar = [
-  { glyph: 'inbox' as const, text: 'A new client’s details get typed into an email, a form, a spreadsheet and an invoice.' },
-  { glyph: 'spreadsheet' as const, text: 'Quotes are rebuilt from the last one. Nobody is sure which version went out.' },
-  { glyph: 'phone' as const, text: 'The only person who knows where every job stands is the owner.' },
-  { glyph: 'clock' as const, text: 'Hours a week go on chasing, sorting and re-keying, and none of it is billable.' },
+  { glyph: 'inbox' as const, text: 'A new customer’s details get typed in three or four times before anyone does any real work on the job.' },
+  { glyph: 'spreadsheet' as const, text: 'Quotes get made by copying the last one and hoping nothing from the previous client is still in it.' },
+  { glyph: 'phone' as const, text: 'If the owner is out for a day, nobody can say what stage anything is at.' },
+  { glyph: 'clock' as const, text: 'Hours every week go on chasing, sorting and re-typing, and none of that time gets invoiced.' },
 ];
 
 const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'New Zealand', 'UAE', 'South Africa'];
@@ -25,7 +25,7 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
 
 <MainLayout
   title="Ten X Africa (10X Africa): we build the software your business is doing by hand"
-  description="Ten X Africa, also written 10X Africa, builds and runs the software an owner-led business of 5 to 50 people is currently doing with spreadsheets, inboxes and memory. Operations excellence, digital transformation and tech implementation, priced fixed after a free 45-minute assessment."
+  description="Ten X Africa, also written 10X Africa, builds and looks after the software a business of 5 to 50 people is currently doing with spreadsheets, inboxes and memory. Operations excellence, digital transformation and tech implementation, priced for your business after a free 45-minute call."
 >
   <!-- Hero: text on the left edge, the constellation on the right at lg and
        behind the text below that. -->
@@ -35,17 +35,17 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
         <AfricaConstellation />
       </div>
       <div class="relative z-10 lg:col-start-1 lg:col-span-7 lg:row-start-1">
-        <p class="t-label text-text-faint">Ten X Africa · Johannesburg, working worldwide</p>
+        <p class="t-label text-text-faint">Ten X Africa · Business software and automation</p>
         <h1 class="t-display text-vapor-white mt-5 max-w-[18ch]">
           We build the software your business is currently doing by hand.
         </h1>
         <p class="t-lede text-text-muted mt-6 max-w-[34rem]">
-          Intake, quotes, invoices, reporting, document packs, inbox triage: built for how your
-          business actually runs, then kept running for you.
+          If your team runs the business out of inboxes, spreadsheets and someone’s memory, we
+          build the system that should be doing that work, and then we look after it for you.
         </p>
         <div class="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
           <Button href="/assessment" variant="primary">Take the 3-minute score</Button>
-          <Button href={BOOKINGS_URL} variant="secondary" external>Book the 45-minute assessment</Button>
+          <Button href={BOOKINGS_URL} variant="secondary" external>Book a free 45-minute call</Button>
         </div>
       </div>
     </div>
@@ -75,8 +75,9 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
           ))}
         </ul>
         <p class="t-lede text-vapor-white measure mt-10">
-          None of that needs another subscription. It needs a small system built around how you
-          already work. We build it, then we run it.
+          The answer usually isn’t another off-the-shelf subscription that nobody logs into. It’s
+          something built around the way your business already works. That’s what we do, and we
+          stay on afterwards to keep it running.
         </p>
       </div>
     </div>
@@ -91,11 +92,11 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
         </p>
         <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
           <h2 id="services-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-            3 services, done in this order.
+            Three things, usually in this order.
           </h2>
           <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-            You cannot automate a mess. So we fix the process first, automate it second, and
-            set up the systems around it third.
+            We fix the process before we automate it, because automating a messy process just
+            gives you a faster mess. Some clients need all three, some only need one.
           </p>
         </div>
       </div>
@@ -113,17 +114,19 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
       </p>
       <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
         <h2 id="pipeline-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          One call with you, then we build it and run it.
+          How it usually goes
         </h2>
         <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          Forty-five minutes on a call. A fixed price in writing. A first working draft built
-          without another meeting. Then we run it for you every month.
+          We talk for about 45 minutes about how your business runs and where the time goes. We
+          come back with a plan and a price. If you’re happy with it, we build a first working
+          version, walk you through it, change what you want changed, and put it live. After that
+          we look after it month to month.
         </p>
         <div class="mt-8 lg:mt-12">
           <HomePipeline />
         </div>
         <div class="mt-8">
-          <Button href="/how-it-works" variant="quiet">See all seven steps</Button>
+          <Button href="/how-it-works" variant="quiet">See the whole process, step by step</Button>
         </div>
       </div>
     </div>
@@ -138,10 +141,11 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
         </p>
         <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
           <h2 id="builds-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-            5 things we build, again and again.
+            The things we get asked for most
           </h2>
           <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-            Most of the hand work in a small business falls into one of these.
+            Yours will be built around your own business, but most of what we do takes one of
+            these five shapes.
           </p>
         </div>
       </div>
@@ -160,11 +164,12 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
         </p>
         <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
           <h2 id="pricing-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-            Fixed price after a free assessment.
+            What it costs, roughly
           </h2>
           <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-            Three plans. The assessment call tells us which one fits, and you get one fixed price
-            for your build before any work starts.
+            These are ballpark figures, so you know what to expect before we talk. Every build is
+            scoped to your business on the call, and you get one clear price, agreed with you,
+            before anything starts. If we don’t think it’s worth building, we’ll tell you that too.
           </p>
         </div>
       </div>
@@ -172,27 +177,26 @@ const countries = ['United States', 'United Kingdom', 'Ireland', 'Australia', 'N
         <PricingTeaser />
       </div>
       <div class="mt-8">
-        <Button href="/pricing" variant="quiet">See what each plan covers</Button>
+        <Button href="/pricing" variant="quiet">More on pricing and what the monthly fee covers</Button>
       </div>
     </div>
   </section>
 
-  <!-- 6. Who you work with -->
-  <section class="section border-t border-rule" aria-labelledby="team-heading">
+  <!-- 6. Where we work -->
+  <section class="section border-t border-rule" aria-labelledby="where-heading">
     <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
       <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
-        Who you work with
+        Where we work
       </p>
       <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
-        <h2 id="team-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
-          You deal with the people who build it.
+        <h2 id="where-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          Based in Johannesburg, working wherever you are.
         </h2>
         <p class="t-body text-text-muted measure mt-4 lg:mt-6">
-          The team member who runs your assessment call also builds your first draft and walks
-          you through it. Two meetings, no account manager. Based in Johannesburg, which keeps our
-          prices below a studio in London or Sydney.
+          Calls are on Microsoft Teams, booked in your own time zone. Everything we build runs
+          in the cloud, so it makes no difference to the system where you are.
         </p>
-        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-rule pt-4" role="list" aria-label="Where our clients are">
+        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3 border-t border-rule pt-4" role="list" aria-label="Countries our clients are in">
           {countries.map((c) => <li class="t-label text-text-muted">{c}</li>)}
         </ul>
       </div>

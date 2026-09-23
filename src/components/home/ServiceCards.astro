@@ -1,9 +1,7 @@
 ---
 /**
- * ServiceCards: the three service lines as three flat cards, each a discrete
- * thing with a glyph, a number, one line, and where it leads. Cards are
- * allowed here because each service is a genuine object (design contract
- * section 2), and they sit side by side at lg so the eye scans, not reads.
+ * ServiceCards: the three service lines as three flat cards, each with a
+ * glyph, a number, one plain sentence, and three things it includes.
  */
 import Glyph from "../ui/Glyph.astro";
 
@@ -13,24 +11,24 @@ const services = [
 		glyph: "map" as const,
 		name: "Operations excellence",
 		href: "/what-we-build#operations-excellence",
-		lede: "Fix the process before touching the software.",
-		items: ["Process maps", "Standard procedures", "ISO 9001 readiness"],
+		lede: "We look at how the work really flows through your business and fix the process first.",
+		items: ["Map how a job actually moves", "Write down the standard way of doing it", "Cut the steps that add nothing"],
 	},
 	{
 		n: "02",
 		glyph: "automate" as const,
 		name: "Digital transformation",
 		href: "/what-we-build#digital-transformation",
-		lede: "Then automate the fixed process.",
-		items: ["Custom systems", "AI agents with approval", "Tools joined up"],
+		lede: "Then we build the software that does the repetitive part for you.",
+		items: ["Systems built around your process", "AI that drafts, sorts and routes, with a person approving", "Your existing tools connected so data is typed once"],
 	},
 	{
 		n: "03",
 		glyph: "plug" as const,
 		name: "Tech implementation",
 		href: "/what-we-build#tech-implementation",
-		lede: "Set up and connect the systems you chose.",
-		items: ["CRM, accounting, HR", "Integrations and migration", "Training and hand-over"],
+		lede: "Or we set up and connect the tools you have already chosen.",
+		items: ["CRM, accounting and job systems set up properly", "Integrations, and moving off spreadsheets", "Training so your team actually uses it"],
 	},
 ];
 ---
@@ -51,13 +49,13 @@ const services = [
 					<p class="t-small mt-2 text-vapor-white">{s.lede}</p>
 					<ul class="mt-5 border-t border-rule" role="list">
 						{s.items.map((it) => (
-							<li class="t-small flex items-center gap-2 border-b border-rule py-2 text-text-muted">
-								<Glyph name="check" class="h-3.5 w-3.5 shrink-0 text-text-faint" />
+							<li class="t-small flex items-start gap-2 border-b border-rule py-2 text-text-muted">
+								<Glyph name="check" class="mt-1 h-3.5 w-3.5 shrink-0 text-text-faint" />
 								{it}
 							</li>
 						))}
 					</ul>
-					<span class="t-caption mt-4 text-text-faint group-hover:text-tenx-gold">What it includes →</span>
+					<span class="t-caption mt-4 text-text-faint group-hover:text-tenx-gold">More about this →</span>
 				</a>
 			</li>
 		))

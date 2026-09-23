@@ -30,15 +30,15 @@ We do not provide legal, tax, accounting, financial or investment advice, and no
 
 Every build starts with a free Digital Maturity Assessment: a short online score and a 45-minute call. The assessment is free and places you under no obligation to buy anything. The results are an indication based on what you tell us, not a guarantee of any outcome.
 
-## Scope and fixed price
+## Scope and price
 
-After the assessment we send you a written scope and one fixed price for the build, together with the monthly retainer that applies once it is live. The price covers the work described in the scope. Changes you ask for that go beyond the scope are quoted separately before we do them.
+After the assessment we send you a written scope and a price for the build, agreed with you, together with the monthly retainer that applies once it is live. The price covers the work described in the scope. Changes you ask for that go beyond the scope are quoted separately before we do them.
 
 All prices are quoted in US dollars unless the written quote says otherwise. VAT is added where South African law requires it.
 
 ## Payment
 
-- **Build fee.** 50% of the fixed price is due as a deposit before we start. The remaining 50% is due when you accept the finished build.
+- **Build fee.** 50% of the agreed price is due as a deposit before we start. The remaining 50% is due when you accept the finished build.
 - **Acceptance.** After the walkthrough call we make the agreed changes and hand the build over for you to accept. A build is accepted when you tell us so in writing or when you start using it in your day-to-day work, whichever comes first.
 - **Retainer.** The monthly retainer starts when the build goes live and has a 12-month minimum term. After the minimum term it continues month to month until either of us gives one month's written notice.
 - **Tool costs.** Third-party tools, hosting and software subscriptions that your system needs are passed through to you at cost, or billed to you directly by the provider. We tell you what these are in the written scope.
