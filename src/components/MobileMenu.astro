@@ -128,16 +128,21 @@ const isActive = (href: string) =>
 			if (closeBtn) closeBtn.focus();
 		}
 
-		function close() {
-			if (sheet.open) sheet.close();
-		}
-
-		// Runs for every way the dialog closes: button, Escape, link tap, resize.
-		sheet.addEventListener("close", function () {
-			document.body.style.overflow = previousOverflow;
+		// Undo the scroll lock and hand focus back. Safe to run more than once.
+		function restore() {
+			document.body.style.overflow = previousOverflow === "hidden" ? "" : previousOverflow;
 			toggle.setAttribute("aria-expanded", "false");
 			toggle.focus();
-		});
+		}
+
+		function close() {
+			if (sheet.open) sheet.close();
+			restore();
+		}
+
+		// Escape closes the dialog natively; the close event then restores.
+		// The event can arrive late, which is why close() restores directly too.
+		sheet.addEventListener("close", restore);
 
 		toggle.addEventListener("click", open);
 		if (closeBtn) closeBtn.addEventListener("click", close);
