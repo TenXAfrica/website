@@ -146,21 +146,27 @@ const FONTS_URL =
 			<link href={FONTS_URL} rel="stylesheet" />
 		</noscript>
 
-		<!-- Google tag (gtag.js): the library itself is fetched only once the page has
-		     loaded and the browser is idle, so it never competes with the content.
-		     Consent defaults and config are queued on dataLayer first and picked up
-		     when it arrives. -->
+		<!-- Google tag (gtag.js): the 170 KB library is fetched on the visitor's first
+		     scroll, tap, click or key press, or 10 seconds after load, whichever comes
+		     first, so it never competes with the content. Consent defaults and config
+		     are queued on dataLayer first and picked up when it arrives. -->
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
-			window.addEventListener("load", function () {
+			(function () {
+				var done = false;
+				var events = ["scroll", "pointerdown", "keydown", "touchstart"];
 				var go = function () {
+					if (done) return;
+					done = true;
+					events.forEach(function (e) { window.removeEventListener(e, go); });
 					var s = document.createElement("script");
 					s.async = true;
 					s.src = "https://www.googletagmanager.com/gtag/js?id=G-DSYSCC30V3";
 					document.head.appendChild(s);
 				};
-				if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 4000 }); else setTimeout(go, 1500);
-			});
+				events.forEach(function (e) { window.addEventListener(e, go, { passive: true }); });
+				window.addEventListener("load", function () { setTimeout(go, 10000); });
+			})();
 			function gtag(){dataLayer.push(arguments);}
 			// Consent mode: nothing is stored until the visitor accepts in the
 			// cookie banner. Advertising storage and signals stay off for everyone.
