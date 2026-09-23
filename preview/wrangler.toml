@@ -1,0 +1,20 @@
+# Ten X Africa -- review preview of the website (never the live site).
+#
+# Serves the built Astro site (dist/) as static files on its workers.dev
+# hostname, https://tenx-website-preview.ten-x-africa-main.workers.dev, so
+# Joash can review a branch before it is merged. Production stays on GitHub
+# Pages; nothing here touches tenxafrica.co.za or its DNS.
+#
+# Deploy with: pwsh scripts/deploy-preview.ps1
+# The script builds the site and adds a noindex header so search engines
+# skip the preview.
+
+name = "tenx-website-preview"
+compatibility_date = "2026-09-22"
+workers_dev = true
+account_id = "b9cdaef0ff634f13dfbc1261e8723051"
+
+[assets]
+directory = "../dist"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
