@@ -32,7 +32,7 @@ const variantClass =
 	href={href}
 	class:list={[variantClass, className]}
 	target={external ? "_blank" : undefined}
-	rel={external ? "noopener" : undefined}
+	rel={external ? "noopener noreferrer" : undefined}
 >
-	<slot />
+	<slot />{external && <span class="sr-only"> (opens in a new tab)</span>}
 </a>

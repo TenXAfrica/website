@@ -69,7 +69,6 @@ const intake = [
 				<div class="mt-8 lg:mt-12">
 					<Button href={BOOKINGS_URL} variant="primary" external>
 						Choose a time
-						<span class="sr-only"> (opens Microsoft Bookings in a new tab)</span>
 					</Button>
 					<p class="t-caption mt-3">Opens Microsoft Bookings in a new tab.</p>
 				</div>
@@ -83,7 +82,7 @@ const intake = [
 			<h2 id="calendar-title" class="t-h2">Or pick a time here</h2>
 			<p class="t-caption mt-4">
 				If the calendar does not load,
-				<a href={BOOKINGS_URL} target="_blank" rel="noopener" class="text-tenx-gold underline underline-offset-2">
+				<a href={BOOKINGS_URL} target="_blank" rel="noopener noreferrer" class="text-tenx-gold underline underline-offset-2">
 					open it in a new tab<span class="sr-only"> (Microsoft Bookings)</span>
 				</a>.
 			</p>

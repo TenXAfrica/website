@@ -1,0 +1,159 @@
+---
+/**
+ * Mobile menu (below 1024px). No framework: a toggle button plus a native
+ * <dialog> opened with showModal(), which makes the rest of the page inert and
+ * keeps focus inside the sheet. Full-screen opaque obsidian sheet, 56px link
+ * rows, 44px close target, Escape closes, focus goes straight back to the
+ * toggle on close. No blur, no slide; a 150ms opacity fade only.
+ *
+ * Place this inside <header> but outside the header's <nav aria-label="Main">,
+ * so the sheet is not a landmark nested inside that nav.
+ */
+export interface NavItem {
+	label: string;
+	href: string;
+}
+
+interface Props {
+	navLinks: NavItem[];
+	cta: NavItem;
+	/** Current pathname (trailing slash stripped) for aria-current. */
+	currentPath?: string;
+}
+
+const { navLinks, cta, currentPath = "" } = Astro.props;
+
+const isActive = (href: string) =>
+	href === "/"
+		? currentPath === "/"
+		: currentPath === href || currentPath.startsWith(`${href}/`);
+---
+
+<button
+	type="button"
+	class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold lg:hidden"
+	aria-label="Open menu"
+	aria-expanded="false"
+	aria-controls="mobile-menu"
+	data-mobile-menu-toggle
+>
+	<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+		<path stroke-linecap="square" d="M4 7h16M4 12h16M4 17h16"></path>
+	</svg>
+</button>
+
+<dialog
+	id="mobile-menu"
+	class="mobile-menu fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-y-auto border-0 bg-obsidian-void p-0 text-vapor-white lg:hidden"
+	aria-label="Site menu"
+>
+	<div class="flex min-h-full flex-col">
+		<div class="container-content flex h-20 shrink-0 items-center justify-between border-b border-rule">
+			<span class="t-label">Menu</span>
+			<button
+				type="button"
+				class="inline-flex h-11 w-11 items-center justify-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
+				aria-label="Close menu"
+				data-mobile-menu-close
+				autofocus
+			>
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+					<path stroke-linecap="square" d="M6 6l12 12M18 6L6 18"></path>
+				</svg>
+			</button>
+		</div>
+
+		<ul class="container-content flex-1 py-4">
+			{
+				navLinks.map((link) => {
+					const active = isActive(link.href);
+					return (
+						<li class="border-b border-rule">
+							<a
+								href={link.href}
+								aria-current={active ? "page" : undefined}
+								class:list={[
+									"flex min-h-14 items-center font-heading text-xl font-semibold transition-colors duration-150 hover:text-tenx-gold",
+									active ? "text-tenx-gold" : "text-vapor-white",
+								]}
+							>
+								{link.label}
+							</a>
+						</li>
+					);
+				})
+			}
+		</ul>
+
+		<div
+			class="container-content shrink-0 border-t border-rule pt-4"
+			style="padding-bottom: max(1.5rem, env(safe-area-inset-bottom))"
+		>
+			<a href={cta.href} class="btn btn-primary w-full">{cta.label}</a>
+		</div>
+	</div>
+</dialog>
+
+<style>
+	.mobile-menu::backdrop {
+		background: var(--color-obsidian-void);
+	}
+	.mobile-menu[open] {
+		animation: mobile-menu-fade 150ms ease-out;
+	}
+	@keyframes mobile-menu-fade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		var toggle = document.querySelector("[data-mobile-menu-toggle]");
+		var sheet = document.getElementById("mobile-menu");
+		if (!toggle || !sheet || typeof sheet.showModal !== "function") return;
+		var closeBtn = sheet.querySelector("[data-mobile-menu-close]");
+		var previousOverflow = "";
+
+		function open() {
+			if (sheet.open) return;
+			previousOverflow = document.body.style.overflow;
+			document.body.style.overflow = "hidden";
+			sheet.showModal();
+			toggle.setAttribute("aria-expanded", "true");
+			if (closeBtn) closeBtn.focus();
+		}
+
+		function close() {
+			if (sheet.open) sheet.close();
+		}
+
+		// Runs for every way the dialog closes: button, Escape, link tap, resize.
+		sheet.addEventListener("close", function () {
+			document.body.style.overflow = previousOverflow;
+			toggle.setAttribute("aria-expanded", "false");
+			toggle.focus();
+		});
+
+		toggle.addEventListener("click", open);
+		if (closeBtn) closeBtn.addEventListener("click", close);
+
+		// Link taps just close; the browser then follows the link.
+		sheet.addEventListener("click", function (event) {
+			var target = event.target;
+			if (target && target.closest && target.closest("a[href]")) close();
+		});
+
+		// Close if the viewport grows past the mobile breakpoint.
+		var mq = window.matchMedia("(min-width: 1024px)");
+		var onChange = function (e) {
+			if (e.matches) close();
+		};
+		if (mq.addEventListener) mq.addEventListener("change", onChange);
+		else if (mq.addListener) mq.addListener(onChange);
+	})();
+</script>

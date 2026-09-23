@@ -16,14 +16,15 @@ const x = (i: number) => 72 + i * 136;
 const spineY = 116;
 ---
 <figure class="hidden lg:block">
-  <svg class="w-full h-auto max-w-[70rem]" viewBox="0 0 960 224" role="img" aria-labelledby="spine-title">
-    <title id="spine-title">
+  <svg class="w-full h-auto max-w-[70rem]" viewBox="0 0 960 224" role="img" aria-labelledby="spine-title" aria-describedby="spine-desc">
+    <title id="spine-title">The seven steps, with your two calls at steps 3 and 6</title>
+    <desc id="spine-desc">
       The seven steps in order. 1, we find you or you find us (us). 2, you take the 3-minute score (you).
       3, the 45-minute assessment call (both of us). 4, the assessment becomes the spec (us).
       Between steps 4 and 5 the first draft is built with no meeting needed. 5, we build the first
       working draft (us). 6, the walkthrough call (both of us). 7, changes, deploy, then we run it (us).
       Steps 3 and 6 are the only two moments you are in a meeting.
-    </title>
+    </desc>
     <line x1="24" y1={spineY} x2="936" y2={spineY} stroke="var(--color-text-faint)" stroke-width="1.5" />
 
     {steps.map((s, i) => (

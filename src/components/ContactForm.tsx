@@ -112,8 +112,25 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
     const [turnstileKey, setTurnstileKey] = useState(0);
     const [turnstileBroken, setTurnstileBroken] = useState(false);
 
+    const [hydrated, setHydrated] = useState(false);
+
     const formRef = useRef<HTMLFormElement>(null);
     const successRef = useRef<HTMLHeadingElement>(null);
+    const announceTimer = useRef<number | undefined>(undefined);
+
+    // The submit button stays disabled until React has hydrated, so an early
+    // tap cannot fall through to a native form post.
+    useEffect(() => {
+        setHydrated(true);
+        return () => window.clearTimeout(announceTimer.current);
+    }, []);
+
+    // Set the live-region text after a short delay so screen readers treat a
+    // repeated message as new (the region is cleared at the start of submit).
+    const announce = (message: string) => {
+        window.clearTimeout(announceTimer.current);
+        announceTimer.current = window.setTimeout(() => setAnnouncement(message), 50);
+    };
 
     useEffect(() => {
         if (status === 'success') successRef.current?.focus();
@@ -130,7 +147,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
             update(name, e.target.value);
 
     const focusFirstError = (errs: Errors) => {
-        const order: FieldName[] = ['name', 'email', 'company', 'country', 'timeSink', 'message', 'consent'];
+        const order: FieldName[] = ['name', 'email', 'company', 'country', 'timeSink', 'message', 'consent', 'turnstile'];
         const first = order.find((k) => errs[k]);
         if (first) {
             document.getElementById(id(first))?.focus();
@@ -140,12 +157,14 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (status === 'sending') return;
+        window.clearTimeout(announceTimer.current);
+        setAnnouncement('');
 
         const errs = validate(form, turnstileToken);
         setErrors(errs);
         const count = Object.values(errs).filter(Boolean).length;
         if (count > 0) {
-            setAnnouncement(
+            announce(
                 count === 1 ? 'One thing needs fixing before we can send this.' : `${count} things need fixing before we can send this.`
             );
             focusFirstError(errs);
@@ -153,7 +172,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
         }
 
         setStatus('sending');
-        setAnnouncement('Sending your message.');
+        announce('Sending your message.');
 
         const payload = {
             fullName: form.name.trim(),
@@ -175,7 +194,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                 console.warn('No contact endpoint configured. Simulating submission.');
                 await new Promise((resolve) => setTimeout(resolve, 800));
                 setStatus('success');
-                setAnnouncement('Message sent.');
+                announce('Message sent.');
                 setForm(EMPTY);
                 return;
             }
@@ -199,7 +218,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                 setTurnstileKey((k) => k + 1);
                 setErrors({ turnstile: 'The security check did not pass. Wait for it to reload, then send again.' });
                 setStatus('idle');
-                setAnnouncement('The security check did not pass. Please try again.');
+                announce('The security check did not pass. Please try again.');
                 return;
             }
 
@@ -209,12 +228,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
             if (failed) throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
 
             setStatus('success');
-            setAnnouncement('Message sent.');
+            announce('Message sent.');
             setForm(EMPTY);
         } catch (err) {
             console.error('Contact form submission failed:', err);
             setStatus('error');
-            setAnnouncement('Your message did not send. You can try again or email joash@tenxafrica.co.za.');
+            announce('Your message did not send. You can try again or email joash@tenxafrica.co.za.');
             setTurnstileToken('');
             setTurnstileKey((k) => k + 1);
         }
@@ -236,10 +255,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
         </p>
     );
 
-    if (status === 'success') {
-        return (
-            <div className={className}>
-                {statusRegion}
+    return (
+        <div className={className}>
+            {/* One status region for the life of the component, never re-created. */}
+            {statusRegion}
+            {status === 'success' ? (
                 <div className="border-t border-rule pt-8">
                     <h2 ref={successRef} tabIndex={-1} className="t-h2 text-vapor-white focus:outline-none">
                         Thanks. Your message is with us.
@@ -261,6 +281,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                         <button
                             type="button"
                             onClick={() => {
+                                window.clearTimeout(announceTimer.current);
                                 setStatus('idle');
                                 setAnnouncement('');
                                 setErrors({});
@@ -271,14 +292,15 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                         </button>
                     </div>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className={className}>
-            {statusRegion}
-            <form ref={formRef} onSubmit={handleSubmit} noValidate aria-describedby={id('required-note')}>
+            ) : (
+            <form
+                ref={formRef}
+                method="post"
+                action="#"
+                onSubmit={handleSubmit}
+                noValidate
+                aria-describedby={id('required-note')}
+            >
                 <p id={id('required-note')} className="t-small text-text-muted">
                     All fields are required except the weekly time-sink.
                 </p>
@@ -429,7 +451,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                         {fieldError('consent')}
                     </div>
 
-                    <div className="sm:col-span-2">
+                    <div
+                        id={id('turnstile')}
+                        tabIndex={-1}
+                        aria-describedby={errors.turnstile ? id('turnstile-error') : undefined}
+                        className="sm:col-span-2 focus:outline-2 focus:outline-offset-[3px] focus:outline-tenx-gold"
+                    >
                         <Turnstile
                             key={turnstileKey}
                             sitekey={TURNSTILE_SITE_KEY}
@@ -469,7 +496,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                 <div className="mt-8">
                     <button
                         type="submit"
-                        disabled={status === 'sending'}
+                        disabled={!hydrated || status === 'sending'}
                         aria-busy={status === 'sending'}
                         className="btn btn-primary disabled:cursor-wait disabled:opacity-70"
                     >
@@ -477,6 +504,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                     </button>
                 </div>
             </form>
+            )}
         </div>
     );
 };

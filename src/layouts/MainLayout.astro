@@ -1,6 +1,6 @@
 ---
-import { Navigation } from "../components/MobileMenu";
-import { CookiesBanner } from "../components/CookiesBanner";
+import MobileMenu from "../components/MobileMenu.astro";
+import CookiesBanner from "../components/CookiesBanner.astro";
 import "../styles/global.css";
 import { getEntry } from "astro:content";
 
@@ -138,12 +138,13 @@ const FONTS_URL =
 	<body class="flex min-h-screen flex-col overflow-x-hidden bg-obsidian-void text-vapor-white">
 		<a href="#main" class="skip-link">Skip to content</a>
 
-		<CookiesBanner client:idle />
+		<CookiesBanner />
 
 		<header class="sticky top-0 z-50 border-b border-rule bg-obsidian-void print:hidden">
+			<div class="container-wide flex h-20 items-center justify-between gap-2">
 			<nav
 				aria-label="Main"
-				class="container-wide flex h-20 items-center justify-between gap-6"
+				class="flex flex-1 items-center justify-between gap-6"
 			>
 				<a
 					href="/"
@@ -183,18 +184,18 @@ const FONTS_URL =
 					}
 				</ul>
 
-				<div class="flex items-center gap-2">
-					<a href={navCta.href} class="btn btn-primary hidden lg:inline-flex">
-						{navCta.label}
-					</a>
-					<Navigation
-						client:idle
-						navLinks={navigation}
-						cta={navCta}
-						currentPath={currentPath}
-					/>
-				</div>
+				<a href={navCta.href} class="btn btn-primary hidden lg:inline-flex">
+					{navCta.label}
+				</a>
 			</nav>
+
+			<!-- Mobile menu: inside the header, outside the Main nav landmark -->
+			<MobileMenu
+				navLinks={navigation}
+				cta={navCta}
+				currentPath={currentPath}
+			/>
+			</div>
 		</header>
 
 		<main id="main" class="flex-grow">

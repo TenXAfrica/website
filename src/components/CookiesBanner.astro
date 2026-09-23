@@ -1,0 +1,86 @@
+---
+/**
+ * Cookie notice. A flat bottom bar on surface-1 with a hairline top border.
+ * No framework, no blur, no slide. Hidden in the HTML (hidden attribute) so
+ * it never shifts layout; a small inline script shows it about a second after
+ * load, only when no choice is stored under localStorage 'cookiesAccepted'.
+ * The choice updates Google consent mode (see the consent block in
+ * MainLayout.astro). While the bar is visible, scroll-padding-bottom is set
+ * to its height so focused content is never hidden behind it (WCAG 2.4.11).
+ */
+---
+
+<div
+	id="cookie-notice"
+	role="region"
+	aria-label="Cookie notice"
+	class="fixed inset-x-0 bottom-0 z-50 border-t border-rule bg-surface-1 print:hidden"
+	style="padding-bottom: env(safe-area-inset-bottom)"
+	hidden
+>
+	<div class="container-wide flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+		<p class="t-small max-w-[44rem]">
+			We use cookies and Google Analytics to see which pages are read, so we can improve them.
+			<a href="/privacy" class="text-vapor-white underline underline-offset-4 transition-colors duration-150 hover:text-tenx-gold">Read the privacy policy</a>.
+		</p>
+		<div class="flex shrink-0 gap-3">
+			<button type="button" class="btn btn-primary" data-cookie-choice="true">Accept</button>
+			<button type="button" class="btn btn-secondary" data-cookie-choice="false">Decline</button>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	(function () {
+		var bar = document.getElementById("cookie-notice");
+		if (!bar) return;
+
+		var stored = null;
+		try {
+			stored = localStorage.getItem("cookiesAccepted");
+		} catch (e) {
+			stored = null;
+		}
+		if (stored) return;
+
+		var observer = null;
+		function syncScrollPadding() {
+			document.documentElement.style.scrollPaddingBottom = bar.offsetHeight + "px";
+		}
+
+		function store(value) {
+			try {
+				localStorage.setItem("cookiesAccepted", value);
+			} catch (e) {
+				/* storage blocked: just hide for this page view */
+			}
+			if (typeof window.gtag === "function") {
+				window.gtag("consent", "update", {
+					analytics_storage: value === "true" ? "granted" : "denied",
+				});
+			}
+			bar.hidden = true;
+			if (observer) observer.disconnect();
+			window.removeEventListener("resize", syncScrollPadding);
+			document.documentElement.style.scrollPaddingBottom = "";
+		}
+
+		var buttons = bar.querySelectorAll("[data-cookie-choice]");
+		for (var i = 0; i < buttons.length; i++) {
+			buttons[i].addEventListener("click", function (event) {
+				store(event.currentTarget.getAttribute("data-cookie-choice"));
+			});
+		}
+
+		setTimeout(function () {
+			bar.hidden = false;
+			syncScrollPadding();
+			if (typeof ResizeObserver === "function") {
+				observer = new ResizeObserver(syncScrollPadding);
+				observer.observe(bar);
+			} else {
+				window.addEventListener("resize", syncScrollPadding);
+			}
+		}, 1000);
+	})();
+</script>
