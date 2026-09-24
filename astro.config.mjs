@@ -74,7 +74,7 @@ export default defineConfig({
   ],
   compressHTML: true,
   build: {
-    inlineStylesheets: 'auto',
+    inlineStylesheets: 'always',
     assets: '_astro'
   },
   experimental: {

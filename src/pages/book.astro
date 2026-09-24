@@ -86,14 +86,31 @@ const intake = [
 					open it in a new tab<span class="sr-only"> (Microsoft Bookings)</span>
 				</a>.
 			</p>
+			<!-- The calendar is attached on the visitor's first mouse move, scroll, tap or
+			     key press rather than during page load: Microsoft's embed is about 4 MB and
+			     sets third-party cookies, and nobody reaches this section without one of
+			     those. The button above works without it. -->
 			<iframe
-				src={BOOKINGS_URL}
+				data-src={BOOKINGS_URL}
+				id="bookings-embed"
 				title="Microsoft Bookings calendar for the Ten X Africa Digital Maturity Assessment"
 				loading="lazy"
 				referrerpolicy="strict-origin-when-cross-origin"
 				class="mt-8 block w-full rounded-[2px] border border-rule bg-surface-1"
 				style="min-height: 900px;"
 			></iframe>
+			<script is:inline>
+				(function () {
+					var frame = document.getElementById("bookings-embed");
+					if (!frame) return;
+					var events = ["pointermove", "pointerdown", "scroll", "keydown", "touchstart"];
+					var attach = function () {
+						events.forEach(function (e) { window.removeEventListener(e, attach); });
+						if (!frame.src) frame.src = frame.getAttribute("data-src");
+					};
+					events.forEach(function (e) { window.addEventListener(e, attach, { passive: true }); });
+				})();
+			</script>
 		</div>
 	</section>
 
