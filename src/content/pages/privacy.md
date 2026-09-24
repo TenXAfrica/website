@@ -8,7 +8,7 @@ hero:
   subheadline: What we collect, why, who handles it, how long we keep it, and how to stop hearing from us.
 ---
 
-**Last updated 23 September 2026**
+**Last updated 24 September 2026**
 
 This notice explains how Ten X Africa (Pty) Ltd handles personal information. We build and run software for owner-led businesses, so almost everything we hold is business contact information: names, work email addresses and what people tell us about how their business runs.
 
@@ -53,7 +53,7 @@ We use a small number of service providers, each bound by their own data process
 - **Our customer records system** — the database where we keep contacts, companies, notes and tasks. We run it ourselves on a server we rent from **DigitalOcean**.
 - **Cloudflare** — website protection and delivery, the Turnstile security check, and the small service that receives form and assessment submissions and writes them to our records.
 - **GitHub Pages** — hosts this website's pages.
-- **Google** — Google Analytics for site statistics, and Google Fonts for the typefaces on this site.
+- **Google** — Google Analytics for site statistics. The typefaces on this site are served from our own pages, not from Google.
 
 We also use software tools, including AI assistants, to research businesses, draft emails and keep our records tidy. They work on the same information described here, and we are responsible for everything sent in our name.
 
