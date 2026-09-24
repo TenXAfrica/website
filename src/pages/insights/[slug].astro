@@ -6,7 +6,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export async function getStaticPaths() {
     // Files starting with an underscore are templates and never published.
-    const posts = await getCollection("insights", ({ id }) => !id.startsWith("_"));
+    const posts = await getCollection("insights", ({ id, data }) => !id.startsWith("_") && !data.draft);
     return posts.map((entry) => ({
         params: { slug: entry.slug },
         props: { entry },
