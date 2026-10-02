@@ -1,0 +1,198 @@
+---
+/**
+ * /business-services — the second service line: business plans, financial
+ * models, valuations, feasibility studies and lender or investor packs.
+ * Zero JavaScript. Same anatomy per service as the three service lines on
+ * /what-we-build: label · h2 · lede · body · what you get · what we need
+ * from you · how long · typically from.
+ *
+ * Services, prices and wording approved 2 Oct 2026. The `from` values are
+ * the approved "typically from" figures in US dollars, like the plans on
+ * /pricing. South African clients are quoted in rand on the call; the rand
+ * figures are in the working rules, not on the page. An empty `from` hides
+ * the price row.
+ */
+import MainLayout from '../layouts/MainLayout.astro';
+import PageHeader from '../components/ui/PageHeader.astro';
+import Button from '../components/ui/Button.astro';
+
+const services = [
+  {
+    n: '01',
+    id: 'business-plan',
+    name: 'Business plan',
+    lede: 'A plan written for the person who has to say yes: your bank, your landlord, a franchisor or an investor.',
+    body: 'We start from the form or checklist that person has given you, because that decides what the plan must answer. Then we write your business up in plain words, with the market, the people, what the money is for and a forecast that ties back to your own figures.',
+    get: 'A written plan in your name with a three to five year forecast, and the spreadsheet behind the forecast so you can answer questions on it.',
+    need: 'One call, your last two years of figures if you have traded, and whatever the lender or franchisor has asked for.',
+    time: 'Usually two to three weeks.',
+    from: '$1,800',
+  },
+  {
+    n: '02',
+    id: 'financial-model',
+    name: 'Financial model and forecast',
+    lede: 'A spreadsheet that shows where your business is heading, and what happens if you change something.',
+    body: 'Income statement, balance sheet and cash flow, linked to each other and built from your own prices, staff and costs. Every assumption sits on one sheet, so you can change a price or add a hire and see the effect on cash month by month.',
+    get: 'A working model you own and can change yourself, monthly for the first year, with a short note explaining each assumption.',
+    need: 'Your management accounts or bank exports, your price list, your staff and cost list, and one call.',
+    time: 'Usually two to three weeks.',
+    from: '$2,000',
+  },
+  {
+    n: '03',
+    id: 'valuation',
+    name: 'Business valuation',
+    lede: 'A reasoned view of what your business is worth, before you name a price or accept one.',
+    body: 'We value the business more than one way, from its future cash, from its earnings and from what similar businesses have sold for, and show how each figure was reached. It is made for an owner who is selling, buying, or agreeing a price with a partner. If your valuation is for tax, a court or a lender that requires an accredited valuer, we will tell you so and you will need one of those instead.',
+    get: 'A written valuation with a range, the methods and the workings, in words you can put in front of the other side.',
+    need: 'Three years of financial statements, what you really pay yourself, any one-off costs, and one call.',
+    time: 'Usually two to three weeks.',
+    from: '$2,500',
+  },
+  {
+    n: '04',
+    id: 'feasibility-study',
+    name: 'Feasibility study',
+    lede: 'A straight answer on one idea before you spend money on it.',
+    body: 'A second branch, a new product, a franchise, a fleet of vans. We look at whether enough customers are there, what it costs to start and to run, when it breaks even, and what has to be true for it to work. If the answer is no, we say no.',
+    get: 'A short report with a clear go or no-go, the numbers behind it, and the two or three things that would change the answer.',
+    need: 'The idea in your own words, any quotes or cost estimates you already have, and one call.',
+    time: 'Usually three to four weeks.',
+    from: '$3,000',
+  },
+  {
+    n: '05',
+    id: 'lender-investor-pack',
+    name: 'Lender or investor pack',
+    lede: 'Everything a lender or investor asks for, in the order they ask for it.',
+    body: 'The plan in short form, the financial model and a summary of ten to twelve slides, made to match the requirements of the bank or investor you are going to. We cannot promise you the funding, and we do not take a fee that depends on it.',
+    get: 'A pack ready to send: summary plan, model and slides, with your figures the same in all three.',
+    need: 'The same as for the plan and the model, plus what the lender or investor has asked you for.',
+    time: 'Usually three to five weeks.',
+    from: '$3,500',
+  },
+];
+
+const notAccounting = [
+  'Bookkeeping and monthly accounts.',
+  'Tax returns or tax advice.',
+  'Audits and reviews.',
+  'Payroll.',
+  'Annual financial statements.',
+];
+---
+
+<MainLayout
+  title="Business plans, financial models and valuations | Ten X Africa"
+  description="Business plans, financial models and forecasts, business valuations, feasibility studies and lender or investor packs for owner-led businesses. Made for your business, at a price agreed with you first. We do not do accounting."
+>
+  <PageHeader
+    eyebrow="Business services"
+    title="Plans, forecasts and valuations for the decision in front of you."
+    lede="When you are applying for a loan, buying or selling a business, or weighing up a new site, someone will ask for the numbers. We prepare them with you, for your business and for the person who will read them, and we agree the price with you before we start."
+  />
+
+  {services.map((s, i) => (
+    <section
+      id={s.id}
+      class:list={['section scroll-mt-24', i > 0 && 'border-t border-rule']}
+      aria-labelledby={`${s.id}-heading`}
+    >
+      <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+        <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+          Service {s.n}
+        </p>
+        <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+          <h2 id={`${s.id}-heading`} class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+            {s.name}
+          </h2>
+          <p class="t-lede text-text-muted measure mt-4 lg:mt-6">{s.lede}</p>
+          <p class="t-body text-text-muted measure mt-4 lg:mt-6">{s.body}</p>
+          <dl class="measure mt-8 lg:mt-12 border-b border-rule">
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">What you get</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{s.get}</dd>
+            </div>
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">What we need from you</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{s.need}</dd>
+            </div>
+            <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+              <dt class="t-label text-text-faint pt-1">How long</dt>
+              <dd class="t-small text-text-muted mt-1 sm:mt-0">{s.time}</dd>
+            </div>
+            {s.from && (
+              <div class="border-t border-rule py-3 sm:grid sm:grid-cols-[10rem_1fr] sm:gap-x-4">
+                <dt class="t-label text-text-faint pt-1">Typically from</dt>
+                <dd class="t-small text-text-muted mt-1 sm:mt-0">
+                  {s.from}. The real price is agreed with you after we have talked.
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section id="price" class="section scroll-mt-24 border-t border-rule" aria-labelledby="price-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        The price
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="price-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          A price we agree with you before any work starts.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          A plan for a first loan and a plan for a business with three branches are different
+          amounts of work, so the figures on this page are only where each service typically
+          starts. We talk through what you need and who it is for, then give you one price in
+          writing. If that figure does not suit you, we
+          trim the scope with you until it does.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="not-accounting" class="section scroll-mt-24 border-t border-rule" aria-labelledby="not-accounting-heading">
+    <div class="container-content lg:grid lg:grid-cols-12 lg:gap-x-8">
+      <p class="t-label text-text-faint mb-4 lg:mb-0 lg:pt-3 lg:col-start-9 lg:col-span-4 lg:row-start-1">
+        What we do not do
+      </p>
+      <div class="lg:col-start-1 lg:col-span-8 lg:row-start-1">
+        <h2 id="not-accounting-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+          We are not accountants, and we do not do accounting.
+        </h2>
+        <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+          This work is done by a qualified financial modelling and valuation analyst on the
+          team. It looks forward, at plans and decisions. Your accountant looks after the
+          records and the filings, and we work from the figures they prepare. These stay with
+          your accountant:
+        </p>
+        <ul class="measure mt-8 border-t border-rule lg:mt-12" role="list">
+          {notAccounting.map((item) => (
+            <li class="t-small text-text-muted border-b border-rule py-3">{item}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section border-t border-rule" aria-labelledby="talk-heading">
+    <div class="container-content">
+      <h2 id="talk-heading" class="t-h2 text-vapor-white max-w-[28rem] lg:max-w-[44rem]">
+        Tell us what you have been asked for.
+      </h2>
+      <p class="t-body text-text-muted measure mt-4 lg:mt-6">
+        Send us the application form, the lender's checklist or a few lines on the decision you
+        are facing. We will reply with what we would prepare, how long it would take, and a
+        price to agree with you.
+      </p>
+      <div class="mt-8">
+        <Button href="/contact">Get in touch</Button>
+      </div>
+    </div>
+  </section>
+</MainLayout>
