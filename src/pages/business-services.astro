@@ -6,16 +6,15 @@
  * /what-we-build: label · h2 · lede · body · what you get · what we need
  * from you · how long · typically from.
  *
- * NOT APPROVED FOR PUBLICATION (30 Sep 2026). The services, the prices and
- * the wording wait for review. Every `from` value below is a placeholder:
- * replace PRICE_PENDING with the approved "typically from" figure, or the
- * price row stays hidden. Do not merge with a placeholder showing.
+ * Services, prices and wording approved 2 Oct 2026. The `from` values are
+ * the approved "typically from" figures in US dollars, like the plans on
+ * /pricing. South African clients are quoted in rand on the call; the rand
+ * figures are in the working rules, not on the page. An empty `from` hides
+ * the price row.
  */
 import MainLayout from '../layouts/MainLayout.astro';
 import PageHeader from '../components/ui/PageHeader.astro';
 import Button from '../components/ui/Button.astro';
-
-const PRICE_PENDING = '';
 
 const services = [
   {
@@ -27,7 +26,7 @@ const services = [
     get: 'A written plan in your name with a three to five year forecast, and the spreadsheet behind the forecast so you can answer questions on it.',
     need: 'One call, your last two years of figures if you have traded, and whatever the lender or franchisor has asked for.',
     time: 'Usually two to three weeks.',
-    from: PRICE_PENDING,
+    from: '$1,800',
   },
   {
     n: '02',
@@ -38,7 +37,7 @@ const services = [
     get: 'A working model you own and can change yourself, monthly for the first year, with a short note explaining each assumption.',
     need: 'Your management accounts or bank exports, your price list, your staff and cost list, and one call.',
     time: 'Usually two to three weeks.',
-    from: PRICE_PENDING,
+    from: '$2,000',
   },
   {
     n: '03',
@@ -49,7 +48,7 @@ const services = [
     get: 'A written valuation with a range, the methods and the workings, in words you can put in front of the other side.',
     need: 'Three years of financial statements, what you really pay yourself, any one-off costs, and one call.',
     time: 'Usually two to three weeks.',
-    from: PRICE_PENDING,
+    from: '$2,500',
   },
   {
     n: '04',
@@ -60,7 +59,7 @@ const services = [
     get: 'A short report with a clear go or no-go, the numbers behind it, and the two or three things that would change the answer.',
     need: 'The idea in your own words, any quotes or cost estimates you already have, and one call.',
     time: 'Usually three to four weeks.',
-    from: PRICE_PENDING,
+    from: '$3,000',
   },
   {
     n: '05',
@@ -71,7 +70,7 @@ const services = [
     get: 'A pack ready to send: summary plan, model and slides, with your figures the same in all three.',
     need: 'The same as for the plan and the model, plus what the lender or investor has asked you for.',
     time: 'Usually three to five weeks.',
-    from: PRICE_PENDING,
+    from: '$3,500',
   },
 ];
 
@@ -148,8 +147,9 @@ const notAccounting = [
         </h2>
         <p class="t-body text-text-muted measure mt-4 lg:mt-6">
           A plan for a first loan and a plan for a business with three branches are different
-          amounts of work, so we do not price from a list. We talk through what you need and who
-          it is for, then give you one price in writing. If that figure does not suit you, we
+          amounts of work, so the figures on this page are only where each service typically
+          starts. We talk through what you need and who it is for, then give you one price in
+          writing. If that figure does not suit you, we
           trim the scope with you until it does.
         </p>
       </div>
