@@ -31,7 +31,7 @@ The unglamorous truth is that most enterprise AI value comes from automating rou
 African businesses sit on mountains of underutilized data. AI can turn this data into actionable insights for supply chain optimization, demand forecasting, and risk assessment.
 
 ### Language AI
-With 2,000+ languages spoken across Africa, AI-powered translation and localization represents a massive opportunity.
+With 2,000+ languages spoken across Africa, machine translation and localization represents a massive opportunity.
 
 ## The Challenges
 

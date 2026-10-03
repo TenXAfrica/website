@@ -80,6 +80,6 @@ In Africa, we are famous for "leapfrogging" older technologies. We did it with l
 
 We don't need to get bogged down in the legacy systems of the past. We can move straight to adopting intelligent agents that automate our core business processes.
 
-At Ten X Africa, our mission isn't just to serve the JSE Top 40. It's to make this powerful technology accessible to the businesses that are truly driving our economy forward. Whether you need to streamline governance in a large corporate or automate operations in a high-growth mid-sized firm, the goal is the same: stop just talking about AI, and start putting it to work.
+At Ten X Africa we work with owner-led businesses of 5 to 50 people, the ones that cannot hire a software team but lose hours every week to intake, quotes, invoices and inbox sorting. We learn how your business runs, agree with you what is worth automating and what it should cost, and then build exactly that. The goal is to stop talking about AI and put it to work on the jobs your team does by hand today.
 
 **Let's move from chatting to doing.**
