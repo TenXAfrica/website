@@ -4,6 +4,8 @@ navigation:
     href: /how-it-works
   - label: What we build
     href: /what-we-build
+  - label: Business services
+    href: /business-services
   - label: Pricing
     href: /pricing
   - label: Insights

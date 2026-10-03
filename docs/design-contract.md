@@ -55,6 +55,15 @@ structured data now carry those alternate names, the footer says so in one capti
 title includes "(10X Africa)", and `public/og-default.jpg` plus `public/logo.png` exist
 (`scripts/make-og-image.mjs`).
 
+## Amendment — 3 October 2026
+
+7. **Business services joins the top menu** (Joash asked for it on 3 Oct 2026). The primary nav is
+   now seven items: How it works · What we build · Business services · Pricing · Insights · Case
+   studies · Contact, plus the gold button. Measured with the real Inter and Outfit files, the
+   seven links, the wordmark and the button need about 1,160px, so the desktop nav shows from
+   `xl` (1280px) and the full-screen menu sheet is used below that. The six-item nav already
+   needed about 1,070px and was being squeezed between 1024px and 1150px; this fixes that too.
+
 ---
 
 ---
