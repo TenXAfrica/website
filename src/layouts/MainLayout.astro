@@ -211,7 +211,7 @@ const websiteLd = {
 					<span class="whitespace-nowrap">Ten X Africa</span>
 				</a>
 
-				<ul class="hidden items-center gap-x-5 lg:flex xl:gap-x-8">
+				<ul class="hidden items-center gap-x-5 whitespace-nowrap xl:flex">
 					{
 						navigation.map((item) => {
 							const active = isActive(item.href);
@@ -233,7 +233,7 @@ const websiteLd = {
 					}
 				</ul>
 
-				<a href={navCta.href} class="btn btn-primary hidden lg:inline-flex">
+				<a href={navCta.href} class="btn btn-primary hidden xl:inline-flex">
 					{navCta.label}
 				</a>
 			</nav>
