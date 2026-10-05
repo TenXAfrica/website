@@ -345,4 +345,19 @@ describe('renderContactNote', () => {
     });
     expect(out).not.toContain('```');
   });
+
+  it('starts with the service line, automation when no topic was sent', () => {
+    const base = {
+      fullName: 'Jane',
+      email: 'jane@acme.co.uk',
+      companyLabel: 'Acme',
+      message: 'hello',
+      consent: true,
+      receivedAt: RECEIVED_AT,
+    };
+    expect(renderContactNote(base).split('\n')[0]).toBe('Service line: automation');
+    expect(renderContactNote({ ...base, topic: 'business_services' }).split('\n')[0]).toBe(
+      'Service line: business services'
+    );
+  });
 });

@@ -63,6 +63,11 @@ title includes "(10X Africa)", and `public/og-default.jpg` plus `public/logo.png
    seven links, the wordmark and the button need about 1,160px, so the desktop nav shows from
    `xl` (1280px) and the full-screen menu sheet is used below that. The six-item nav already
    needed about 1,070px and was being squeezed between 1024px and 1150px; this fixes that too.
+8. **Case studies leaves the top menu** (Joash, 5 Oct 2026) until the first case study is
+   approved; it stays in the footer. The nav is six items again and still needs about 1,050px,
+   so the `xl` breakpoint from amendment 7 stays. The contact form now opens with a required
+   "What is this about?" choice (automation, or a plan, forecast or valuation); the business
+   services page links to `/contact?topic=business-services` so that choice arrives made.
 
 ---
 

@@ -246,6 +246,14 @@ export function validateSelfServe(body: unknown): ValidationResult<ValidSelfServ
 /* Contact form validator                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * What the enquiry is about, picked on the form. Older copies of the page
+ * send no topic; those are treated as automation, which is all the form
+ * covered before business services existed.
+ */
+export type ContactTopic = 'automation' | 'business_services';
+const CONTACT_TOPICS: readonly ContactTopic[] = ['automation', 'business_services'];
+
 export interface ValidContact {
   fullName: string;
   email: string;
@@ -254,6 +262,7 @@ export interface ValidContact {
   phone?: string;
   message: string;
   consent: boolean;
+  topic: ContactTopic;
   turnstileToken: string;
 }
 
@@ -271,7 +280,10 @@ export function validateContact(body: unknown): ValidationResult<ValidContact> {
   const message = str(body['message']);
   const token = str(body['turnstileToken']);
   const consent = body['consent'];
+  const rawTopic = str(body['topic']);
+  const topic = (rawTopic ?? 'automation') as ContactTopic;
 
+  if (!CONTACT_TOPICS.includes(topic)) errors.push('topic is not recognised');
   if (!fullName) errors.push('fullName is required');
   else if (fullName.length > LIMITS.name) errors.push('fullName is too long');
 
@@ -295,6 +307,7 @@ export function validateContact(body: unknown): ValidationResult<ValidContact> {
     email: (email as string).toLowerCase(),
     message: clean(message as string),
     consent: consent === true,
+    topic,
     turnstileToken: token,
   };
   if (company) value.company = clean(company);
@@ -836,6 +849,7 @@ export async function handleContact(
     companyLabel,
     message: input.message,
     consent: input.consent,
+    topic: input.topic,
     receivedAt,
   };
   if (input.company) noteInput.company = input.company;
@@ -863,6 +877,41 @@ export async function handleContact(
     }
   }
 
+  /* --- Opportunity (business services only) --- */
+  //
+  // A business services lead carries an opportunity with serviceLine
+  // BUSINESS_SERVICES, so the pipeline and the routines can tell the two
+  // lines apart. Automation enquiries keep the old path: the follow-up task
+  // decides whether one is worth opening. Never for an opted-out company.
+  const businessServices = input.topic === 'business_services';
+  let opportunityId: string | null = null;
+  if (businessServices && !optedOut) {
+    const opportunityInput: Record<string, unknown> = {
+      name: plainInline(companyLabel, 120) + ' — Business services enquiry',
+      stage: 'NEW',
+      source: 'INBOUND',
+      serviceLine: 'BUSINESS_SERVICES',
+      dealType: 'PROJECT',
+      need: input.message.slice(0, LIMITS.freeText),
+      timing: 'UNKNOWN',
+      budgetBand: 'UNKNOWN',
+      nextStep: 'Reply with what we would prepare and offer a call',
+      nextStepDate: nextWorkingDay(new Date(receivedAt)).toISOString(),
+      position: 'first',
+    };
+    if (companyId) opportunityInput['companyId'] = companyId;
+    if (personId) opportunityInput['pointOfContactId'] = personId;
+    const opportunity = await attempt('contact-create-opportunity', () =>
+      twenty.createOpportunity(opportunityInput)
+    );
+    opportunityId = opportunity?.id ?? null;
+    if (note?.id && opportunityId) {
+      await attempt('contact-note-target-opportunity', () =>
+        twenty.createNoteTarget({ noteId: note.id, opportunityId })
+      );
+    }
+  }
+
   /* --- Task --- */
   //
   // This body is read by an unattended routine as its brief, so every piece
@@ -883,6 +932,9 @@ export async function handleContact(
       ]
     : [
         safeName + ' (' + safeEmail + ') used the website contact form.',
+        businessServices
+          ? 'Service line: business services (a plan, forecast or valuation). The reply says what we would prepare and offers a call with the booking link; no price in it. Never accounting work.'
+          : 'Service line: automation.',
         '',
         'Read the "Contact form" Note on the Company, then draft a reply.',
         input.consent ? 'They ticked consent.' : 'They did NOT tick consent -- reply only.',
@@ -903,6 +955,11 @@ export async function handleContact(
   if (task?.id && companyId) {
     await attempt('contact-task-target-company', () =>
       twenty.createTaskTarget({ taskId: task.id, companyId })
+    );
+  }
+  if (task?.id && opportunityId) {
+    await attempt('contact-task-target-opportunity', () =>
+      twenty.createTaskTarget({ taskId: task.id, opportunityId })
     );
   }
 
