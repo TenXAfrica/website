@@ -18,7 +18,9 @@ const Turnstile = ((TurnstileImport as unknown as { default?: typeof TurnstileIm
  * 3. Nothing (local dev with neither set): the submission is simulated.
  *
  * The Worker's contact contract accepts fullName, email, company, website,
- * phone, message, consent and turnstileToken. It does not store country or
+ * phone, message, consent, topic and turnstileToken. The topic sets the
+ * service line: a business services enquiry gets an opportunity tagged
+ * BUSINESS_SERVICES in the CRM. It does not store country or
  * the weekly time-sink as separate fields, so both are folded into the
  * message text as well as sent on their own, and nothing is lost.
  */
@@ -43,7 +45,15 @@ interface ContactFormProps {
     className?: string;
 }
 
+type Topic = '' | 'automation' | 'business_services';
+
+const TOPICS: { value: Exclude<Topic, ''>; label: string }[] = [
+    { value: 'automation', label: 'Work we could automate' },
+    { value: 'business_services', label: 'A plan, forecast or valuation' },
+];
+
 interface FormState {
+    topic: Topic;
     name: string;
     email: string;
     company: string;
@@ -58,6 +68,7 @@ type Errors = Partial<Record<FieldName, string>>;
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
 const EMPTY: FormState = {
+    topic: '',
     name: '',
     email: '',
     company: '',
@@ -82,6 +93,7 @@ const ERROR = 'mt-2 text-[0.9375rem] text-signal-bad';
 
 function validate(form: FormState, turnstileToken: string): Errors {
     const errors: Errors = {};
+    if (!form.topic) errors.topic = 'Choose what your enquiry is about.';
     if (!form.name.trim()) errors.name = 'Enter your name.';
     if (!form.email.trim()) errors.email = 'Enter your work email.';
     else if (!EMAIL_RE.test(form.email.trim())) errors.email = 'Enter an email address like name@company.com.';
@@ -94,7 +106,8 @@ function validate(form: FormState, turnstileToken: string): Errors {
 }
 
 function composeMessage(form: FormState): string {
-    const lines = [`Country: ${form.country.trim()}`];
+    const topic = TOPICS.find((t) => t.value === form.topic);
+    const lines = [`About: ${topic ? topic.label : 'not chosen'}`, `Country: ${form.country.trim()}`];
     if (form.timeSink.trim()) lines.push(`Biggest weekly time-sink: ${form.timeSink.trim()}`);
     lines.push('', form.message.trim());
     return lines.join('\n');
@@ -122,6 +135,11 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
     // tap cannot fall through to a native form post.
     useEffect(() => {
         setHydrated(true);
+        // The business services page links here with ?topic=business-services,
+        // so that choice arrives already made.
+        const wanted = new URLSearchParams(window.location.search).get('topic');
+        if (wanted === 'business-services') setForm((prev) => ({ ...prev, topic: 'business_services' }));
+        else if (wanted === 'automation') setForm((prev) => ({ ...prev, topic: 'automation' }));
         return () => window.clearTimeout(announceTimer.current);
     }, []);
 
@@ -142,12 +160,12 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
     };
 
     const onText =
-        (name: Exclude<keyof FormState, 'consent'>) =>
+        (name: Exclude<keyof FormState, 'consent' | 'topic'>) =>
         (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
             update(name, e.target.value);
 
     const focusFirstError = (errs: Errors) => {
-        const order: FieldName[] = ['name', 'email', 'company', 'country', 'timeSink', 'message', 'consent', 'turnstile'];
+        const order: FieldName[] = ['topic', 'name', 'email', 'company', 'country', 'timeSink', 'message', 'consent', 'turnstile'];
         const first = order.find((k) => errs[k]);
         if (first) {
             document.getElementById(id(first))?.focus();
@@ -181,6 +199,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
             company: form.company.trim(),
             country: form.country.trim(),
             biggestTimeSink: form.timeSink.trim(),
+            topic: form.topic,
             message: composeMessage(form),
             consent: form.consent,
             turnstileToken,
@@ -306,6 +325,35 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                 </p>
 
                 <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <fieldset
+                        className="sm:col-span-2"
+                        aria-invalid={errors.topic ? true : undefined}
+                        aria-describedby={describedBy('topic')}
+                    >
+                        <legend className={LABEL}>What is this about?</legend>
+                        <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {TOPICS.map((t, i) => (
+                                <label
+                                    key={t.value}
+                                    className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[2px] border bg-surface-1 px-4 py-3 text-base text-vapor-white transition-colors duration-150 has-[:checked]:border-tenx-gold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-tenx-gold ${errors.topic ? CONTROL_INVALID : 'border-border-interactive'}`}
+                                >
+                                    <input
+                                        id={i === 0 ? id('topic') : undefined}
+                                        type="radio"
+                                        name="topic"
+                                        value={t.value}
+                                        required
+                                        checked={form.topic === t.value}
+                                        onChange={() => update('topic', t.value)}
+                                        className="h-5 w-5 shrink-0 cursor-pointer accent-tenx-gold focus:outline-none"
+                                    />
+                                    {t.label}
+                                </label>
+                            ))}
+                        </div>
+                        {fieldError('topic')}
+                    </fieldset>
+
                     <div>
                         <label htmlFor={id('name')} className={LABEL}>
                             Your name
@@ -393,7 +441,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                             <span className="font-normal text-text-muted">(optional)</span>
                         </label>
                         <p id={id('timeSink-hint')} className={HINT}>
-                            For example: re-typing enquiries into a spreadsheet, chasing unpaid invoices, building the monthly report.
+                            For automation enquiries. For example: re-typing enquiries into a spreadsheet, chasing unpaid invoices, building the monthly report.
                         </p>
                         <textarea
                             id={id('timeSink')}

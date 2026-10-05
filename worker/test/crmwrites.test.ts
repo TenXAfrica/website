@@ -289,6 +289,23 @@ describe('an opted-out company never produces a follow-up instruction', () => {
     expect(task['title']).toBe('@claude Follow up DMA score: Acme Widgets');
   });
 
+  it('opens no business services opportunity for an opted-out company', async () => {
+    const crm = fakeTwenty({ companies: [optedOut] });
+    await handleContact(
+      {
+        fullName: 'Jane Smith',
+        email: 'jane@acme-widgets.co.uk',
+        company: 'Acme Widgets',
+        message: 'We need a lender pack',
+        consent: true,
+        topic: 'business_services',
+        turnstileToken: 'tok',
+      },
+      { twenty: crm.twenty, version: DEPS_VERSION }
+    );
+    expect(crm.of('opportunities')).toHaveLength(0);
+  });
+
   it('marks the contact-form task too', async () => {
     const crm = fakeTwenty({ companies: [optedOut] });
     await handleContact(
@@ -315,6 +332,59 @@ describe('an opted-out company never produces a follow-up instruction', () => {
 /* ------------------------------------------------------------------ */
 /* Item 1 -- injection into the @claude work queue                     */
 /* ------------------------------------------------------------------ */
+
+describe('contact form topic', () => {
+  const base = {
+    fullName: 'Jane Smith',
+    email: 'jane@acme-widgets.co.uk',
+    company: 'Acme Widgets',
+    message: 'The bank wants a three-year forecast',
+    consent: true,
+    turnstileToken: 'tok',
+  };
+
+  it('tags a business services enquiry: opportunity, note first line, task line', async () => {
+    const crm = fakeTwenty();
+    const res = await handleContact(
+      { ...base, topic: 'business_services' },
+      { twenty: crm.twenty, version: DEPS_VERSION }
+    );
+    expect(res.status).toBe(200);
+
+    const opps = crm.of('opportunities');
+    expect(opps).toHaveLength(1);
+    expect(opps[0]!.body['serviceLine']).toBe('BUSINESS_SERVICES');
+    expect(opps[0]!.body['stage']).toBe('NEW');
+    expect(opps[0]!.body['source']).toBe('INBOUND');
+
+    const note = String((crm.of('notes')[0]!.body['bodyV2'] as { markdown: string }).markdown);
+    expect(note.split('\n')[0]).toBe('Service line: business services');
+
+    const task = String((crm.of('tasks')[0]!.body['bodyV2'] as { markdown: string }).markdown);
+    expect(task.split('\n')[0]).toContain('used the website contact form');
+    expect(task).toContain('Service line: business services');
+  });
+
+  it('keeps an automation enquiry, or one with no topic, on the old path', async () => {
+    for (const topic of ['automation', undefined]) {
+      const crm = fakeTwenty();
+      await handleContact({ ...base, topic }, { twenty: crm.twenty, version: DEPS_VERSION });
+      expect(crm.of('opportunities')).toHaveLength(0);
+      const note = String((crm.of('notes')[0]!.body['bodyV2'] as { markdown: string }).markdown);
+      expect(note.split('\n')[0]).toBe('Service line: automation');
+    }
+  });
+
+  it('rejects a topic it does not know', async () => {
+    const crm = fakeTwenty();
+    const res = await handleContact(
+      { ...base, topic: 'tax_return' },
+      { twenty: crm.twenty, version: DEPS_VERSION }
+    );
+    expect(res.status).toBe(400);
+    expect(crm.of('notes')).toHaveLength(0);
+  });
+});
 
 describe('submitter text cannot forge instructions in a task body', () => {
   /**

@@ -10,8 +10,6 @@ navigation:
     href: /pricing
   - label: Insights
     href: /insights
-  - label: Case studies
-    href: /case-studies
   - label: Contact
     href: /contact
 

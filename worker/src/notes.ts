@@ -502,6 +502,8 @@ export interface ContactNoteInput {
   phone?: string;
   message: string;
   consent: boolean;
+  /** Missing on notes written before the form asked; read as automation. */
+  topic?: 'automation' | 'business_services';
   receivedAt: string;
 }
 
@@ -510,7 +512,13 @@ export function contactNoteTitle(input: ContactNoteInput): string {
 }
 
 export function renderContactNote(input: ContactNoteInput): string {
+  // The first line names the service line: routines find business services
+  // leads by a note whose first line is "Service line: business services".
   const lines = [
+    input.topic === 'business_services'
+      ? 'Service line: business services'
+      : 'Service line: automation',
+    '',
     '# Contact form submission',
     '',
     '- Name: ' + mdInline(input.fullName),
