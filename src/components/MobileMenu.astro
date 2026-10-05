@@ -1,6 +1,6 @@
 ---
 /**
- * Mobile menu (below 1024px). No framework: a toggle button plus a native
+ * Mobile menu (below 1280px). No framework: a toggle button plus a native
  * <dialog> opened with showModal(), which makes the rest of the page inert and
  * keeps focus inside the sheet. Full-screen opaque obsidian sheet, 56px link
  * rows, 44px close target, Escape closes, focus goes straight back to the
@@ -31,7 +31,7 @@ const isActive = (href: string) =>
 
 <button
 	type="button"
-	class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold lg:hidden"
+	class="mobile-menu-toggle inline-flex h-11 w-11 items-center justify-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold xl:hidden"
 	aria-label="Open menu"
 	aria-expanded="false"
 	aria-controls="mobile-menu"
@@ -44,7 +44,7 @@ const isActive = (href: string) =>
 
 <dialog
 	id="mobile-menu"
-	class="mobile-menu fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-y-auto border-0 bg-obsidian-void p-0 text-vapor-white lg:hidden"
+	class="mobile-menu fixed inset-0 m-0 h-full max-h-none w-full max-w-none overflow-y-auto border-0 bg-obsidian-void p-0 text-vapor-white xl:hidden"
 	aria-label="Site menu"
 >
 	<div class="flex min-h-full flex-col">
@@ -154,7 +154,7 @@ const isActive = (href: string) =>
 		});
 
 		// Close if the viewport grows past the mobile breakpoint.
-		var mq = window.matchMedia("(min-width: 1024px)");
+		var mq = window.matchMedia("(min-width: 1280px)");
 		var onChange = function (e) {
 			if (e.matches) close();
 		};
