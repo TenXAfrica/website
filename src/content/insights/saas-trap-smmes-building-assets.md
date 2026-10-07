@@ -71,4 +71,4 @@ At Ten X, we scope the work in one assessment, build a first working draft, and 
 
 Don't let your business become a tenant in the future economy. Let's build something you own.
 
-Not sure if you're in the trap? [Take the free assessment](/assessment) and see where you're renting and where you could be owning.
+Not sure if you're in the trap? [Take the free assessment](/assessment/) and see where you're renting and where you could be owning.

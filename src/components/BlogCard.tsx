@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface BlogCardProps {
-    /** Where the title links to, e.g. `/insights/how-we-price`. */
+    /** Where the title links to, e.g. `/insights/how-we-price/`. */
     href: string;
     /** Small uppercase line above the title, e.g. "23 Sep 2026 · 6 min read". */
     eyebrow: string;

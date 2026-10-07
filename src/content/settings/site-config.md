@@ -1,49 +1,49 @@
 ---
 navigation:
   - label: How it works
-    href: /how-it-works
+    href: /how-it-works/
   - label: What we build
-    href: /what-we-build
+    href: /what-we-build/
   - label: Business services
-    href: /business-services
+    href: /business-services/
   - label: Pricing
-    href: /pricing
+    href: /pricing/
   - label: Insights
-    href: /insights
+    href: /insights/
   - label: Contact
-    href: /contact
+    href: /contact/
 
 navCta:
   label: Take the free assessment
-  href: /assessment
+  href: /assessment/
 
 footer:
   links:
     - label: How it works
-      href: /how-it-works
+      href: /how-it-works/
     - label: What we build
-      href: /what-we-build
+      href: /what-we-build/
     - label: Business services
-      href: /business-services
+      href: /business-services/
     - label: Pricing
-      href: /pricing
+      href: /pricing/
     - label: Insights
-      href: /insights
+      href: /insights/
     - label: Case studies
-      href: /case-studies
+      href: /case-studies/
     - label: Contact
-      href: /contact
+      href: /contact/
     - label: Take the assessment
-      href: /assessment
+      href: /assessment/
     - label: Book a call
-      href: /book
+      href: /book/
   legalLinks:
     - label: Privacy
-      href: /privacy
+      href: /privacy/
     - label: Opt out of email
-      href: /privacy#opt-out
+      href: /privacy/#opt-out
     - label: Terms
-      href: /terms
+      href: /terms/
   company:
     name: Ten X Africa (Pty) Ltd
     registration: Reg 2020/714539/07 · VAT 4250317601

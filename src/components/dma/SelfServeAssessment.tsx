@@ -742,7 +742,7 @@ export const SelfServeAssessment: React.FC = () => {
                 Ten X Africa (Pty) Ltd, Johannesburg, South Africa. You can ask us
                 to stop at any time and we will. See our{' '}
                 <a
-                  href="/privacy"
+                  href="/privacy/"
                   className="dma-inline-link text-tenx-gold underline underline-offset-2"
                 >
                   privacy notice

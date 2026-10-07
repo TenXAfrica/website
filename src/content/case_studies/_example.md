@@ -30,7 +30,7 @@ This file is a template, not a published case study.
 Its name starts with an underscore, which is how Astro is told to ignore it, so it never
 reaches the live site and never appears in any listing. Copy it to a new file named after
 the URL you want — `src/content/case_studies/quote-turnaround.md` publishes at
-`/case-studies/quote-turnaround` — then replace every field above and this body text.
+`/case-studies/quote-turnaround/` — then replace every field above and this body text.
 
 The fields are documented in full in the README, under "Publishing a case study". The two
 that catch people out:

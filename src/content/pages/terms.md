@@ -66,7 +66,7 @@ We each keep the other's confidential information private, use it only for the w
 
 ## Personal information
 
-We handle personal information in line with the Protection of Personal Information Act (POPIA). Our [privacy policy](/privacy) explains what we collect and why, and how to [opt out](/privacy#opt-out) of any contact from us.
+We handle personal information in line with the Protection of Personal Information Act (POPIA). Our [privacy policy](/privacy/) explains what we collect and why, and how to [opt out](/privacy/#opt-out) of any contact from us.
 
 ## Information on this website
 
