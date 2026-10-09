@@ -141,7 +141,7 @@ export const InsightsFilter: React.FC<InsightsFilterProps> = ({ posts, categorie
                 {paginatedPosts.map((post) => (
                     <BlogCard
                         key={post.id}
-                        href={`/insights/${post.slug}`}
+                        href={`/insights/${post.slug}/`}
                         eyebrow={`${formatPostDate(post.publishedAt)} · ${post.readTime} min read`}
                         title={post.title}
                         excerpt={post.excerpt}

@@ -29,10 +29,18 @@ const currentPath =
 		? Astro.url.pathname.replace(/\/$/, "")
 		: Astro.url.pathname;
 
+// The address Google should list: always the trailing-slash form, because
+// GitHub Pages forwards the bare one (Search Console "Page with redirect").
+const canonicalURL = new URL(
+	Astro.url.pathname.replace(/\/?$/, "/"),
+	"https://tenxafrica.co.za",
+).href;
+
 const isActive = (href: string) =>
 	href === "/"
 		? currentPath === "/"
-		: currentPath === href || currentPath.startsWith(`${href}/`);
+		: currentPath === href.replace(/\/$/, "") ||
+			currentPath.startsWith(href.endsWith("/") ? href : `${href}/`);
 
 const siteConfig = await getEntry("settings", "site-config");
 if (!siteConfig) {
@@ -113,6 +121,8 @@ const websiteLd = {
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#0a0f14" />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
+		{/* Pages that pass an SEOHead in the head slot set their own canonical. */}
+		{!noindex && !Astro.slots.has("head") && <link rel="canonical" href={canonicalURL} />}
 		<title>{title}</title>
 
 		<!-- Marks the document as JavaScript-capable before first paint, so the

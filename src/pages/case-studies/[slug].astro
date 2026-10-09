@@ -34,7 +34,7 @@ const { Content } = await entry.render();
 
 const buildLabel = BUILD_TYPE_LABELS[data.buildType];
 const siteUrl = "https://tenxafrica.co.za";
-const canonicalURL = `${siteUrl}/case-studies/${slug}`;
+const canonicalURL = `${siteUrl}/case-studies/${slug}/`;
 const publishedISO = data.publishedAt.toISOString();
 
 // Only our own hosted screenshots are shown or used for link previews.
@@ -171,7 +171,7 @@ const articleJsonLd = {
 
                 <p class="measure mt-12 border-t border-rule pt-6">
                     <a
-                        href="/case-studies"
+                        href="/case-studies/"
                         class="t-label inline-flex min-h-11 items-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
                     >
                         All case studies

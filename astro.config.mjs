@@ -46,10 +46,10 @@ export default defineConfig({
   // Old routes from the previous site. On a static GitHub Pages build these
   // emit meta-refresh pages with canonicals (design contract section 10).
   redirects: {
-    '/consulting': '/what-we-build',
-    '/consulting/operations-excellence': '/what-we-build#operations-excellence',
-    '/consulting/digital-transformation': '/what-we-build#digital-transformation',
-    '/consulting/tech-implementation': '/what-we-build#tech-implementation',
+    '/consulting': '/what-we-build/',
+    '/consulting/operations-excellence': '/what-we-build/#operations-excellence',
+    '/consulting/digital-transformation': '/what-we-build/#digital-transformation',
+    '/consulting/tech-implementation': '/what-we-build/#tech-implementation',
     '/venture-studio': '/',
     '/venture-studio/incubation-and-funding': '/',
     '/venture-studio/compliance-and-registration': '/',

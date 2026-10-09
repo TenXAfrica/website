@@ -490,7 +490,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ className }) => {
                             <label htmlFor={id('consent')} className="cursor-pointer text-[0.9375rem] leading-relaxed text-text-muted">
                                 Ten X Africa may contact me about this enquiry. We use your details only to reply, as set
                                 out in our{' '}
-                                <a href="/privacy" className="text-tenx-gold underline underline-offset-2">
+                                <a href="/privacy/" className="text-tenx-gold underline underline-offset-2">
                                     privacy notice
                                 </a>
                                 .

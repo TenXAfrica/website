@@ -22,7 +22,7 @@ const { data, slug } = entry;
 const { Content } = await entry.render();
 
 const siteUrl = "https://tenxafrica.co.za";
-const canonicalURL = `${siteUrl}/insights/${slug}`;
+const canonicalURL = `${siteUrl}/insights/${slug}/`;
 const publishedISO = data.publishedAt.toISOString();
 const publishedLabel = data.publishedAt.toLocaleDateString("en-GB", {
     day: "numeric",
@@ -104,7 +104,7 @@ const articleJsonLd = {
 
                 <p class="measure mt-12 border-t border-rule pt-6">
                     <a
-                        href="/insights"
+                        href="/insights/"
                         class="t-label inline-flex min-h-11 items-center text-vapor-white transition-colors duration-150 hover:text-tenx-gold"
                     >
                         All insights

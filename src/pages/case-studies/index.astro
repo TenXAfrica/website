@@ -32,7 +32,7 @@ const description =
         slot="head"
         title={title}
         description={description}
-        canonicalURL="https://tenxafrica.co.za/case-studies"
+        canonicalURL="https://tenxafrica.co.za/case-studies/"
     />
 
     <PageHeader
@@ -48,7 +48,7 @@ const description =
                     <div class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
                         {studies.map((study) => (
                             <BlogCard
-                                href={`/case-studies/${study.slug}`}
+                                href={`/case-studies/${study.slug}/`}
                                 eyebrow={`${study.data.sector} · ${study.data.country} · ${BUILD_TYPE_LABELS[study.data.buildType]}`}
                                 title={study.data.title}
                                 excerpt={study.data.excerpt}
@@ -63,7 +63,7 @@ const description =
                         made up. If you want to see where your own business stands in the
                         meantime,{" "}
                         <a
-                            href="/assessment"
+                            href="/assessment/"
                             class="text-tenx-gold underline underline-offset-4 transition-colors duration-150 hover:text-vapor-white"
                         >
                             take the 3-minute score
